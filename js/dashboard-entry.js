@@ -190,7 +190,7 @@ Dashbird.DashboardEntry = function(){
                         me.changedEntryData.tags.push(tagTitle);
                         if(me.editMode){
                                 var $tagField = me.$meta.find('.tag-field');
-                                var tag = Tag();
+                                var tag = Dashbird.Tag();
                                 tag.init(me, tagTitle);
                                 $tagField.val('');
                                 $tagField.before(tag.$tag);
