@@ -173,10 +173,13 @@ class DashboardEntryModel extends Model {
                 
                 // CAUTION: DashboardEntrieTags and Tags in the cache maybe still have a reference to this object
 //                // manually delete cache entries
-//                $CacheDashboardEntrieTags = ModelTable::Get('DashboardEntriesTags')->GetCache()->GetAllCacheInstances();
-//                foreach($CacheDashboardEntrieTags as $CacheDashboardEntryTag){
-//                        ModelTable::Get('DashboardEntriesTags')->GetCache()->Delete($CacheDashboardEntryTag);
-//                }
+                $CacheDashboardEntriesTags = ModelTable::Get('DashboardEntriesTags')->GetCache()->GetAllCacheInstances();
+                foreach($CacheDashboardEntriesTags as $CacheDashboardEntryTag){
+                        /* @var $CacheDashboardEntryTag DashboardEntriesTagsModel */
+                        if($CacheDashboardEntryTag->DashboardEntryId == $this->DashboardEntryId){
+                                ModelTable::Get('DashboardEntriesTags')->GetCache()->Delete($CacheDashboardEntryTag);
+                        }
+                }
                 
                 
                 
