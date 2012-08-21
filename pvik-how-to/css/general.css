@@ -1,0 +1,31 @@
+/* formatting */
+body {font-family: "Courier New";color:black;font-size: 12px;}
+h1, h2, h3 {font-weight:bold;}
+h1 {font-size:24px;}
+h2 {font-size:18px;} 
+h3 {font-size:14px;}
+#global {width: 900px;margin-left: 30px;}
+#menu {width : 300px; float: left;}
+#content {margin-left: 300px;}
+
+#menu ul li {margin-bottom: 4px;}
+#menu ul ul {margin-top: 4px;}
+#menu ul li a {color:blue;}
+#menu ul li a:visited {color:blue; }
+#content h2 {margin: 40px 0px 10px 10px; border-bottom: 1px dashed gray;} 
+#content h3 {margin: 20px 0px 0px 20px;}
+#content pre, ul {margin-left:20px;}
+
+#content p {text-align: justify;margin: 5px 0px 5px 20px;}
+#content pre {margin-top: 10px; padding: 5px;background-color: #d0d0d0;}
+#content pre {
+   white-space: pre-wrap;       /* css-3 */
+   white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+   white-space: -pre-wrap;       /* Opera 4-6 */
+   white-space: -o-pre-wrap;       /* Opera 7 */
+   word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+#content p.info {
+	background-color: #ffec82;
+	padding: 3px 4px;
+}
