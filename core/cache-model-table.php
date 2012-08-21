@@ -32,6 +32,19 @@ class CacheModelTable {
                 $this->IsLoadedAll = false;
                 $this->ModelArrayAll = null;
         }
+        
+        /**
+         * Returns all instances that are in the cache
+         * @return ModelArray
+         */
+        public function GetAllCacheInstances(){
+                $Instances =  new ModelArray();
+                $Instances->SetModelTable($this->ModelTable);
+                foreach($this->Cache as $Value){
+                        $Instances->append($Value['Instance']);
+                }
+                return $Instances;
+        }
 
         /**
          * Stores a instance of model into the cache.
@@ -131,6 +144,7 @@ class CacheModelTable {
                                 $this->DeleteForeignKeyReference($Object, $FieldName);
                         }
                 }
+                
         }
 
         public function DeleteForeignKeyReference(Model $Object, $FieldName) {
