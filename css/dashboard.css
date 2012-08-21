@@ -1,0 +1,237 @@
+.clear-fix {
+	clear: both;
+}
+
+body {
+    font-family: Helvetica;
+    font-size: 11px;
+    font-weight: normal;
+     word-wrap: break-word;
+}
+
+textarea, input, select {
+        font-family: Helvetica;
+          font-size: 11px;
+         font-weight: normal;
+         outline: 0px;
+}
+
+textarea, input {
+      border: 1px solid black;
+        line-height: 19px;
+        padding: 3px;
+}
+
+
+a, a:visited  {
+	color: #006cff;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+#global {
+	margin: 0px 0px 0px 50px;
+}
+
+#board {
+        width: 610px;
+        padding-top: 5px;
+        float: left;
+}
+
+#board:hover{
+   
+}
+#board-bar {
+    margin-left: 20px;
+    width : 510px;
+    padding: 5px;
+    float : left;
+}
+
+#board-bar:hover{
+}
+
+#command-bar {
+	margin: 0px 0px 20px 0px;
+}
+
+#command-bar #command-bar-top {
+        padding-top: 5px;
+        border-top: 1px solid white;
+	margin: 0px 0px 0px 0px;
+}
+
+#command-bar #command-bar-top.closed{
+	border-top-color: black;
+}
+
+
+#command-bar .command-form {
+    padding: 10px;
+    border: 1px solid black;
+}
+
+.command-bar-option {
+	float: left;
+	padding : 5px;
+	margin-top: -1px;
+          cursor : pointer;
+          
+}
+
+.command-bar-option.selected {
+        border: 1px solid black;
+        border-top: 1px solid white;
+}
+
+#search {
+        padding-top: 5px;
+        border-top: 1px solid black;
+        
+}
+
+#search span {
+        font-weight: bold;
+       padding-right: 30px;
+}
+
+#search input {
+        width: 250px;
+}
+
+#logout {
+        float: right;
+}
+
+#content {
+
+}
+
+#content .dashboard-entry {
+	padding: 10px 0px 40px 0px;
+        border-top: 1px solid black;
+}
+
+#content .dashboard-entry.selected {
+    border-top: 1px dashed black;
+}
+
+#content .dashboard-entry .dashboard-entry-left-column {
+	float:left;
+        width: 45px;
+}
+
+#content .dashboard-entry .dashboard-entry-middle-column {
+	float:left;
+	width: 500px;
+	margin: 10px 0px 0px 0px;
+}
+
+#content .dashboard-entry .dashboard-entry-right-column {
+	float:left;
+	margin: 0px 0px 0px 10px;
+         width: 45px;
+}
+
+#content .dashboard-entry .dashboard-entry-right-column img{
+        float: right;
+        margin-right: 10px;
+}
+
+
+#content .dashboard-entry .dashboard-entry-footer-column{
+    padding: 4px 0px 8px 45px;
+    color: #464646;
+}
+
+#content .dashboard-entry .dashboard-entry-meta .tags-box{
+    background-color: white;
+    padding: 3px;
+    border: 1px solid black;
+    width: 500px;
+  
+}
+
+#content .dashboard-entry .dashboard-entry-meta .tag{
+    background-color: #9EB27E;
+    padding: 2px 3px;
+    margin: 1px 2px;
+    display: inline-block;
+}
+
+#content .dashboard-entry .dashboard-entry-meta .delete-tag{
+    background-image: url('/dashboard/images/button-delete-disabled-small.png');
+    background-repeat: no-repeat;
+    background-size: 8px 8px;
+    margin: 0px 0px 0px 2px;
+    width: 8px;
+    height: 8px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+#content .dashboard-entry .dashboard-entry-meta .delete-tag:hover{
+    background-image: url('/dashboard/images/button-delete-small.png');
+}
+
+#content .dashboard-entry .dashboard-entry-meta .tag-field{
+    border: none !important;
+    box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    outline: 0 !important;
+    padding: 0 !important;
+    background-color: transparent !important;
+      line-height: 15px;
+}
+
+
+
+
+
+#command-bar .command-form.note-module textarea {
+	width: 480px;
+    height: 200px;
+}
+
+#command-bar .command-form.todo-module textarea {
+	width: 480px;
+        height: 200px;
+}
+
+#command-bar .command-form.link-module input[type=text] {
+	width: 480px;
+}
+
+#content .dashboard-entry.note-module .dashboard-entry-middle-column textarea {
+	width: 500px;
+    height: 200px;
+}
+
+
+
+#content .dashboard-entry.link-module a {
+	font-weight: bold;
+}
+
+#content .dashboard-entry.link-module .dashboard-entry-middle-column img {
+	width: 500px;
+}
+
+#content .dashboard-entry.link-module input[type=text] {
+	width: 500px;
+}
+
+#content > .dashboard-entry.todo-module .dashboard-entry-left-column img {
+     cursor : pointer;
+}
+
+#content .dashboard-entry.todo-module .dashboard-entry-middle-column textarea {
+	width: 500px;
+    height: 200px;
+}
+
+
