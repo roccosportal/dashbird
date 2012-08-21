@@ -1,11 +1,11 @@
 $(document).ready(function (){
-    LoginBox.init();
-    Dashboard.registerModule('Note', NoteModule);
-    Dashboard.registerModule('Link', LinkModule);
-    Dashboard.registerModule('Todo', TodoModule);
-    Auth.attach('onLoggedIn',  function (){
-        Dashboard.init();
+    Dashbird.LoginBox.init();
+    Dashbird.Dashboard.registerModule('Note', Dashbird.Modules.Note.Module);
+    Dashbird.Dashboard.registerModule('Link', Dashbird.Modules.Link.Module);
+    Dashbird.Dashboard.registerModule('Todo', Dashbird.Modules.Todo.Module);
+    Dashbird.Auth.attach('onLoggedIn',  function (){
+        Dashbird.Dashboard.init();
     });
-    Auth.init();
+    Dashbird.Auth.init();
 
 });

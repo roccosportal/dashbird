@@ -1,4 +1,7 @@
-var LoginBox = function(){
+if(Dashbird===undefined){
+        var Dashbird = {};
+}
+Dashbird.LoginBox = function(){
         var me = {},
         _private = {};
                         
@@ -17,7 +20,7 @@ var LoginBox = function(){
 				
                 _private.$password.keydown(function(event){
                         if(event.keyCode == 13){
-                                Auth.login(_private.$name.val(),_private.$password.val(), _private.onLoggedIn);
+                                Dashbird.Auth.login(_private.$name.val(),_private.$password.val(), _private.onLoggedIn);
                                 event.preventDefault();
                         }
                 });

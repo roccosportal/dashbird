@@ -1,4 +1,11 @@
-var LinkModule = function(){
+if(Dashbird===undefined){
+        var Dashbird = {};
+}
+if(Dashbird.Modules===undefined){
+        Dashbird.Modules = {};
+}
+Dashbird.Modules.Link = {};
+Dashbird.Modules.Link.Module = function(){
         var me = {},
         _private = {};
         _private.$addForm = null;
@@ -10,8 +17,8 @@ var LinkModule = function(){
                 _private.$addFormIsImage = $('#link-module-add-form-is-image');
         };
         me.newEntry = function(){
-                this.addLink(_private.$addFormLink.val(), _private.$addFormIsImage.prop('checked'));
-                Dashboard.hideCommandForms();
+                me.addLink(_private.$addFormLink.val(), _private.$addFormIsImage.prop('checked'));
+                Dashbird.Dashboard.hideCommandForms();
         };
         me.addLink = function (link, isImage){
                 $.getJSON('ajax/link/add/', {
@@ -19,13 +26,13 @@ var LinkModule = function(){
                         isImage : isImage ? '1' : '0'
                 }, function(data) {
                         if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                                Dashboard.addToTop(data[AJAX.DATA]);		
+                                Dashbird.Dashboard.addToTop(data[AJAX.DATA]);		
                         }
                 });
         };
                 
         me.createDashboardEntry = function(entry){
-                var linkEntry = LinkEntry()
+                var linkEntry = Dashbird.Modules.Link.Entry();
                 linkEntry.init(entry);
                 return linkEntry.create();
         };
@@ -42,12 +49,12 @@ var LinkModule = function(){
 
 
 
-var LinkEntry = function(){
+Dashbird.Modules.Link.Entry = function(){
         var me = {},
         _private = {};
         _private.dashboardEntry = null;
         me.init = function(entry){
-                _private.dashboardEntry = DashboardEntry();
+                _private.dashboardEntry = Dashbird.DashboardEntry();
                 _private.dashboardEntry.init(entry, this);
         };
         me.create = function(){

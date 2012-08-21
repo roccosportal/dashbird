@@ -1,4 +1,11 @@
-var NoteModule = function(){
+if(Dashbird===undefined){
+        var Dashbird = {};
+}
+if(Dashbird.Modules===undefined){
+        Dashbird.Modules = {};
+}
+Dashbird.Modules.Note = {};
+Dashbird.Modules.Note.Module = function(){
         var me = {},
         _private = {};
         _private.$addForm = null;
@@ -14,12 +21,12 @@ var NoteModule = function(){
                         text : text
                 }, function(data) {
                         if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                                Dashboard.addToTop(data[AJAX.DATA]);
+                                Dashbird.Dashboard.addToTop(data[AJAX.DATA]);
                         }
                 });
         };
         me.createDashboardEntry = function(entry){
-                var noteEntry = NoteEntry()
+                var noteEntry = Dashbird.Modules.Note.Entry();
                 noteEntry.init(entry);
                 return noteEntry.create();
         };
@@ -30,7 +37,7 @@ var NoteModule = function(){
         };
         me.newEntry = function(){
                 me.addNote(_private.$addFormText.val());
-                Dashboard.hideCommandForms();
+                Dashbird.Dashboard.hideCommandForms();
         };
         me._private = _private; // for inheritance
         return me;
@@ -38,12 +45,12 @@ var NoteModule = function(){
 
 
 
-var NoteEntry = function(){
+Dashbird.Modules.Note.Entry = function(){
         var me = {},
         _private = {};
         _private.dashboardEntry = null;
         me.init = function(entry){
-                _private.dashboardEntry = DashboardEntry();
+                _private.dashboardEntry = Dashbird.DashboardEntry();
                 _private.dashboardEntry.init(entry, this);
         };
         me.create = function(){

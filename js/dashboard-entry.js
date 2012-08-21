@@ -1,4 +1,7 @@
-var DashboardEntry = function(){
+if(Dashbird===undefined){
+        var Dashbird = {};
+}
+Dashbird.DashboardEntry = function(){
         var me = {},
         _private = {};
         
@@ -32,15 +35,15 @@ var DashboardEntry = function(){
                 me.drawNormalTags();
                         
                 me.$entry.mouseover(function (){
-                        Dashboard.$selectedEntry = me.$entry;
+                      Dashbird.Dashboard.$selectedEntry = me.$entry;
                         $('#content > .dashboard-entry.selected').removeClass('selected');
-                        Dashboard.$selectedEntry.addClass('selected');
-                        Dashboard.$selectedEntry.focus();
+                        Dashbird.Dashboard.$selectedEntry.addClass('selected');
+                        Dashbird.Dashboard.$selectedEntry.focus();
                 });
                 me.$entry.mouseleave(function (){
-                        if(Dashboard.$selectedEntry.data('dashboardEntry').entryData.dashboardEntryId == me.entryData.dashboardEntryId){
+                        if(Dashbird.Dashboard.$selectedEntry.data('dashboardEntry').entryData.dashboardEntryId == me.entryData.dashboardEntryId){
                                 $('#content > .dashboard-entry.selected').removeClass('selected');
-                                Dashboard.$selectedEntry = null;
+                                Dashbird.Dashboard.$selectedEntry = null;
                         }
                 });
                         
@@ -148,7 +151,7 @@ var DashboardEntry = function(){
                 var width = 500;
                 var tag = null;
                 $.each(me.entryData.tags,function(index, value){
-                        tag = Tag();
+                        tag = Dashbird.Tag();
                         tag.init(me, value);
                         $tagField.before(tag.$tag);
                         width = width - tag.$tag.width() - 4 - 6; // 4px margin 6px padding 
@@ -246,7 +249,7 @@ var DashboardEntry = function(){
 };
 
 
-var Tag = function(){
+Dashbird.Tag = function(){
         var me = {},
         _private = {};
         

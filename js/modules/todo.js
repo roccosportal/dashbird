@@ -1,4 +1,11 @@
-var TodoModule = function(){
+if(Dashbird===undefined){
+        var Dashbird = {};
+}
+if(Dashbird.Modules===undefined){
+        Dashbird.Modules = {};
+}
+Dashbird.Modules.Todo = {};
+Dashbird.Modules.Todo.Module = function(){
         var me = {},
         _private = {};
         _private.$addForm = null;
@@ -10,19 +17,19 @@ var TodoModule = function(){
         };
         me.newEntry = function(){
                 me.addTodo(_private.$addFormText.val());
-                Dashboard.hideCommandForms();
+                Dashbird.Dashboard.hideCommandForms();
         };
         me.addTodo = function (text){
                 $.getJSON('ajax/todo/add/', {
                         text : text
                 }, function(data) {
                         if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                                Dashboard.addToTop(data[AJAX.DATA]);	
+                                Dashbird.Dashboard.addToTop(data[AJAX.DATA]);	
                         }
                 });
         };
         me.createDashboardEntry = function(entry){
-                var todoEntry = TodoEntry()
+                var todoEntry = Dashbird.Modules.Todo.Entry()
                 todoEntry.init(entry);
                 return todoEntry.create();
         };
@@ -37,12 +44,12 @@ var TodoModule = function(){
 
 
 
-var TodoEntry = function(){
+Dashbird.Modules.Todo.Entry = function(){
         var me = {},
         _private = {};
         _private.dashboardEntry = null;
         me.init = function(entry){
-                _private.dashboardEntry = DashboardEntry();
+                _private.dashboardEntry = Dashbird.DashboardEntry();
                 _private.dashboardEntry.init(entry, this);
         };
         me.create = function(){
@@ -117,10 +124,10 @@ var TodoEntry = function(){
                 _private.dashboardEntry.$middleColumn.html('<p>' + _private.dashboardEntry.entryData.reference.text.replace(/\n/g,'<br />') + '</p>');
                         
                 if( _private.dashboardEntry.entryData.reference.isDone == '1'){
-                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashboard.baseUrl + '/images/button-todo-done-small.png' );
+                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashbird.baseUrl + '/images/button-todo-done-small.png' );
                 }
                 else {
-                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashboard.baseUrl + '/images/button-todo-not-done-small.png' );
+                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashbird.baseUrl + '/images/button-todo-not-done-small.png' );
                 }
                         
         };

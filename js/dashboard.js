@@ -1,4 +1,7 @@
-var Dashboard = function(){
+if(Dashbird===undefined){
+        var Dashbird = {};
+}
+Dashbird.Dashboard = function(){
         var me = {},
         _private = {};
         _private.modules = [];
@@ -24,7 +27,7 @@ var Dashboard = function(){
                         if(_private.boardBarKeyCapture){
                                 if(event.ctrlKey == true && event.keyCode == 83){ // CTRL + S
                                         if($('.command-bar-option.selected').length>0){ // adding a new entry
-                                                var module = Dashboard.findModule($('.command-bar-option.selected:first').data('module'));
+                                                var module = me.findModule($('.command-bar-option.selected:first').data('module'));
                                                 module.newEntry();
                                         }
                                         event.preventDefault();
@@ -63,36 +66,36 @@ var Dashboard = function(){
                 $(document).bind("keydown", function(event){
                         if(_private.boardKeyCapture){
                                 if(event.ctrlKey == true && event.keyCode == 69){ // CTRL + E
-                                        if(Dashboard.$selectedEntry!=null){
-                                                Dashboard.$selectedEntry.data('dashboardEntry').toggleMode();
+                                        if(me.$selectedEntry!=null){
+                                                me.$selectedEntry.data('dashboardEntry').toggleMode();
                                         }
                                         event.preventDefault();
                                 }
                                 else if(event.ctrlKey == true && event.keyCode == 83){ // CTRL + S
-                                        if(Dashboard.$selectedEntry!=null){
-                                                Dashboard.$selectedEntry.data('dashboardEntry').save();
+                                        if(me.$selectedEntry!=null){
+                                                me.$selectedEntry.data('dashboardEntry').save();
                                         }
                                         event.preventDefault();
                                 }
                                 else if(event.ctrlKey == true && event.keyCode == 68){  // CTRL + D
                                         event.preventDefault();
-                                        if(Dashboard.$selectedEntry!=null){
+                                        if(me.$selectedEntry!=null){
                                                 var next = [];
-                                                Dashboard.$selectedEntry.data('dashboardEntry').deleteEntry({
+                                                me.$selectedEntry.data('dashboardEntry').deleteEntry({
                                                         beforeDetach :  function(){ // before detach
-                                                                if(Dashboard.$selectedEntry!=null){
-                                                                        next = Dashboard.$selectedEntry.next();
+                                                                if(me.$selectedEntry!=null){
+                                                                        next = me.$selectedEntry.next();
                                                                 }
                                                         },
                                                         afterDetach :  function(){ // after detach
                                                                 if(next.length != 0){
                                                                         // select next one
-                                                                        Dashboard.$selectedEntry = next;
-                                                                        Dashboard.$selectedEntry.addClass('selected');
-                                                                        Dashboard.$selectedEntry.focus();
+                                                                        me.$selectedEntry = next;
+                                                                        me.$selectedEntry.addClass('selected');
+                                                                        me.$selectedEntry.focus();
                                                                 }
                                                                 else {
-                                                                        Dashboard.$selectedEntry = null;
+                                                                        me.$selectedEntry = null;
                                                                 }
                                                         }
                                                 });
@@ -105,7 +108,6 @@ var Dashboard = function(){
         
         
         
-        me.baseUrl = '/dashboard';
         me.$selectedEntry = null;
         me.findModule = function(module){
                 for (var i = 0; i < _private.modules.length; i++) {

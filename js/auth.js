@@ -1,4 +1,7 @@
-var Auth = function (){
+if(Dashbird===undefined){
+        var Dashbird = {};
+}
+Dashbird.Auth = function (){
         var me = SimpleJSLib.EventHandler(),
         _private = {};
                 
