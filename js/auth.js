@@ -11,7 +11,7 @@ Dashbird.Auth = function (){
                 $.getJSON('ajax/is/logged/in/', function(data) {
                         if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                                 if(data[AJAX.MESSAGE] === AJAX.IS_NOT_LOGGED_IN){
-                                        LoginBox.show();
+                                        Dashbird.LoginBox.show();
                                 }
                                 else {
                                         me.isLoggedIn = true;
