@@ -55,7 +55,11 @@
 				Password:<input type="password" id="login-box-password" />
 			</fieldset>
 		</div>
-	<div>
+	</div>
+    <script type="text/javascript">
+            var Dashbird = {};
+            Dashbird.baseUrl = '<?php echo Core::RelativePath('~/'); ?>';
+    </script>
 	<?php Html::JavaScriptLink('~/js/jquery-1.6.1.min.js'); ?>
 	<?php Html::JavaScriptLink('~/js/constants.js'); ?>
 	<?php Html::JavaScriptLink('~/js/simple-js-lib/single-request-queue.js'); ?>
