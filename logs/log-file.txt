@@ -44,18 +44,15 @@ Route matching: /ajax/note/edit/
 Executing controller: Note, using NoteController as class
 Executing action: AjaxEdit
 Use MySQL as database system
-Executing querystring: SELECT Notes.NoteId, Notes.Text, Notes.UserId FROM Notes WHERE Notes.NoteId = "78"  
-Executing querystring: UPDATE Notes SET Text="testabc231", UserId="2" WHERE Notes.NoteId = "78"
-Executing querystring: SELECT DashboardEntries.DashboardEntryId, DashboardEntries.Module, DashboardEntries.ReferenceId, DashboardEntries.Date, DashboardEntries.SearchHelper, DashboardEntries.UserId, GROUP_CONCAT(DISTINCT t.DashboardEntriesTagsId) as DashboardEntriesTags, GROUP_CONCAT(DISTINCT tt.SearchHelperPartId) as SearchHelperParts FROM DashboardEntries LEFT JOIN DashboardEntriesTags as t ON t.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN SearchHelperParts as tt ON tt.DashboardEntryId = DashboardEntries.DashboardEntryId WHERE DashboardEntries.Module = "Note" AND DashboardEntries.ReferenceId = "78" GROUP BY DashboardEntries.DashboardEntryId, DashboardEntries.DashboardEntryId 
-Executing querystring: DELETE FROM DashboardEntriesTags WHERE DashboardEntriesTags.DashboardEntryId = 201
-Executing querystring: SELECT Tags.TagId, Tags.Title FROM Tags WHERE title IN ("note","hallo","ok")  
-Executing querystring: INSERT INTO DashboardEntriesTags (DashboardEntryId, TagId) VALUES ("201", "20")
-Executing querystring: INSERT INTO DashboardEntriesTags (DashboardEntryId, TagId) VALUES ("201", "54")
-Executing querystring: INSERT INTO DashboardEntriesTags (DashboardEntryId, TagId) VALUES ("201", "55")
-Executing querystring: SELECT SearchHelperParts.SearchHelperPartId, SearchHelperParts.DashboardEntryId, SearchHelperParts.Keyword, SearchHelperParts.StartAt, SearchHelperParts.EndAt FROM SearchHelperParts WHERE SearchHelperParts.SearchHelperPartId IN ( "82","83")  
-Executing querystring: UPDATE SearchHelperParts SET DashboardEntryId="201", Keyword="note-text", StartAt="0", EndAt="9" WHERE SearchHelperParts.SearchHelperPartId = "82"
-Executing querystring: UPDATE SearchHelperParts SET DashboardEntryId="201", Keyword="tags", StartAt="10", EndAt="20" WHERE SearchHelperParts.SearchHelperPartId = "83"
-Executing querystring: SELECT DashboardEntriesTags.DashboardEntriesTagsId, DashboardEntriesTags.DashboardEntryId, DashboardEntriesTags.TagId FROM DashboardEntriesTags WHERE DashboardEntriesTags.DashboardEntriesTagsId IN ( "251","252","253")  
-Executing querystring: SELECT DashboardEntriesTags.DashboardEntriesTagsId, DashboardEntriesTags.DashboardEntryId, DashboardEntriesTags.TagId FROM DashboardEntriesTags WHERE DashboardEntriesTags.DashboardEntriesTagsId IN ( "251","252","253")  
-Executing querystring: UPDATE SearchHelperParts SET DashboardEntryId="201", Keyword="tags", StartAt="10", EndAt="20" WHERE SearchHelperParts.SearchHelperPartId = "83"
-Executing querystring: UPDATE DashboardEntries SET Module="Note", ReferenceId="78", Date="2012-08-21 22:34:35", SearchHelper="testabc231notehallook", UserId="2" WHERE DashboardEntries.DashboardEntryId = "201"
+Executing querystring: SELECT Notes.NoteId, Notes.Text, Notes.UserId FROM Notes WHERE Notes.NoteId = "79"  
+Executing querystring: UPDATE Notes SET Text="rass", UserId="2" WHERE Notes.NoteId = "79"
+Executing querystring: SELECT DashboardEntries.DashboardEntryId, DashboardEntries.Module, DashboardEntries.ReferenceId, DashboardEntries.Date, DashboardEntries.SearchHelper, DashboardEntries.UserId, GROUP_CONCAT(DISTINCT t.DashboardEntriesTagsId) as DashboardEntriesTags, GROUP_CONCAT(DISTINCT tt.SearchHelperPartId) as SearchHelperParts FROM DashboardEntries LEFT JOIN DashboardEntriesTags as t ON t.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN SearchHelperParts as tt ON tt.DashboardEntryId = DashboardEntries.DashboardEntryId WHERE DashboardEntries.Module = "Note" AND DashboardEntries.ReferenceId = "79" GROUP BY DashboardEntries.DashboardEntryId, DashboardEntries.DashboardEntryId 
+Executing querystring: DELETE FROM DashboardEntriesTags WHERE DashboardEntriesTags.DashboardEntryId = 202
+Executing querystring: SELECT Tags.TagId, Tags.Title FROM Tags WHERE title IN ("note","test")  
+Executing querystring: INSERT INTO DashboardEntriesTags (DashboardEntryId, TagId) VALUES ("202", "7")
+Executing querystring: INSERT INTO DashboardEntriesTags (DashboardEntryId, TagId) VALUES ("202", "20")
+Executing querystring: SELECT SearchHelperParts.SearchHelperPartId, SearchHelperParts.DashboardEntryId, SearchHelperParts.Keyword, SearchHelperParts.StartAt, SearchHelperParts.EndAt FROM SearchHelperParts WHERE SearchHelperParts.SearchHelperPartId IN ( "84","85")  
+Executing querystring: UPDATE SearchHelperParts SET DashboardEntryId="202", Keyword="note-text", StartAt="0", EndAt="3" WHERE SearchHelperParts.SearchHelperPartId = "84"
+Executing querystring: UPDATE SearchHelperParts SET DashboardEntryId="202", Keyword="tags", StartAt="4", EndAt="7" WHERE SearchHelperParts.SearchHelperPartId = "85"
+Executing querystring: UPDATE SearchHelperParts SET DashboardEntryId="202", Keyword="tags", StartAt="4", EndAt="11" WHERE SearchHelperParts.SearchHelperPartId = "85"
+Executing querystring: UPDATE DashboardEntries SET Module="Note", ReferenceId="79", Date="2012-08-23 19:47:14", SearchHelper="rasstestnote", UserId="2" WHERE DashboardEntries.DashboardEntryId = "202"

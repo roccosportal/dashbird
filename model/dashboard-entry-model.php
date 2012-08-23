@@ -105,11 +105,38 @@ class DashboardEntryModel extends Model {
                     'tags' => $TagTitle
                 );
         }
-
+        
+        /**
+         * Find a search helper part by the keyword
+         * @param string $Keyword
+         * @return SearchHelperPartModel 
+         */
+        public function FindSearchHelperPartByKeyWord($Keyword){
+                 $SearchHelperParts = $this->SearchHelperParts;
+                 foreach ($SearchHelperParts as $SearchHelperPart) {
+                          /* @var $SearchHelperPart SearchHelperPartModel */
+                         if ($SearchHelperPart->Keyword == $Keyword) {
+                                 return $SearchHelperPart;
+                         }
+                 }
+                 return null;
+        }
 
 
         public function SetSearchHelpePart($Keyword, $Value) {
                 $SearchHelperParts = $this->SearchHelperParts->Sort('StartAt');
+                $CurrentSearchHelperPart = $this->FindSearchHelperPartByKeyWord($Keyword);
+                if($CurrentSearchHelperPart !== null){
+                        // if this keyword already exists check if we need to change something
+                        $OldValue = substr($this->SearchHelper, $CurrentSearchHelperPart->StartAt, ($CurrentSearchHelperPart->EndAt -  $CurrentSearchHelperPart->StartAt) + 1);
+                        if($OldValue == $Value){
+                                // don't change anything
+                                return;
+                        }
+                        
+                }
+                
+
                 $AlreadyExists = false;
                 $DifferntLength = 0;
                 foreach ($SearchHelperParts as $SearchHelperPart) {
@@ -120,6 +147,7 @@ class DashboardEntryModel extends Model {
                                         $NewLength = strlen($Value);
                                         $DifferntLength = $NewLength - (($SearchHelperPart->EndAt - $SearchHelperPart->StartAt) + 1);
 
+                                      
 
                                         $SearchHelperTextFront = substr($this->SearchHelper, 0, $SearchHelperPart->StartAt);
                                         $SearchHelperTextBack = '';
@@ -181,6 +209,9 @@ class DashboardEntryModel extends Model {
                         }
                 }
                 
+                // clear all reference keys 
+                $this->SetFieldData('DashboardEntriesTags', null);
+                
                 
                 
                 
@@ -200,6 +231,8 @@ class DashboardEntryModel extends Model {
                                 $TitleInStateMent .= '"%s"';
                                 $Query->AddParameter($TagTitle);
                         }
+                        
+                        
                         $Query->SetConditions('WHERE title IN (' . $TitleInStateMent . ')');
                         $TagModels = $Query->Select(); // get existing tags
                         foreach ($TagModels as $TagModel) {
