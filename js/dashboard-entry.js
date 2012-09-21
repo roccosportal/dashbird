@@ -24,7 +24,7 @@ Dashbird.DashboardEntry = function(){
                 var html = '<div class="dashboard-entry ' + htmlConfig.cssClass +'">';
                 html =	html + '<div class="dashboard-entry-left-column">' + htmlConfig.leftColumn +'</div>';
                 html =	html + '<div class="dashboard-entry-middle-column">' + htmlConfig.middleColumn +'</div>';
-                html =	html + '<div class="dashboard-entry-right-column"><img class="delete-button" src="' + Dashbird.baseUrl + '/images/button-delete-disabled-small.png" alt="" /></div>';
+                html =	html + '<div class="dashboard-entry-right-column"><img class="delete-button" src="' + Dashbird.baseUrl + 'images/button-delete-disabled-small.png" alt="" /></div>';
                 html =  html + '<div class="dashboard-entry-footer-column clear-fix" >';
                 html =  html + '<div class="dashboard-entry-meta" ><div class="tags"></div></div>';
                 html =	html + '</div>';
@@ -53,10 +53,10 @@ Dashbird.DashboardEntry = function(){
                         me.deleteEntry();
                 });
                 $deleteButton.mouseenter(function (){
-                        $(this).attr('src', Dashbird.baseUrl + '/images/button-delete-small.png');
+                        $(this).attr('src', Dashbird.baseUrl + 'images/button-delete-small.png');
                 });
                 $deleteButton.mouseleave(function (){
-                        $(this).attr('src', Dashbird.baseUrl + '/images/button-delete-disabled-small.png');
+                        $(this).attr('src', Dashbird.baseUrl + 'images/button-delete-disabled-small.png');
                 });
                 
                 me.$entry.data('dashboardEntry', me);

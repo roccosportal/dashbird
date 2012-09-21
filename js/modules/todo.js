@@ -58,10 +58,10 @@ Dashbird.Modules.Todo.Entry = function(){
                 var htmlConfig = {};
                 htmlConfig.cssClass = 'todo-module';
                 if( _private.dashboardEntry.entryData.reference.isDone=='1'){
-                        htmlConfig.leftColumn = '<img data-is-done="true" src="' + Dashbird.baseUrl + '/images/button-todo-done-small.png" alt="" />';
+                        htmlConfig.leftColumn = '<img data-is-done="true" src="' + Dashbird.baseUrl + 'images/button-todo-done-small.png" alt="" />';
                 }
                 else {
-                        htmlConfig.leftColumn = '<img data-is-done="false" src="' + Dashbird.baseUrl + '/images/button-todo-not-done-small.png" alt="" />';
+                        htmlConfig.leftColumn = '<img data-is-done="false" src="' + Dashbird.baseUrl + 'images/button-todo-not-done-small.png" alt="" />';
                 }
                 htmlConfig.middleColumn = '<p>' + _private.dashboardEntry.entryData.reference.text.replace(/\n/g,'<br />') + '</p>';
                 var $entry =  _private.dashboardEntry.create(htmlConfig);
@@ -84,12 +84,12 @@ Dashbird.Modules.Todo.Entry = function(){
                 _private.dashboardEntry.changedEntryData.reference.isDone = _private.dashboardEntry.changedEntryData.reference.isDone == '1' ? '0' : '1';
 
                 if( _private.dashboardEntry.changedEntryData.reference.isDone == '1'){
-                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashbird.baseUrl + '/images/button-todo-done-small.png' );
+                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashbird.baseUrl + 'images/button-todo-done-small.png' );
                         _private.dashboardEntry.deleteTag( 'undone');
                         _private.dashboardEntry.addTag('isdone');
                 }
                 else {
-                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashbird.baseUrl + '/images/button-todo-not-done-small.png' );
+                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashbird.baseUrl + 'images/button-todo-not-done-small.png' );
                         _private.dashboardEntry.deleteTag('isdone');
                         _private.dashboardEntry.addTag('undone');
                 }
@@ -124,10 +124,10 @@ Dashbird.Modules.Todo.Entry = function(){
                 _private.dashboardEntry.$middleColumn.html('<p>' + _private.dashboardEntry.entryData.reference.text.replace(/\n/g,'<br />') + '</p>');
                         
                 if( _private.dashboardEntry.entryData.reference.isDone == '1'){
-                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashbird.baseUrl + '/images/button-todo-done-small.png' );
+                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashbird.baseUrl + 'images/button-todo-done-small.png' );
                 }
                 else {
-                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashbird.baseUrl + '/images/button-todo-not-done-small.png' );
+                        _private.dashboardEntry.$entry.find('.dashboard-entry-left-column img').attr('src', Dashbird.baseUrl + 'images/button-todo-not-done-small.png' );
                 }
                         
         };

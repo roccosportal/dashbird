@@ -56,7 +56,7 @@ Dashbird.Modules.Note.Entry = function(){
         me.create = function(){
                 var htmlConfig = {};
                 htmlConfig.cssClass = 'note-module';
-                htmlConfig.leftColumn = '<img src="' + Dashbird.baseUrl + '/images/button-note-small.png" alt="" />';
+                htmlConfig.leftColumn = '<img src="' + Dashbird.baseUrl + 'images/button-note-small.png" alt="" />';
                 htmlConfig.middleColumn = '<p>' + _private.dashboardEntry.entryData.reference.text.replace(/\n/g,'<br />') + '</p>';
                   
                 return _private.dashboardEntry.create(htmlConfig);

@@ -61,16 +61,16 @@
             Dashbird.baseUrl = '<?php echo $this->RelativePath('~/'); ?>';
     </script>
 	<?php $this->Helper->JavaScriptLink('~/js/jquery-1.6.1.min.js'); ?>
-	<?php $this->Helper->JavaScriptLink('~/js/constants.js'); ?>
-	<?php $this->Helper->JavaScriptLink('~/js/simple-js-lib/single-request-queue.js'); ?>
-    <?php $this->Helper->JavaScriptLink('~/js/simple-js-lib/event-handler.js'); ?>
-    <?php $this->Helper->JavaScriptLink('~/js/auth.js'); ?>
-    <?php $this->Helper->JavaScriptLink('~/js/login-box.js'); ?>
-    <?php $this->Helper->JavaScriptLink('~/js/modules/note.js'); ?>
-    <?php $this->Helper->JavaScriptLink('~/js/modules/link.js'); ?>
-    <?php $this->Helper->JavaScriptLink('~/js/modules/todo.js'); ?>    
-    <?php $this->Helper->JavaScriptLink('~/js/dashboard-entry.js'); ?>
-    <?php $this->Helper->JavaScriptLink('~/js/dashboard.js'); ?>
-    <?php $this->Helper->JavaScriptLink('~/js/init.js'); ?>
+	<?php $this->Helper->JavaScriptLink('~/js/constants.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
+	<?php $this->Helper->JavaScriptLink('~/js/simple-js-lib/single-request-queue.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
+    <?php $this->Helper->JavaScriptLink('~/js/simple-js-lib/event-handler.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
+    <?php $this->Helper->JavaScriptLink('~/js/auth.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
+    <?php $this->Helper->JavaScriptLink('~/js/login-box.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
+    <?php $this->Helper->JavaScriptLink('~/js/modules/note.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
+    <?php $this->Helper->JavaScriptLink('~/js/modules/link.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
+    <?php $this->Helper->JavaScriptLink('~/js/modules/todo.js?version='. \Pvik\Core\Config::$Config['Version']); ?>    
+    <?php $this->Helper->JavaScriptLink('~/js/dashboard-entry.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
+    <?php $this->Helper->JavaScriptLink('~/js/dashboard.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
+    <?php $this->Helper->JavaScriptLink('~/js/init.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
 </body>
 </html>

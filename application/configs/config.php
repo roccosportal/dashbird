@@ -3,6 +3,8 @@ self::$Config['UnderConstruction']['Enabled'] = false;
 self::$Config['Log']['On'] = true;
 self::$Config['Log']['UseOneFile'] = true;
 
+
+
 self::$Config['DefaultNamespace'] = '\\Dashbird';
 self::$Config['NamespaceAssociations']['\\Dashbird'] = '~/application/';
 
@@ -30,4 +32,5 @@ self::$Config['Routes'] = array (
     array ('Url' => '/test/', 'Controller' => 'Test', 'Action' => 'Test')
 );
 
+self::$Config['Version'] = '1.0.1';
 ?>
