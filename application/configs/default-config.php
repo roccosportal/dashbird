@@ -2,7 +2,7 @@
 self::$Config['Log']['On'] = false;
 self::$Config['Log']['UseOneFile'] = true;
 self::$Config['UnderConstruction']['Enabled'] = false;
-self::$Config['UnderConstruction']['Path'] = '~/views/other/under-construction.php';
+
 self::$Config['ErrorPages'] = array (
     'Default' => '~/application/views/error-pages/master.php'
 );
@@ -14,4 +14,5 @@ self::$Config['DefaultNamespaceControllers'] = '\\Controllers';
 self::$Config['DefaultNamespaceEntity'] = '\\Model\\Entities'; 
 self::$Config['DefaultNamespaceModelTable'] = '\\Model\\ModelTables';
 self::$Config['DefaultViewsFolder'] = '~/application/views/';
+self::$Config['UnderConstruction']['Path'] = self::$Config['DefaultViewsFolder'] . 'other/under-construction.php';
 ?>

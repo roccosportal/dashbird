@@ -33,7 +33,7 @@ img {margin: 0px 15px;float: left;}
 <body>
 <div id="content">
 <h1>Under Construction</h1>
-<p><img alt="" src="<?php echo Core::RelativePath('~/images/under-construction.jpg') ?>" />Sorry, but this page is currently unavailable during a normal update proccess. Please try it in a few minutes again. You can contact me via my email address: admin@website.com. Feel free to ask anything.</p>
+<p><img alt="" src="<?php echo \Pvik\Core\Path::RelativePath('~/images/under-construction.jpg') ?>" />Sorry, but this page is currently unavailable during a normal update proccess. Please try it in a few minutes again. You can contact me via my email address: admin@website.com. Feel free to ask anything.</p>
 </div>
 </body>
 </html>
