@@ -103,6 +103,9 @@ Dashbird.Modules.Link.Entry = function(){
                         if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                                 // save status
                                 _private.dashboardEntry.entryData =  _private.dashboardEntry.changedEntryData;
+                                // convert (is converted on serverside aswell)
+                                _private.dashboardEntry.entryData.reference.link = Dashbird.Dashboard.htmlEntities(_private.dashboardEntry.entryData.reference.link);
+                                
                                 _private.dashboardEntry.changedEntryData = {};
                                                
                                 // switch to normal mode

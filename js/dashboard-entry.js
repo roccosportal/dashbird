@@ -169,6 +169,16 @@ Dashbird.DashboardEntry = function(){
                                 me.addTag($tagField.val());
                         ///event.preventDefault();
                         }
+                        else if(event.keyCode == 60){
+                            event.preventDefault();
+                        }
+                        else if(event.ctrlKey == true && event.keyCode == 86){
+                            setTimeout(function(){
+                                $tagField.val($tagField.val().replace(/</g, '').replace(/>/g, ''));
+                            }, 100)
+                           
+                        }
+                        console.log(event.keyCode);
                 
                 });
                 me.$meta.find('.tags-box').focusout(function(){

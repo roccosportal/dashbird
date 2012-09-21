@@ -1,58 +1,8 @@
-Loaded: config.php
-Relative file base: /dashbird/
-Absolute file base: C:/xampp/htdocs/dashbird/
-Included: C:/xampp/htdocs/dashbird/core/cache-model-table.php
-Included: C:/xampp/htdocs/dashbird/core/controller-manager.php
-Included: C:/xampp/htdocs/dashbird/core/controller.php
-Included: C:/xampp/htdocs/dashbird/core/core.php
-Included: C:/xampp/htdocs/dashbird/core/field-definition-helper.php
-Included: C:/xampp/htdocs/dashbird/core/html.php
-Included: C:/xampp/htdocs/dashbird/core/master-page.php
-Included: C:/xampp/htdocs/dashbird/core/model-array.php
-Included: C:/xampp/htdocs/dashbird/core/model-table.php
-Included: C:/xampp/htdocs/dashbird/core/model.php
-Included: C:/xampp/htdocs/dashbird/core/sql-builder.php
-Included: C:/xampp/htdocs/dashbird/core/mssql-builder.php
-Included: C:/xampp/htdocs/dashbird/core/sql-manager.php
-Included: C:/xampp/htdocs/dashbird/core/mssql-manager.php
-Included: C:/xampp/htdocs/dashbird/core/mysql-builder.php
-Included: C:/xampp/htdocs/dashbird/core/mysql-manager.php
-Included: C:/xampp/htdocs/dashbird/core/query.php
-Included: C:/xampp/htdocs/dashbird/core/sqlsqrv-manager.php
-Included: C:/xampp/htdocs/dashbird/core/sqlsrv-builder.php
-Included: C:/xampp/htdocs/dashbird/core/validation-state.php
-Included: C:/xampp/htdocs/dashbird/core/view-manager.php
-Included: C:/xampp/htdocs/dashbird/core/view.php
-Included: C:/xampp/htdocs/dashbird/code/constants.php
-Included: C:/xampp/htdocs/dashbird/model/dashboard-entries-tags-model.php
-Included: C:/xampp/htdocs/dashbird/model/dashboard-entry-model.php
-Included: C:/xampp/htdocs/dashbird/model/module-model.php
-Included: C:/xampp/htdocs/dashbird/model/link-model.php
-Included: C:/xampp/htdocs/dashbird/model/note-model.php
-Included: C:/xampp/htdocs/dashbird/model/search-helper-part-model.php
-Included: C:/xampp/htdocs/dashbird/model/tag-model.php
-Included: C:/xampp/htdocs/dashbird/model/todo-model.php
-Included: C:/xampp/htdocs/dashbird/model/user-model.php
-Included: C:/xampp/htdocs/dashbird/controllers/base-controller.php
-Included: C:/xampp/htdocs/dashbird/controllers/auth-controller.php
-Included: C:/xampp/htdocs/dashbird/controllers/dashboard-controller.php
-Included: C:/xampp/htdocs/dashbird/controllers/link-controller.php
-Included: C:/xampp/htdocs/dashbird/controllers/note-controller.php
-Included: C:/xampp/htdocs/dashbird/controllers/todo-controller.php
-Url: /ajax/note/edit/
-Route matching: /ajax/note/edit/
-Executing controller: Note, using NoteController as class
-Executing action: AjaxEdit
-Use MySQL as database system
-Executing querystring: SELECT Notes.NoteId, Notes.Text, Notes.UserId FROM Notes WHERE Notes.NoteId = "79"  
-Executing querystring: UPDATE Notes SET Text="rass", UserId="2" WHERE Notes.NoteId = "79"
-Executing querystring: SELECT DashboardEntries.DashboardEntryId, DashboardEntries.Module, DashboardEntries.ReferenceId, DashboardEntries.Date, DashboardEntries.SearchHelper, DashboardEntries.UserId, GROUP_CONCAT(DISTINCT t.DashboardEntriesTagsId) as DashboardEntriesTags, GROUP_CONCAT(DISTINCT tt.SearchHelperPartId) as SearchHelperParts FROM DashboardEntries LEFT JOIN DashboardEntriesTags as t ON t.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN SearchHelperParts as tt ON tt.DashboardEntryId = DashboardEntries.DashboardEntryId WHERE DashboardEntries.Module = "Note" AND DashboardEntries.ReferenceId = "79" GROUP BY DashboardEntries.DashboardEntryId, DashboardEntries.DashboardEntryId 
-Executing querystring: DELETE FROM DashboardEntriesTags WHERE DashboardEntriesTags.DashboardEntryId = 202
-Executing querystring: SELECT Tags.TagId, Tags.Title FROM Tags WHERE title IN ("note","test")  
-Executing querystring: INSERT INTO DashboardEntriesTags (DashboardEntryId, TagId) VALUES ("202", "7")
-Executing querystring: INSERT INTO DashboardEntriesTags (DashboardEntryId, TagId) VALUES ("202", "20")
-Executing querystring: SELECT SearchHelperParts.SearchHelperPartId, SearchHelperParts.DashboardEntryId, SearchHelperParts.Keyword, SearchHelperParts.StartAt, SearchHelperParts.EndAt FROM SearchHelperParts WHERE SearchHelperParts.SearchHelperPartId IN ( "84","85")  
-Executing querystring: UPDATE SearchHelperParts SET DashboardEntryId="202", Keyword="note-text", StartAt="0", EndAt="3" WHERE SearchHelperParts.SearchHelperPartId = "84"
-Executing querystring: UPDATE SearchHelperParts SET DashboardEntryId="202", Keyword="tags", StartAt="4", EndAt="7" WHERE SearchHelperParts.SearchHelperPartId = "85"
-Executing querystring: UPDATE SearchHelperParts SET DashboardEntryId="202", Keyword="tags", StartAt="4", EndAt="11" WHERE SearchHelperParts.SearchHelperPartId = "85"
-Executing querystring: UPDATE DashboardEntries SET Module="Note", ReferenceId="79", Date="2012-08-23 19:47:14", SearchHelper="rasstestnote", UserId="2" WHERE DashboardEntries.DashboardEntryId = "202"
+[Include] /var/www/Dashbird/library/pvik/core/log.php
+[Info] Loaded: ~/application/configs/default-config.php,~/application/configs/config.php
+[Include] /var/www/Dashbird/library/pvik/web/error-manager.php
+[Include] /var/www/Dashbird/library/pvik/web/route-manager.php
+[Include] /var/www/Dashbird/library/pvik/web/request.php
+[Include] /var/www/Dashbird/library/pvik/utils/key-value-array.php
+[Include] /var/www/Dashbird/library/pvik/web/controller-manager.php
+[Include] /var/www/Dashbird/library/pvik/core/class-not-found-exception.php

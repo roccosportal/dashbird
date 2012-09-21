@@ -223,6 +223,9 @@ Dashbird.Dashboard = function(){
                         }
                 });		
         };
+        me.htmlEntities = function (str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        };
         me._private = _private; // for inheritance
         return me;
 }();
