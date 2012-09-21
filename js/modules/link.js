@@ -60,7 +60,7 @@ Dashbird.Modules.Link.Entry = function(){
         me.create = function(){
                 var htmlConfig = {};
                 htmlConfig.cssClass = 'link-module';
-                htmlConfig.leftColumn = '<img src="' + Dashbird.baseUrl + '/images/button-link-small.png" alt="" />';
+                htmlConfig.leftColumn = '<img src="' + Dashbird.baseUrl + 'images/button-link-small.png" alt="" />';
                 if(_private.dashboardEntry.entryData.reference.isImage!=='1'){
                         htmlConfig.middleColumn = '<a href="' + _private.dashboardEntry.entryData.reference.link +'">' + _private.dashboardEntry.entryData.reference.link +'</a>';
                 }
