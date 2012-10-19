@@ -149,7 +149,6 @@ Dashbird.Modules.Todo.Entry = function(){
                                 _private.dashboardEntry.changedEntryData = {};
                                 // convert (is converted on serverside aswell)
                                 _private.dashboardEntry.entryData.reference.text = Dashbird.Dashboard.htmlEntities(_private.dashboardEntry.entryData.reference.text);
-                                
                                 // switch to normal mode
                                 _private.dashboardEntry.switchToNormalMode();
                         }

@@ -17,8 +17,22 @@ class Users extends \Pvik\Database\Generic\ModelTable {
         
         $this->FieldDefinition['Password'] =  array ('Type' => 'Normal');
         
+        $this->FieldDefinition['UserShares'] = array ('Type' => 'ManyForeignObjects', 'ModelTable' => 'UserShares','ForeignKey' => 'UserId');
+         
         $this->FieldDefinition['Links'] = array ('Type' => 'ManyForeignObjects', 'ModelTable' => 'Links','ForeignKey' => 'UserId');
 
         $this->FieldDefinition['Notes'] = array ('Type' => 'ManyForeignObjects', 'ModelTable' => 'Notes','ForeignKey' => 'UserId');
+    }
+    
+    /**
+     * 
+     * @param string $Name
+     * @return \Dashbird\Model\Entities\User
+     */
+    public function FindByName($Name){
+         $Query = new \Pvik\Database\Generic\Query('Users');
+         $Query->SetConditions('WHERE Users.Name = "%s"');
+         $Query->AddParameter($Name);
+         return $Query->SelectSingle();
     }
 }

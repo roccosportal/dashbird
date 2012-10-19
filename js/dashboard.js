@@ -175,7 +175,7 @@ Dashbird.Dashboard = function(){
                         $.getJSON('ajax/logout/',{}, function(data) {
                                 if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                                         // refresh page
-                                        window.location.href = window.location.href;
+                                       document.location.reload();
                                 }
                         });	
                         event.preventDefault();

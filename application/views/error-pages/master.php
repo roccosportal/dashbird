@@ -44,7 +44,7 @@ body {
             <span>Stacktrace:</span>
             <div id="stacktrace"><?php echo  nl2br($Exception->getTraceAsString()) ?></div>
             <span>Logtrace:</span>
-            <div id="logtrace"><?php echo  nl2br(Log::GetTrace()) ?></div>
+            <div id="logtrace"><?php echo  nl2br(\Pvik\Core\Log::GetTrace()) ?></div>
             <span>Code:</span>
             <div id="code"><?php echo  nl2br($Exception->getCode()) ?></div>
         </div>

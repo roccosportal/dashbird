@@ -1,281 +1,312 @@
 if(Dashbird===undefined){
-        var Dashbird = {};
+    var Dashbird = {};
 }
 Dashbird.DashboardEntry = function(){
-        var me = {},
-        _private = {};
+    var me = {},
+    _private = {};
         
-        me.entryData = null;
-        me.moduleEntry = null;
-        me.$entry = null;
-        me.$meta = null;
-        me.$middleColumn = null;
-        me.changedEntryData = null;
-        me.editMode = false;
-        me.hasUnsavedChanges = false;
+    me.entryData = null;
+    me.moduleEntry = null;
+    me.$entry = null;
+    me.$meta = null;
+    me.$middleColumn = null;
+    me.changedEntryData = null;
+    me.editMode = false;
+    me.hasUnsavedChanges = false;
         
-        me.init = function (entryData, moduleEntry){
-                me.entryData = entryData;
-                me.moduleEntry = moduleEntry;
-        }
+    me.init = function (entryData, moduleEntry){
+        me.entryData = entryData;
+        me.moduleEntry = moduleEntry;
+    }
 
-        me.create = function(htmlConfig){
+    me.create = function(htmlConfig){
                         
-                var html = '<div class="dashboard-entry ' + htmlConfig.cssClass +'">';
-                html =	html + '<div class="dashboard-entry-left-column">' + htmlConfig.leftColumn +'</div>';
-                html =	html + '<div class="dashboard-entry-middle-column">' + htmlConfig.middleColumn +'</div>';
-                html =	html + '<div class="dashboard-entry-right-column"><img class="delete-button" src="' + Dashbird.baseUrl + 'images/button-delete-disabled-small.png" alt="" /></div>';
-                html =  html + '<div class="dashboard-entry-footer-column clear-fix" >';
-                html =  html + '<div class="dashboard-entry-meta" ><div class="tags"></div></div>';
-                html =	html + '</div>';
-                html =	html + '</div>';
-                me.$entry = $(html);
-                me.$middleColumn = me.$entry.find('.dashboard-entry-middle-column');
-                me.$meta = me.$entry.find('.dashboard-entry-meta');
-                me.drawNormalTags();
+        var html = '<div class="dashboard-entry ' + htmlConfig.cssClass +'">';
+        html =	html + '<div class="dashboard-entry-top-column">' + me.entryData.user.name + ' on ' +  me.entryData.datetime +'</div>';
+        html =	html + '<div class="dashboard-entry-left-column">' + htmlConfig.leftColumn +'</div>';
+        html =	html + '<div class="dashboard-entry-middle-column">' + htmlConfig.middleColumn +'</div>';
+        html =	html + '<div class="dashboard-entry-right-column">';
+        if(Dashbird.Auth.getUser().userId === me.entryData.user.userId){
+            html =	html + '<a class="edit-button" href="#">e</a>';
+            html =	html + '<a class="entry-shares-button" href="#">s</a>';
+            html =	html + '<a class="delete-button"  href="#">x</a>';
+        }
+        html =	html + '</div>';
+        html =  html + '<div class="dashboard-entry-footer-column clear-fix" >';
+        html =  html + '<div class="dashboard-entry-meta" ><div class="tags"></div></div>';
+        html =	html + '</div>';
+        html =	html + '</div>';
+        me.$entry = $(html);
+        me.$middleColumn = me.$entry.find('.dashboard-entry-middle-column');
+        me.$meta = me.$entry.find('.dashboard-entry-meta');
+        me.drawNormalTags();
                         
-                me.$entry.mouseover(function (){
-                      Dashbird.Dashboard.$selectedEntry = me.$entry;
-                        $('#content > .dashboard-entry.selected').removeClass('selected');
-                        Dashbird.Dashboard.$selectedEntry.addClass('selected');
-                        Dashbird.Dashboard.$selectedEntry.focus();
-                });
-                me.$entry.mouseleave(function (){
-                        if(Dashbird.Dashboard.$selectedEntry.data('dashboardEntry').entryData.dashboardEntryId == me.entryData.dashboardEntryId){
-                                $('#content > .dashboard-entry.selected').removeClass('selected');
-                                Dashbird.Dashboard.$selectedEntry = null;
-                        }
-                });
+        me.$entry.mouseover(function (){
+            Dashbird.Dashboard.$selectedEntry = me.$entry;
+            $('#content > .dashboard-entry.selected').removeClass('selected');
+            Dashbird.Dashboard.$selectedEntry.addClass('selected');
+            Dashbird.Dashboard.$selectedEntry.focus();
+        });
+        me.$entry.mouseleave(function (){
+            if(Dashbird.Dashboard.$selectedEntry.data('dashboardEntry').entryData.dashboardEntryId == me.entryData.dashboardEntryId){
+                $('#content > .dashboard-entry.selected').removeClass('selected');
+                Dashbird.Dashboard.$selectedEntry = null;
+            }
+        });
                         
-                var $deleteButton = me.$entry.find('.delete-button');
-                       
-                $deleteButton.click(function (){
-                        me.deleteEntry();
-                });
-                $deleteButton.mouseenter(function (){
-                        $(this).attr('src', Dashbird.baseUrl + 'images/button-delete-small.png');
-                });
-                $deleteButton.mouseleave(function (){
-                        $(this).attr('src', Dashbird.baseUrl + 'images/button-delete-disabled-small.png');
-                });
+        var $deleteButton = me.$entry.find('.delete-button'); 
+        $deleteButton.click(function (){
+            me.deleteEntry();
+        });
+        //                $deleteButton.mouseenter(function (){
+        //                        $(this).attr('src', Dashbird.baseUrl + 'images/button-delete-small.png');
+        //                });
+        //                $deleteButton.mouseleave(function (){
+        //                        $(this).attr('src', Dashbird.baseUrl + 'images/button-delete-disabled-small.png');
+        //                });
+
+        me.$entry.find('.entry-shares-button').click(function(){
+            me.showEntryShares()
+            });
+        me.$entry.find('.edit-button').click(function(){
+            me.toggleMode()
+            });
+                 
                 
-                me.$entry.data('dashboardEntry', me);
-                return me.$entry;
-        },
-        me.switchToEditMode = function(){
+        me.$entry.data('dashboardEntry', me);
+        return me.$entry;
+    },
+    me.switchToEditMode = function(){
+        if(Dashbird.Auth.getUser().userId === me.entryData.user.userId){
+            me.editMode = true
+            me.changedEntryData = {};
+            me.changedEntryData = $.extend(true, {}, me.entryData);
+            me.drawEditableTags();
+            me.moduleEntry.switchToEditMode();
+            me.$middleColumn.find('input').keydown(function(){
+                me.unsavedChanges();
+            });
+            me.$middleColumn.find('textarea').keydown(function(){
+                me.unsavedChanges();
+            });
+        }
+    },
+    me.switchToNormalMode = function(){
                 
-                me.editMode = true
-                me.changedEntryData = {};
-                me.changedEntryData = $.extend(true, {}, me.entryData);
-                me.drawEditableTags();
-                me.moduleEntry.switchToEditMode();
-                me.$middleColumn.find('input').keydown(function(){
-                        me.unsavedChanges();
-                });
-                me.$middleColumn.find('textarea').keydown(function(){
-                        me.unsavedChanges();
-                });
-        },
-        me.switchToNormalMode = function(){
-                
-                me.editMode = false;
+        me.editMode = false;
                         
-                // forget changes
-                me.changedEntryData = {};
-                me.drawNormalTags();
+        // forget changes
+        me.changedEntryData = {};
+        me.drawNormalTags();
                         
-                me.hideUnsavedChages();
-                me.moduleEntry.switchToNormalMode();
-        },
-        me.toggleMode = function(){
+        me.hideUnsavedChages();
+        me.moduleEntry.switchToNormalMode();
+    },
+    me.toggleMode = function(){
+        if(Dashbird.Auth.getUser().userId === me.entryData.user.userId){
+            if(me.editMode == false){
+                me.switchToEditMode();
+            }
+            else {
+                me.switchToNormalMode()
+            }
+        }
+    },
+    me.save = function(){
                 
-                if(me.editMode == false){
-                        me.switchToEditMode();
-                }
-                else {
-                        me.switchToNormalMode()
-                }
-        },
-        me.save = function(){
+        if(me.editMode){
+            me.moduleEntry.save();
+        }
+    },
                 
-                if(me.editMode){
-                        me.moduleEntry.save();
-                }
-        },
-                
-        me.deleteEntry= function(params){
-                var me = this;
-                if(params===undefined){
-                        params = {};
-                }
-                var _params = {
-                        beforeDetach : null,
-                        afterDetach : null        
-                };
-                $.extend(_params, params);
-                        
-                if(confirm('Do you really want to delete this entry?')){
-                        me.moduleEntry.deleteEntry();
-                        me.$entry.fadeOut("slow", function(){
-                                if(_params.beforeDetach!=null){
-                                        _params.beforeDetach();
-                                }
-                                me.$entry.detach();
-                                if(_params.afterDetach!=null){
-                                        _params.afterDetach();
-                                }
-                        });
-                }
-                       
+    me.deleteEntry= function(params){
+        var me = this;
+        if(params===undefined){
+            params = {};
+        }
+        var _params = {
+            beforeDetach : null,
+            afterDetach : null        
         };
-                
-        me.drawNormalTags = function(){
-                var tagHtml = '';
-                var tags = [];
-                if(!jQuery.isEmptyObject(me.changedEntryData)){
-                        tags = me.changedEntryData.tags;
-                }
-                else {
-                        tags = me.entryData.tags;
-                }
+        $.extend(_params, params);
                         
-                $.each(tags,function(index, value){
-                        tagHtml = tagHtml + '<span class="tag">' + value + '</span>';
-                });
-                me.$meta.find('.tags').html(tagHtml);
-        };
+        if(confirm('Do you really want to delete this entry?')){
+            me.moduleEntry.deleteEntry();
+            me.$entry.fadeOut("slow", function(){
+                if(_params.beforeDetach!=null){
+                    _params.beforeDetach();
+                }
+                me.$entry.detach();
+                if(_params.afterDetach!=null){
+                    _params.afterDetach();
+                }
+            });
+        }
+                       
+    };
                 
-        me.drawEditableTags = function(){
-                me.$meta.find('.tags').html('<div class="tags-box"><input class="tag-field" type="name" /></div>');
-                var $tagField = me.$meta.find('.tag-field');
-                var width = 500;
-                var tag = null;
-                $.each(me.entryData.tags,function(index, value){
-                        tag = Dashbird.Tag();
-                        tag.init(me, value);
-                        $tagField.before(tag.$tag);
-                        width = width - tag.$tag.width() - 4 - 6; // 4px margin 6px padding 
-                });
-                $tagField.css('width', width + 'px');
+    me.drawNormalTags = function(){
+        var tagHtml = '';
+        var tags = [];
+        if(!jQuery.isEmptyObject(me.changedEntryData)){
+            tags = me.changedEntryData.tags;
+        }
+        else {
+            tags = me.entryData.tags;
+        }
                         
-                $tagField.keydown(function(event){
-                        if(event.keyCode == 32){
-                                if($tagField.val()!==''){
-                                        me.addTag($tagField.val());
-                                }
-                                event.preventDefault();
-                        }
-                        else if(event.ctrlKey == true && event.keyCode == 83) {
-                                me.addTag($tagField.val());
-                        ///event.preventDefault();
-                        }
-                        else if(event.keyCode == 60){
-                            event.preventDefault();
-                        }
-                        else if(event.ctrlKey == true && event.keyCode == 86){
-                            setTimeout(function(){
-                                $tagField.val($tagField.val().replace(/</g, '').replace(/>/g, ''));
-                            }, 100)
+        $.each(tags,function(index, value){
+            tagHtml = tagHtml + '<span class="tag">' + value + '</span>';
+        });
+        me.$meta.find('.tags').html(tagHtml);
+    };
+                
+    me.drawEditableTags = function(){
+        me.$meta.find('.tags').html('<div class="tags-box"><input class="tag-field" type="name" /></div>');
+        var $tagField = me.$meta.find('.tag-field');
+        var width = 500;
+        var tag = null;
+        $.each(me.entryData.tags,function(index, value){
+            tag = Dashbird.Tag();
+            tag.init(me, value);
+            $tagField.before(tag.$tag);
+            width = width - tag.$tag.width() - 4 - 6; // 4px margin 6px padding 
+        });
+        $tagField.css('width', width + 'px');
+                        
+        $tagField.keydown(function(event){
+            if(event.keyCode == 32){
+                if($tagField.val()!==''){
+                    me.addTag($tagField.val());
+                }
+                event.preventDefault();
+            }
+            else if(event.ctrlKey == true && event.keyCode == 83) {
+                me.addTag($tagField.val());
+            ///event.preventDefault();
+            }
+            else if(event.keyCode == 60){
+                event.preventDefault();
+            }
+            else if(event.ctrlKey == true && event.keyCode == 86){
+                setTimeout(function(){
+                    $tagField.val($tagField.val().replace(/</g, '').replace(/>/g, ''));
+                }, 100)
                            
-                        }
-                        console.log(event.keyCode);
+            }
+            console.log(event.keyCode);
                 
-                });
-                me.$meta.find('.tags-box').focusout(function(){
-                        if($tagField.val()!==''){
-                                me.addTag($tagField.val());
-                        }
-                });
-        };
+        });
+        me.$meta.find('.tags-box').focusout(function(){
+            if($tagField.val()!==''){
+                me.addTag($tagField.val());
+            }
+        });
+    };
                 
-        me.addTag = function(tagTitle){
+    me.addTag = function(tagTitle){
                 
-                if(jQuery.isEmptyObject(me.changedEntryData)||me.changedEntryData.tags === undefined){
-                        throw "changedEntryData can't be empty. Please fill it with the entryData's before you call this function.";
-                }
+        if(jQuery.isEmptyObject(me.changedEntryData)||me.changedEntryData.tags === undefined){
+            throw "changedEntryData can't be empty. Please fill it with the entryData's before you call this function.";
+        }
                      
                         
-                var position = $.inArray(tagTitle, me.changedEntryData.tags);
-                if(position===-1){ // only add if not already in tags
-                        me.changedEntryData.tags.push(tagTitle);
-                        if(me.editMode){
-                                var $tagField = me.$meta.find('.tag-field');
-                                var tag = Dashbird.Tag();
-                                tag.init(me, tagTitle);
-                                $tagField.val('');
-                                $tagField.before(tag.$tag);
-                                var width = $tagField.width() - tag.$tag.width() - 4 - 6; // 4px margin 6px padding
-                                $tagField.css('width', width + 'px');
-                                me.unsavedChanges();
-                        }
-                        else {
-                                me.drawNormalTags(); // redraw
-                        }
-                }
+        var position = $.inArray(tagTitle, me.changedEntryData.tags);
+        if(position===-1){ // only add if not already in tags
+            me.changedEntryData.tags.push(tagTitle);
+            if(me.editMode){
+                var $tagField = me.$meta.find('.tag-field');
+                var tag = Dashbird.Tag();
+                tag.init(me, tagTitle);
+                $tagField.val('');
+                $tagField.before(tag.$tag);
+                var width = $tagField.width() - tag.$tag.width() - 4 - 6; // 4px margin 6px padding
+                $tagField.css('width', width + 'px');
+                me.unsavedChanges();
+            }
+            else {
+                me.drawNormalTags(); // redraw
+            }
+        }
                 
-        };
+    };
                 
-        me.deleteTag = function(tagTitle){
+    me.deleteTag = function(tagTitle){
                 
-                if(jQuery.isEmptyObject(me.changedEntryData)||me.changedEntryData.tags === undefined){
-                        throw "changedEntryData can't be empty. Please fill it with the entryData's before you call this function.";
-                }
-                var position = $.inArray(tagTitle, me.changedEntryData.tags);
-                if(position!== -1){ 
+        if(jQuery.isEmptyObject(me.changedEntryData)||me.changedEntryData.tags === undefined){
+            throw "changedEntryData can't be empty. Please fill it with the entryData's before you call this function.";
+        }
+        var position = $.inArray(tagTitle, me.changedEntryData.tags);
+        if(position!== -1){ 
                            
-                        me.changedEntryData.tags.splice(position, 1);
-                        if(me.editMode){
-                                var $tagField = me.$meta.find('.tag-field');
-                                var $tag = me.$meta.find(".tag:contains('" + tagTitle +"'):first");
-                                var width = $tagField.width() + $tag.width() + 4 + 6; // 4px margin 6px padding 
-                                $tagField.css('width', width + 'px');
-                                $tag.detach();
-                                me.unsavedChanges();
-                        }
-                        else {
-                                me.drawNormalTags(); // redraw
-                        }
-                }
-        };
+            me.changedEntryData.tags.splice(position, 1);
+            if(me.editMode){
+                var $tagField = me.$meta.find('.tag-field');
+                var $tag = me.$meta.find(".tag:contains('" + tagTitle +"'):first");
+                var width = $tagField.width() + $tag.width() + 4 + 6; // 4px margin 6px padding 
+                $tagField.css('width', width + 'px');
+                $tag.detach();
+                me.unsavedChanges();
+            }
+            else {
+                me.drawNormalTags(); // redraw
+            }
+        }
+    };
                 
-        me.unsavedChanges = function(){
+    me.unsavedChanges = function(){
                 
-                if(!me.hasUnsavedChanges){
-                        me.hasUnsavedChanges = true;
-                        me.$meta.append('<div class="unsaved-changes">Unsaved changes!</div>');
-                }
-        };
+        if(!me.hasUnsavedChanges){
+            me.hasUnsavedChanges = true;
+            me.$meta.append('<div class="unsaved-changes">Unsaved changes!</div>');
+        }
+    };
                 
-        me.hideUnsavedChages = function(){
+    me.hideUnsavedChages = function(){
                 
-                if(me.hasUnsavedChanges){
-                        me.$meta.find('.unsaved-changes').detach();
-                        me.hasUnsavedChanges = false;
-                }
-        };
+        if(me.hasUnsavedChanges){
+            me.$meta.find('.unsaved-changes').detach();
+            me.hasUnsavedChanges = false;
+        }
+    };
+        
+    me.showEntryShares = function(){
+        Dashbird.EntrySharesBox.show(me);
+    };
+        
+    me.setEntryShares = function(userIds){
+        $.getJSON('ajax/set/entry/shares/', {
+            entryId : me.entryData.dashboardEntryId, 
+            userIds : userIds
+        }, function(data) {
+            if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
+                me.entryData.entryShares = userIds;
+            }
+        });
+    }
                 
-        me._private = _private; // for inheritance
-        return me;
+    me._private = _private; // for inheritance
+    return me;
 };
 
 
 Dashbird.Tag = function(){
-        var me = {},
-        _private = {};
+    var me = {},
+    _private = {};
         
-        _private.dashboardEntry = null;
+    _private.dashboardEntry = null;
   
-        me.$tag = null;
-        me.title = null;
-        me.init = function(dashboardEntry, title){
+    me.$tag = null;
+    me.title = null;
+    me.init = function(dashboardEntry, title){
                 
-                _private.dashboardEntry = dashboardEntry;
-                me.$tag =  $('<span class="tag">' + title + '<span class="delete-tag"></span></span>');
-                me.$tag.find('.delete-tag').click( function(){
-                        _private.dashboardEntry.deleteTag(title);
-                });
-        };
+        _private.dashboardEntry = dashboardEntry;
+        me.$tag =  $('<span class="tag">' + title + '<span class="delete-tag"></span></span>');
+        me.$tag.find('.delete-tag').click( function(){
+            _private.dashboardEntry.deleteTag(title);
+        });
+    };
               
-        me._private = _private; // for inheritance
-        return me;
+    me._private = _private; // for inheritance
+    return me;
 };

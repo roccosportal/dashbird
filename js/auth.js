@@ -4,6 +4,11 @@ if(Dashbird===undefined){
 Dashbird.Auth = function (){
         var me = SimpleJSLib.EventHandler(),
         _private = {};
+        _private.user = null;
+        
+        me.getUser = function(){
+            return _private.user;
+        }
                 
         me.isLoggedIn=  false;
         me.init = function(){
@@ -14,6 +19,7 @@ Dashbird.Auth = function (){
                                         Dashbird.LoginBox.show();
                                 }
                                 else {
+                                        _private.user = data[AJAX.DATA].user;
                                         me.isLoggedIn = true;
                                         me.fire('onLoggedIn');
                                 }
@@ -28,6 +34,7 @@ Dashbird.Auth = function (){
                                 password : password
                         }, function(data) {
                                 if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
+                                        _private.user = data[AJAX.DATA].user;
                                         callbackOnSuccess();
                                         me.isLoggedIn = true;
                                         me.fire('onLoggedIn');

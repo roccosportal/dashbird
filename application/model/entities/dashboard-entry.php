@@ -5,12 +5,13 @@ namespace Dashbird\Model\Entities;
  * @property int $DashboardEntryId
  * @property string $Module
  * @property int $ReferenceId
- * @property string $Date
+ * @property string $DateTime
  * @property string $SearchHelper
  * @property int $UserId
- * @porperty UserModel $User
- * @property ModelArray $DashboardEntriesTags
- * @property ModelArray $SearchHelperParts
+ * @property User $User
+ * @property \Pvik\Database\Generic\EntityArray $DashboardEntriesTags
+ * @property \Pvik\Database\Generic\EntityArray $SearchHelperParts
+ * @property \Pvik\Database\Generic\EntityArray $EntryShares
  */
 class DashboardEntry extends \Pvik\Database\Generic\Entity {
 
@@ -20,11 +21,15 @@ class DashboardEntry extends \Pvik\Database\Generic\Entity {
         }
 
         public function Insert() {
-                if ($this->Date == null) {
-                        $this->Date = date('Y.m.d  H:i:s');
+                if ($this->DateTime == null) {
+                        $this->DateTime = date('Y.m.d  H:i:s');
                 }
 
                 parent::Insert();
+        }
+        
+        public function CurrentUserHasPermissionToChange(){
+            return (\Dashbird\Library\Services\UserService::Instance()->GetUserId()==$this->UserId);
         }
 
         public function GetModelTableForModule() {
@@ -65,12 +70,19 @@ class DashboardEntry extends \Pvik\Database\Generic\Entity {
                 foreach ($this->DashboardEntriesTags as $DashboardEntriesTags) {
                         $TagTitle[] = $DashboardEntriesTags->Tag->Title;
                 }
+                $EntrySharesUserIds = array();
+                foreach ($this->EntryShares as $EntryShare) {
+                    /* @var $EntryShare \Dashbird\Model\Entities\EntryShare */
+                        $EntrySharesUserIds[] = $EntryShare->UserId;
+                }
                 return array(
                     'dashboardEntryId' => $this->DashboardEntryId,
-                    'date' => $this->Date,
+                    'datetime' => $this->DateTime,
                     'module' => $this->Module,
                     'reference' => $this->GetReferenceArray(),
-                    'tags' => $TagTitle
+                    'tags' => $TagTitle,
+                    'user' => array ( 'userId' => $this->UserId, 'name' => $this->User->Name),
+                    'entryShares' => $EntrySharesUserIds
                 );
         }
         
@@ -309,6 +321,40 @@ class DashboardEntry extends \Pvik\Database\Generic\Entity {
                 }
             }
             return $TagTitlesTemp;
+        }
+        
+        public function SetEntryShares($UserIds){
+             \Pvik\Database\SQL\Manager::GetInstance()->DeleteWithParameters('DELETE FROM EntryShares WHERE EntryShares.DashboardEntryId = %s', array($this->DashboardEntryId));
+                
+                // CAUTION: EntryShares in the cache maybe still have a reference to this object
+               // manually delete cache entries
+                $CacheEntryShares = \Pvik\Database\Generic\ModelTable::Get('EntryShares')->GetCache()->GetAllCacheInstances();
+                foreach($CacheEntryShares as $CacheEntryShare){
+                        /* @var $CacheEntryShare EntryShare */
+                        if($CacheEntryShare->DashboardEntryId == $this->DashboardEntryId){
+                            \Pvik\Database\Generic\ModelTable::Get('EntryShares')->GetCache()->Delete($CacheEntryShare);
+                        }
+                }
+                
+                // clear all reference keys 
+                $this->SetFieldData('EntryShares', null);
+                
+                
+               // validate userIds
+                $UserShares = \Dashbird\Library\Services\UserService::Instance()->GetUser()->UserShares;
+                $FilteredUserIds = array();
+                foreach($UserIds as $UserId){
+                    if($UserShares->HasValue('ConnectedUserId', $UserId)){
+                        $FilteredUserIds[] = $UserId;
+                    }
+                }
+                $UserIds = $FilteredUserIds;
+                foreach($UserIds as $UserId){
+                    $EntryShare = new \Dashbird\Model\Entities\EntryShare();
+                    $EntryShare->DashboardEntryId = $this->DashboardEntryId;
+                    $EntryShare->UserId = $UserId;
+                    $EntryShare->Insert();
+                }
         }
 
 }

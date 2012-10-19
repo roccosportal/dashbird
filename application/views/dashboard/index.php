@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-	<title>Dashboard</title>
+	<title>Dashbird</title>
     <?php $this->Helper->StyleSheetLink('~/css/reset.css'); ?>
 	<?php $this->Helper->StyleSheetLink('~/css/dashboard.css'); ?>
 </head>
@@ -44,7 +44,13 @@
             <div id="search">
                     <span>Search:</span><input id="search-box" type="text" name="search" />
             </div>
-            <div>
+          
+            <div id="user-shares">
+                <p>You can share entries with following users:</p>
+                <ul id="user-shares-list"></ul>
+                <input id="add-user-share-box" type="text" name="add-user-share-box" /><input type="button" id="add-user-share-button" name="add-user-share-button" value="add" />              
+            </div>
+              <div>
                     <a id="logout" href="#">Logout</a>
             </div>
             <div class="clear-fix"></div>
@@ -55,6 +61,14 @@
 				Password:<input type="password" id="login-box-password" />
 			</fieldset>
 		</div>
+                <div id="entry-shares-box" style="display:none">
+                        You are sharing this entry with:
+			<ul id="entry-shares-list">
+                        </ul>
+                        <a href="#" class="save-button">Save</a>
+                        <a href="#" class="cancel-button">Cancel</a>
+		</div>
+                
 	</div>
     <script type="text/javascript">
             var Dashbird = {};
@@ -71,6 +85,7 @@
     <?php $this->Helper->JavaScriptLink('~/js/modules/todo.js?version='. \Pvik\Core\Config::$Config['Version']); ?>    
     <?php $this->Helper->JavaScriptLink('~/js/dashboard-entry.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
     <?php $this->Helper->JavaScriptLink('~/js/dashboard.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
+    <?php $this->Helper->JavaScriptLink('~/js/shares.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
     <?php $this->Helper->JavaScriptLink('~/js/init.js?version='. \Pvik\Core\Config::$Config['Version']); ?>
 </body>
 </html>

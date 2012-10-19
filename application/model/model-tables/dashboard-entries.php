@@ -17,7 +17,7 @@ class DashboardEntries extends \Pvik\Database\Generic\ModelTable {
 
                 $this->FieldDefinition['ReferenceId'] = array('Type' => 'Normal');
 
-                $this->FieldDefinition['Date'] = array('Type' => 'Normal');
+                $this->FieldDefinition['DateTime'] = array('Type' => 'Normal');
 
                 $this->FieldDefinition['SearchHelper'] = array('Type' => 'Normal');
 
@@ -28,6 +28,8 @@ class DashboardEntries extends \Pvik\Database\Generic\ModelTable {
                 $this->FieldDefinition['DashboardEntriesTags'] = array('Type' => 'ManyForeignObjects', 'ModelTable' => 'DashboardEntriesTags', 'ForeignKey' => 'DashboardEntryId');
                 
                 $this->FieldDefinition['SearchHelperParts'] = array('Type' => 'ManyForeignObjects', 'ModelTable' => 'SearchHelperParts', 'ForeignKey' => 'DashboardEntryId');
+                
+                $this->FieldDefinition['EntryShares'] = array('Type' => 'ManyForeignObjects', 'ModelTable' => 'EntryShares', 'ForeignKey' => 'DashboardEntryId');
                 
                 
         }

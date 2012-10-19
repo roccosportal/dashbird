@@ -19,6 +19,7 @@ class Auth extends Base {
 			$User = $Query->SelectSingle();
 			if($User){
 				$Response[AJAX::STATUS] = AJAX::STATUS_SUCCESS;
+                                $Response[AJAX::DATA] = array ('user' => array ('userId' => $User->UserId));
 				$_SESSION[SESSION::LOGGED_IN] = true;
 				$_SESSION[SESSION::USER_ID] = $User->UserId;
 			}
@@ -43,6 +44,7 @@ class Auth extends Base {
 		$Response[AJAX::STATUS] = AJAX::STATUS_SUCCESS;
 		if($this->IsLoggedIn()){
 			$Response[AJAX::MESSAGE] = AJAX::IS_LOGGED_IN;
+                        $Response[AJAX::DATA] = array ('user' => array ('userId' => $this->GetUserId()));
 		}
 		else {
 			$Response[AJAX::MESSAGE] = AJAX::IS_NOT_LOGGED_IN;

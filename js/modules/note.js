@@ -87,7 +87,6 @@ Dashbird.Modules.Note.Entry = function(){
                                 _private.dashboardEntry.entryData =  _private.dashboardEntry.changedEntryData;
                                  // convert (is converted on serverside aswell)
                                 _private.dashboardEntry.entryData.reference.text = Dashbird.Dashboard.htmlEntities(_private.dashboardEntry.entryData.reference.text);
-                                
                                 _private.dashboardEntry.changedEntryData = {};
                                 // switch to normal mode
                                 _private.dashboardEntry.switchToNormalMode();

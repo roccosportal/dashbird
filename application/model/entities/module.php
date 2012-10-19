@@ -9,7 +9,7 @@ class Module extends \Pvik\Database\Generic\Entity{
     
     /**
      *
-     * @return DashboardEntryModel 
+     * @return DashboardEntry 
      */
     public function GetDashboardEntry(){
         $Query = new \Pvik\Database\Generic\Query('DashboardEntries');
