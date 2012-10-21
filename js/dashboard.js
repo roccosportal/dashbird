@@ -13,6 +13,13 @@ Dashbird.Dashboard = function(){
         _private.boardKeyCapture = false;
         _private.boardBarKeyCapture = false;
         
+        me.pager = {};
+        me.pager.$furtherEntries = null;
+        me.pager.startPosition = 0;
+        me.pager.entryCount = 5;
+        me.pager.hasMoreEntries = false;
+       
+        
         _private.bindBoardKeys = function(){
                 
                 
@@ -132,11 +139,18 @@ Dashbird.Dashboard = function(){
                 _private.$commandBar.show();
                 _private.$content = $('#content');
                 _private.$searchBox = $('#search-box');
+                 me.pager.$furtherEntries = $('#further-entries')
+                 me.pager.$furtherEntries.click(function(e){
+                     e.preventDefault();
+                     me.pager.startPosition =  me.pager.startPosition + me.pager.entryCount;
+                     me.refresh();
+                 })
             
                 _private.searchRequestQueue = SimpleJSLib.SingleRequestQueue();
                 _private.searchRequestQueue.setTimeout(200);
                 _private.$searchBox.keyup(function(){
                         _private.searchRequestQueue.addToQueue({}, function(data){
+                                me.pager.startPosition = 0;
                                 me.refresh();
                         });
                 });
@@ -206,13 +220,23 @@ Dashbird.Dashboard = function(){
                         
                 var request = _private.refreshAjaxRequestQueue.runAsynchronRequest();
                 $.getJSON('ajax/get/dashboard/entries/', {
-                        search : _private.$searchBox.val()
+                        search : _private.$searchBox.val(),
+                        'start-position' : me.pager.startPosition,
+                        'entry-count' : me.pager.entryCount
                 }, function(data) {
                         if(request.isLatestRequest()){
                                 if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
+                                        me.pager.hasMoreEntries = data[AJAX.DATA]['has-more-entries'];
+                                        if(me.pager.hasMoreEntries===true){
+                                            me.pager.$furtherEntries.show();
+                                        }
+                                        else {
+                                             me.pager.$furtherEntries.hide();
+                                        }
                                         _private.$content.html('');
-                                        for (var i = 0; i <  data[AJAX.DATA].length; i++) {
-                                                var entry = data[AJAX.DATA][i];
+                                        var entries = data[AJAX.DATA]['entries'];
+                                        for (var i = 0; i <  entries.length; i++) {
+                                                var entry = entries[i];
                                                 var module = me.findModule(entry.module);
                                                 if(module!==null){
                                                         var $entry = module.createDashboardEntry(entry);

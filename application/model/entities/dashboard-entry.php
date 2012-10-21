@@ -31,6 +31,7 @@ class DashboardEntry extends \Pvik\Database\Generic\Entity {
         public function CurrentUserHasPermissionToChange(){
             return (\Dashbird\Library\Services\UserService::Instance()->GetUserId()==$this->UserId);
         }
+        
 
         public function GetModelTableForModule() {
                 switch ($this->Module) {
@@ -71,10 +72,20 @@ class DashboardEntry extends \Pvik\Database\Generic\Entity {
                         $TagTitle[] = $DashboardEntriesTags->Tag->Title;
                 }
                 $EntrySharesUserIds = array();
-                foreach ($this->EntryShares as $EntryShare) {
-                    /* @var $EntryShare \Dashbird\Model\Entities\EntryShare */
-                        $EntrySharesUserIds[] = $EntryShare->UserId;
+                if($this->CurrentUserHasPermissionToChange()){
+                    foreach ($this->EntryShares as $EntryShare) {
+                        /* @var $EntryShare \Dashbird\Model\Entities\EntryShare */
+                            $EntrySharesUserIds[] = $EntryShare->UserId;
+                    }
                 }
+                
+                $Comments = array();
+                foreach ($this->Comments as $Comment) {
+                    /* @var $Comment Comment */
+                        $Comments[] = $Comment->ToArray();
+                }
+                
+                
                 return array(
                     'dashboardEntryId' => $this->DashboardEntryId,
                     'datetime' => $this->DateTime,
@@ -82,7 +93,8 @@ class DashboardEntry extends \Pvik\Database\Generic\Entity {
                     'reference' => $this->GetReferenceArray(),
                     'tags' => $TagTitle,
                     'user' => array ( 'userId' => $this->UserId, 'name' => $this->User->Name),
-                    'entryShares' => $EntrySharesUserIds
+                    'entryShares' => $EntrySharesUserIds,
+                    'comments' => $Comments
                 );
         }
         

@@ -11,6 +11,9 @@
         <div id="board" style="display:none">
             <div id="content">
             </div>
+            <div id="content-footer">
+                <a href="#" id="further-entries" style="display:none">Next</a>
+            </div>
         </div>
         <div id="board-bar" style="display:none">
             <div id="command-bar" style="display:none" >
@@ -65,6 +68,12 @@
                         You are sharing this entry with:
 			<ul id="entry-shares-list">
                         </ul>
+                        <a href="#" class="save-button">Save</a>
+                        <a href="#" class="cancel-button">Cancel</a>
+		</div>
+                <div id="entry-comment-box" style="display:none">
+                        Your comment:<br/>
+                        <textarea id="entry-comment-box-text"></textarea><br/>
                         <a href="#" class="save-button">Save</a>
                         <a href="#" class="cancel-button">Cancel</a>
 		</div>

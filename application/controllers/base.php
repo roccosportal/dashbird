@@ -38,7 +38,7 @@ class Base extends \Pvik\Web\Controller {
         protected function ResponseSuccess($Data = null){
             $Response = array();
             $Response[AJAX::STATUS] = AJAX::STATUS_SUCCESS;
-            if($Data != null){
+            if($Data !== null){
                 $Response[AJAX::DATA] = $Data;
             }
             echo json_encode($Response);

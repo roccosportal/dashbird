@@ -60,7 +60,8 @@ Dashbird.EntrySharesBox = function(){
     _private.$entrySharesList = null;
     _private.currentDashboardEntry = null;
     
-    _private.onSave = function(){
+    _private.onSave = function(e){
+        e.preventDefault();
         if(_private.currentDashboardEntry !== null){
             var userIds = [];
             _private.$entrySharesList.find('li').each(function(){
@@ -80,8 +81,8 @@ Dashbird.EntrySharesBox = function(){
             _private.$entrySharesList = $('#entry-shares-list');
             _private.$entrySharesBox = $('#entry-shares-box');
             _private.$entrySharesBox.find('.save-button').click(_private.onSave);
-            _private.$entrySharesBox.find('.cancel-button').click(function(){
-                
+            _private.$entrySharesBox.find('.cancel-button').click(function(e){
+                e.preventDefault();
                 _private.$entrySharesBox.hide();
                 _private.currentDashboardEntry = null;
                 

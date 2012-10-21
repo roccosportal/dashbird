@@ -17,6 +17,10 @@ class Dashboard extends Base {
         }
 
         $Search = $this->Request->GetGET('search');
+        $StartPosition = $this->Request->GetGET('start-position');
+        if($StartPosition==null) $StartPosition = 0;
+        $EntryCount = $this->Request->GetGET('entry-count');
+        if($EntryCount==null) $EntryCount = 9999999999;
 
         $Query = new \Pvik\Database\Generic\Query('DashboardEntries');
         $ConditionString = 'LEFT JOIN EntryShares as EntryShares ON EntryShares.DashboardEntryId = DashboardEntries.DashboardEntryId';
@@ -26,16 +30,19 @@ class Dashboard extends Base {
         $Query->AddParameter($this->GetUserId());
         if (!empty($Search)) {
             $SearchWords = preg_split("/[\s]+/", $Search);
-            $Query->AddParameter($this->GetUserId());
             foreach ($SearchWords as $SearchWord) {
                 $Query->AddParameter('%' . $SearchWord . '%');
                 $ConditionString .= ' AND DashboardEntries.SearchHelper LIKE "%s"';
             }
         }
         $Query->SetConditions($ConditionString);
-
-        $Query->SetOrderBy('ORDER BY DashboardEntries.Datetime DESC');
+        $HasMoreEntriesQuery = clone $Query;
+        $Query->SetOrderBy('ORDER BY DashboardEntries.Datetime DESC LIMIT %s,%s');
+        $Query->AddParameter($StartPosition);
+        $Query->AddParameter($EntryCount);
         $DashboardEntries = $Query->Select();
+        
+     
        
         // optimization for tags
         $DashboardEntries->LoadList('DashboardEntriesTags->Tag');
@@ -65,9 +72,20 @@ class Dashboard extends Base {
         }
         ModelTable::Get('Notes')->LoadByPrimaryKeys($Keys);
         $Data = array();
+        $Data['entries'] = array();
         foreach ($DashboardEntries as $DashboardEntry) {
-            $Data[] = $DashboardEntry->ToArray();
+            $Data['entries'][] = $DashboardEntry->ToArray();
         }
+        
+        
+        $HasMoreEntriesQuery->SetOrderBy('ORDER BY DashboardEntries.Datetime DESC LIMIT %s,%s');
+        $HasMoreEntriesQuery->AddParameter($StartPosition + $EntryCount);
+        $HasMoreEntriesQuery->AddParameter(1);
+        $Entry = $HasMoreEntriesQuery->SelectSingle();
+        //print_r($Entry);
+        $Data['has-more-entries'] = ($Entry!=null);
+
+        
         $this->ResponseSuccess($Data);
     }
 

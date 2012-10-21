@@ -31,6 +31,8 @@ class DashboardEntries extends \Pvik\Database\Generic\ModelTable {
                 
                 $this->FieldDefinition['EntryShares'] = array('Type' => 'ManyForeignObjects', 'ModelTable' => 'EntryShares', 'ForeignKey' => 'DashboardEntryId');
                 
+                $this->FieldDefinition['Comments'] = array('Type' => 'ManyForeignObjects', 'ModelTable' => 'Comments', 'ForeignKey' => 'DashboardEntryId');
+                
                 
         }
 

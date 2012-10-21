@@ -32,7 +32,8 @@ self::$Config['Routes'] = array (
     array ('Url' => '/ajax/todo/delete/', 'Controller' => 'Todo', 'Action' => 'AjaxDelete'),
     array ('Url' => '/ajax/todo/edit/is/done/', 'Controller' => 'Todo', 'Action' => 'AjaxEditIsDone'),
     array ('Url' => '/ajax/todo/edit/', 'Controller' => 'Todo', 'Action' => 'AjaxEdit'),
-    array ('Url' => '/test/', 'Controller' => 'Test', 'Action' => 'Test')
+    array ('Url' => '/ajax/add/comment/', 'Controller' => 'Comment', 'Action' => 'AjaxAddComment'),
+    array ('Url' => '/ajax/delete/comment/', 'Controller' => 'Comment', 'Action' => 'AjaxDeleteComment')
 );
 
 self::$Config['Version'] = '1.0.1';

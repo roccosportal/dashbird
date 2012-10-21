@@ -2,7 +2,6 @@
 
 namespace Dashbird\Controllers;
 
-use Dashbird\Library\Constants\AJAX;
 use Pvik\Database\Generic\ModelTable;
 
 class User extends Base {
@@ -11,8 +10,8 @@ class User extends Base {
         if (!$this->IsLoggedIn()) {
             return $this->ResponseNotLoggedIn();
         }
-
-        return $this->ResponseSuccess($this->GetUser()->UserSharesToArray());
+        $Data = $this->GetUser()->UserSharesToArray();
+        return $this->ResponseSuccess($Data);
     }
 
     public function AjaxAddUserShareAction() {

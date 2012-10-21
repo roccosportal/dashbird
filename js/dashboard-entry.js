@@ -9,6 +9,7 @@ Dashbird.DashboardEntry = function(){
     me.moduleEntry = null;
     me.$entry = null;
     me.$meta = null;
+    me.$comments = null;
     me.$middleColumn = null;
     me.changedEntryData = null;
     me.editMode = false;
@@ -26,6 +27,7 @@ Dashbird.DashboardEntry = function(){
         html =	html + '<div class="dashboard-entry-left-column">' + htmlConfig.leftColumn +'</div>';
         html =	html + '<div class="dashboard-entry-middle-column">' + htmlConfig.middleColumn +'</div>';
         html =	html + '<div class="dashboard-entry-right-column">';
+        html =	html + '<a class="comment-button" href="#">c</a>';
         if(Dashbird.Auth.getUser().userId === me.entryData.user.userId){
             html =	html + '<a class="edit-button" href="#">e</a>';
             html =	html + '<a class="entry-shares-button" href="#">s</a>';
@@ -34,12 +36,16 @@ Dashbird.DashboardEntry = function(){
         html =	html + '</div>';
         html =  html + '<div class="dashboard-entry-footer-column clear-fix" >';
         html =  html + '<div class="dashboard-entry-meta" ><div class="tags"></div></div>';
+        html =  html + '<div class="dashboard-entry-comments" ></div>';
         html =	html + '</div>';
         html =	html + '</div>';
         me.$entry = $(html);
         me.$middleColumn = me.$entry.find('.dashboard-entry-middle-column');
         me.$meta = me.$entry.find('.dashboard-entry-meta');
+        
         me.drawNormalTags();
+        me.$comments = me.$entry.find('.dashboard-entry-comments');
+        _private.drawComments();
                         
         me.$entry.mouseover(function (){
             Dashbird.Dashboard.$selectedEntry = me.$entry;
@@ -54,23 +60,24 @@ Dashbird.DashboardEntry = function(){
             }
         });
                         
-        var $deleteButton = me.$entry.find('.delete-button'); 
+        var $deleteButton = me.$entry.find('.dashboard-entry-top-column .delete-button'); 
         $deleteButton.click(function (){
             me.deleteEntry();
         });
-        //                $deleteButton.mouseenter(function (){
-        //                        $(this).attr('src', Dashbird.baseUrl + 'images/button-delete-small.png');
-        //                });
-        //                $deleteButton.mouseleave(function (){
-        //                        $(this).attr('src', Dashbird.baseUrl + 'images/button-delete-disabled-small.png');
-        //                });
-
-        me.$entry.find('.entry-shares-button').click(function(){
+        
+        me.$entry.find('.comment-button').click(function(e){
+            e.preventDefault();
+            me.showCommentBox();
+        });
+       
+        me.$entry.find('.entry-shares-button').click(function(e){
+             e.preventDefault();
             me.showEntryShares()
             });
-        me.$entry.find('.edit-button').click(function(){
+        me.$entry.find('.edit-button').click(function(e){
+            e.preventDefault();
             me.toggleMode()
-            });
+        });
                  
                 
         me.$entry.data('dashboardEntry', me);
@@ -194,7 +201,6 @@ Dashbird.DashboardEntry = function(){
                 }, 100)
                            
             }
-            console.log(event.keyCode);
                 
         });
         me.$meta.find('.tags-box').focusout(function(){
@@ -284,6 +290,60 @@ Dashbird.DashboardEntry = function(){
             }
         });
     }
+    
+     me.showCommentBox = function(){
+        Dashbird.EntryCommentsBox.show(me);
+    };
+    
+    me.addComment = function(text){
+        $.getJSON('ajax/add/comment/', {
+            entryId : me.entryData.dashboardEntryId, 
+            text : text
+        }, function(data) {
+            if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
+                me.entryData.comments.push(data[AJAX.DATA]);
+                _private.drawComments();
+            }
+        });
+    }
+    
+    me.deleteComment = function(id){
+        $.getJSON('ajax/delete/comment/', {
+            commentId : id
+        }, function(data) {
+            if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
+                // rebuild comments
+                var comments = [];
+                $.each(me.entryData.comments,function(index, comment){
+                    if(comment.commentId !== id.toString()){
+                        comments.push(comment);
+                    }
+                });
+                me.entryData.comments = comments;
+                _private.drawComments();
+            }
+        });
+    }
+    
+    _private.drawComments = function(){
+        me.$comments.empty();
+        var html = '';
+        $.each(me.entryData.comments,function(index, comment){
+            html = html + '<div class="comment" data-id="' + comment.commentId + '">';
+            html = html + '<div class="comment-header">' + comment.user.name + ' on ' +  comment.datetime;
+            if(Dashbird.Auth.getUser().userId === comment.user.userId){
+                html = html + '<a href="#" class="delete-button">x</a>';
+            }
+            html = html + '</div>';
+            html = html + '<div class="comment-content">' + comment.text + '</div>';
+            html = html + '</div>';
+        });
+        me.$comments.html(html);
+        me.$comments.find('.delete-button').click(function(){
+            var id = $(this).closest('.comment').data('id');
+            me.deleteComment(id);
+        });
+    }
                 
     me._private = _private; // for inheritance
     return me;
@@ -310,3 +370,46 @@ Dashbird.Tag = function(){
     me._private = _private; // for inheritance
     return me;
 };
+
+Dashbird.EntryCommentsBox = function(){
+  var me = {},
+      _private = {};
+      _private.isInitiated = false;
+      _private.$entryCommentBox = null;
+      _private.currentDashboardEntry = null;
+  
+       me.init = function(){
+        if(!_private.isInitiated){
+            _private.$entryCommentBox = $('#entry-comment-box');
+            _private.$entryCommentBoxText = _private.$entryCommentBox.find('#entry-comment-box-text');
+            _private.$entryCommentBox.find('.save-button').click(_private.onSave);
+            _private.$entryCommentBox.find('.cancel-button').click(function(e){
+                e.preventDefault();
+                _private.$entryCommentBox.hide();
+                _private.currentDashboardEntry = null;
+                
+            })
+            _private.isInitiated = true;
+        }
+    }
+    
+     _private.onSave = function(e){
+        e.preventDefault();
+        if(_private.currentDashboardEntry !== null){
+           _private.currentDashboardEntry.addComment(_private.$entryCommentBoxText.val());
+           _private.currentDashboardEntry = null;
+        }
+        _private.$entryCommentBox.hide();
+    }
+      
+      me.show = function(dashboardEntry){
+          me.init();
+          _private.currentDashboardEntry = dashboardEntry;
+          _private.$entryCommentBoxText.val('');
+          _private.$entryCommentBox.css('top', dashboardEntry.$entry.position().top)
+          _private.$entryCommentBox.css('left', dashboardEntry.$entry.position().left)
+          _private.$entryCommentBox.show();
+      }
+      
+      return me;
+}();
