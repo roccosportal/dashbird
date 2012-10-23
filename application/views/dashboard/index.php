@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-	<title>Dashbird</title>
+	<title>Dashbird 2.0.0-alpha</title>
     <?php $this->Helper->StyleSheetLink('~/css/reset.css'); ?>
 	<?php $this->Helper->StyleSheetLink('~/css/dashboard.css'); ?>
 </head>
