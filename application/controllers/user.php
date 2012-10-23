@@ -37,7 +37,7 @@ class User extends Base {
         $UserShare->Insert();
         
         $NoteModel = new \Dashbird\Model\Entities\Note();
-        $NoteModel->Text = 'Hello '.  $this->GetUser()->Name .",\nI started sharing with you!";
+        $NoteModel->Text = 'Hello '.  $User->Name .",\nI started sharing with you!";
         $NoteModel->UserId = $this->GetUserId();
         $NoteModel->Insert();
 
