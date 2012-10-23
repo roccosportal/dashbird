@@ -6,35 +6,34 @@ use Pvik\Database\Generic\Query;
 class Auth extends Base {
 	// action
 	public function AjaxLoginAction(){
-		$Response = array ();
 		if(!$this->IsLoggedIn()){
 			$Name = $this->Request->GetGET('name');
 			$Password = $this->Request->GetGET('password');
 
 			$Query = new Query('Users');
-			$Query->SetConditions('WHERE Users.Name = "%s" AND Users.Password = "%s"');
+			$Query->SetConditions('WHERE Users.Name = "%s"');
 			$Query->AddParameter($Name);
-			$Query->AddParameter(md5($Password));
+			//$Query->AddParameter(crypt($Password, \Pvik\Core\Config::$Config['Salt']));
 
 			$User = $Query->SelectSingle();
-			if($User){
-				$Response[AJAX::STATUS] = AJAX::STATUS_SUCCESS;
-                                $Response[AJAX::DATA] = array ('user' => array ('userId' => $User->UserId));
-				$_SESSION[SESSION::LOGGED_IN] = true;
-				$_SESSION[SESSION::USER_ID] = $User->UserId;
-			}
-			else {
-				$Response[AJAX::STATUS] = AJAX::STATUS_ERROR;
-				$Response[AJAX::MESSAGE] = AJAX::WRONG_DATA;
-			}
+                        /* @var $User \Dashbird\Model\Entities\User */
+			if(!$User){
+                            return $this->ResponseWrongData();
+                        }
+                        if (crypt($Password, $User->Password) != $User->Password) {
+                             return $this->ResponseWrongData();
+                        }
+
+                        $_SESSION[SESSION::LOGGED_IN] = true;
+                        $_SESSION[SESSION::USER_ID] = $User->UserId;
+                        return $this->ResponseSuccess(array ('user' => array ('userId' => $User->UserId)));
+		
+			
 		}
 		else {
-			// no need to login
-			$Response[AJAX::STATUS] = AJAX::STATUS_ERROR;
-			$Response[AJAX::MESSAGE] = AJAX::ALREADY_LOGGED_IN;
+			return $this->ResponseAlreadyLoggedIn();
 		}
-		echo json_encode($Response);
-		exit();
+		
 	}
 
 
@@ -67,5 +66,13 @@ class Auth extends Base {
 		echo json_encode($Response);
 		exit();
 	}
+        
+        protected function ResponseAlreadyLoggedIn(){
+            $Response = array();
+            $Response[AJAX::STATUS] = AJAX::STATUS_ERROR;
+            $Response[AJAX::MESSAGE] = AJAX::ALREADY_LOGGED_IN;
+            echo json_encode($Response);
+            return true;
+        }
 }
 ?>

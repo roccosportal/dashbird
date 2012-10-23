@@ -27,6 +27,8 @@ class Base extends \Pvik\Web\Controller {
             return true;
         }
         
+
+        
         protected function ResponseWrongData(){
             $Response = array();
             $Response[AJAX::STATUS] = AJAX::STATUS_ERROR;

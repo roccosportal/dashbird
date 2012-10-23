@@ -3,8 +3,6 @@ self::$Config['UnderConstruction']['Enabled'] = false;
 self::$Config['Log']['On'] = true;
 self::$Config['Log']['UseOneFile'] = true;
 
-
-
 self::$Config['DefaultNamespace'] = '\\Dashbird';
 self::$Config['NamespaceAssociations']['\\Dashbird'] = '~/application/';
 
