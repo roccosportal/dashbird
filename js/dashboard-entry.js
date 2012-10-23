@@ -60,7 +60,8 @@ Dashbird.DashboardEntry = function(){
             }
         });
                         
-        var $deleteButton = me.$entry.find('.dashboard-entry-top-column .delete-button'); 
+        var $deleteButton = me.$entry.find('.dashboard-entry-right-column .delete-button');
+        
         $deleteButton.click(function (){
             me.deleteEntry();
         });
