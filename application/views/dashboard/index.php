@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-	<title>Dashbird 2.0.0-alpha</title>
+    <title>Dashbird <?php echo Pvik\Core\Config::$Config['Version']?></title>
     <?php $this->Helper->StyleSheetLink('~/css/reset.css'); ?>
 	<?php $this->Helper->StyleSheetLink('~/css/dashboard.css'); ?>
 </head>
