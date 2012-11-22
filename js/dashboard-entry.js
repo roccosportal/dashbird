@@ -310,7 +310,7 @@ Dashbird.DashboardEntry = function(){
         
     me.setEntryShares = function(userIds){
         $.getJSON('ajax/set/entry/shares/', {
-            entryId : me.entryData.dashboardEntryId, 
+            entryId : me.entryData.entryId, 
             userIds : userIds
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
@@ -325,7 +325,7 @@ Dashbird.DashboardEntry = function(){
     
     me.addComment = function(text){
         $.getJSON('ajax/add/comment/', {
-            entryId : me.entryData.dashboardEntryId, 
+            entryId : me.entryData.entryId, 
             text : text
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){

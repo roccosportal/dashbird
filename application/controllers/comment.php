@@ -14,16 +14,16 @@ class Comment extends Base {
             return $this->ResponseWrongData();
         }
         
-        $DashboardEntry = \Pvik\Database\Generic\ModelTable::Get('DashboardEntries')->LoadByPrimaryKey($EntryId);
-        /* @var $DashboardEntry \Dashbird\Model\Entities\DashboardEntry */
-        if($DashboardEntry == null){
+        $Entry = \Pvik\Database\Generic\ModelTable::Get('Entries')->LoadByPrimaryKey($EntryId);
+        /* @var $Entry \Dashbird\Model\Entities\Entry */
+        if($Entry == null){
             return $this->ResponseWrongData();
         }
         
-        if(!$DashboardEntry->CurrentUserHasPermissionToChange()){
+        if(!$Entry->CurrentUserHasPermissionToChange()){
             // user is not owner, lets look if the entry is shared with him
             $IsShared = false;
-            foreach($DashboardEntry->EntryShares as $EntryShare){
+            foreach($Entry->EntryShares as $EntryShare){
                  /* @var $EntryShare \Dashbird\Model\Entities\EntryShare */
                  if($EntryShare->UserId == $this->GetUserId()){
                      $IsShared = true;
@@ -36,7 +36,7 @@ class Comment extends Base {
         }
         
         $Comment = new \Dashbird\Model\Entities\Comment();
-        $Comment->DashboardEntryId = $DashboardEntry->DashboardEntryId;
+        $Comment->EntryId = $Entry->EntryId;
         $Comment->Text = $Text;
         $Comment->UserId = $this->GetUserId();
         $Comment->Insert();

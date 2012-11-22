@@ -58,19 +58,19 @@ Dashbird.EntrySharesBox = function(){
     _private = {};
     _private.isInitiated = false;
     _private.$entrySharesList = null;
-    _private.currentDashboardEntry = null;
+    _private.currentEntry = null;
     
     _private.onSave = function(e){
         e.preventDefault();
-        if(_private.currentDashboardEntry !== null){
+        if(_private.currentEntry !== null){
             var userIds = [];
             _private.$entrySharesList.find('li').each(function(){
                 if($(this).find('input').attr('checked')){
                     userIds.push($(this).data('userid').toString());
                 } 
             });
-           _private.currentDashboardEntry.setEntryShares(userIds);
-            _private.currentDashboardEntry = null;
+           _private.currentEntry.setEntryShares(userIds);
+            _private.currentEntry = null;
         }
         _private.$entrySharesBox.hide();
     }
@@ -84,15 +84,15 @@ Dashbird.EntrySharesBox = function(){
             _private.$entrySharesBox.find('.cancel-button').click(function(e){
                 e.preventDefault();
                 _private.$entrySharesBox.hide();
-                _private.currentDashboardEntry = null;
+                _private.currentEntry = null;
                 
             })
             _private.isInitiated = true;
         }
     }
-    me.show = function(dashboardEntry){
+    me.show = function(entry){
         me.init();
-        _private.currentDashboardEntry = dashboardEntry;
+        _private.currentEntry = entry;
         _private.$entrySharesList.empty();
         var html = '';
         var currentUserShare = null;
@@ -100,7 +100,7 @@ Dashbird.EntrySharesBox = function(){
             currentUserShare = Dashbird.UserShares.getUserShares()[i];
             html = html + '<li data-userid="'+ currentUserShare.userId +'">';
             html = html + '<input type="checkbox" ';
-            if($.inArray(currentUserShare.userId, dashboardEntry.entryData.entryShares)!== -1){
+            if($.inArray(currentUserShare.userId, entry.entryData.entryShares)!== -1){
                 html = html + 'checked="checked"';
             }
             html = html + '/>';
@@ -108,8 +108,8 @@ Dashbird.EntrySharesBox = function(){
             html = html + '</li>';
         }
         _private.$entrySharesList.append(html);
-        _private.$entrySharesBox.css('top', dashboardEntry.$entry.position().top)
-        _private.$entrySharesBox.css('left', dashboardEntry.$entry.position().left)
+        _private.$entrySharesBox.css('top', entry.$entry.position().top)
+        _private.$entrySharesBox.css('left', entry.$entry.position().left)
         _private.$entrySharesBox.show();
     };
     me._private = _private; // for inheritance

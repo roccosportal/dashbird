@@ -80,13 +80,13 @@ class Dashboard extends Base {
             return $this->ResponseWrongData();
         }
 
-        $DashboardEntry = ModelTable::Get('DashboardEntries')->LoadByPrimaryKey($EntryId);
-        /* @var $DashboardEntry \Dashbird\Model\Entities\DashboardEntry */
-        if ($DashboardEntry != null && !$DashboardEntry->CurrentUserHasPermissionToChange()) {
+        $Entry = ModelTable::Get('Entries')->LoadByPrimaryKey($EntryId);
+        /* @var $DashboardEntry \Dashbird\Model\Entities\Entry */
+        if ($Entry != null && !$Entry->CurrentUserHasPermissionToChange()) {
             return $this->ResponseWrongData();
         }
 
-        $DashboardEntry->SetEntryShares($UserIds);
+        $Entry->SetEntryShares($UserIds);
 
         return $this->ResponseSuccess();
     }

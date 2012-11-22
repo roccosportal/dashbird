@@ -27,5 +27,5 @@ self::$Config['Routes'] = array (
     array ('Url' => '/ajax/delete/comment/', 'Controller' => 'Comment', 'Action' => 'AjaxDeleteComment')
 );
 
-self::$Config['Version'] = '3.0.1-alpha';
+self::$Config['Version'] = '3.0.2-alpha';
 ?>
