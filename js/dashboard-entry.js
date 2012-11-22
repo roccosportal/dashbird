@@ -379,14 +379,14 @@ Dashbird.DashboardEntry = function(){
     
     me.bbcode = function(text){
         var search = new Array(
-              /\[img\](.*?)\[\/img\]/,
-              /\[url=([\w]+?:\/\/[^ \\"\n\r\t<]*?)\](.*?)\[\/url\]/,
-              /\[url\]((www|ftp|)\.[^ \\"\n\r\t<]*?)\[\/url\]/,
-              /\[url=((www|ftp|)\.[^ \\"\n\r\t<]*?)\](.*?)\[\/url\]/,
-              /\[b\](.*?)\[\/b\]/,
-              /\[url\](http:\/\/[^ \\"\n\r\t<]*?)\[\/url\]/,
-              /\[todo\](.*?)\[\/todo\]/,
-              /\[youtube\](.*?)\[\/youtube\]/
+              /\[img\](.*?)\[\/img\]/g,
+              /\[url=([\w]+?:\/\/[^ \\"\n\r\t<]*?)\](.*?)\[\/url\]/g,
+              /\[url\]((www|ftp|)\.[^ \\"\n\r\t<]*?)\[\/url\]/g,
+              /\[url=((www|ftp|)\.[^ \\"\n\r\t<]*?)\](.*?)\[\/url\]/g,
+              /\[b\](.*?)\[\/b\]/g,
+              /\[url\](http:\/\/[^ \\"\n\r\t<]*?)\[\/url\]/g,
+              /\[todo\](.*?)\[\/todo\]/g,
+              /\[youtube\](.*?)\[\/youtube\]/g
          );
      
         var replace = new Array(
