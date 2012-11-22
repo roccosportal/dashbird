@@ -1,255 +1,221 @@
 if(Dashbird===undefined){
-        var Dashbird = {};
+    var Dashbird = {};
 }
 Dashbird.Dashboard = function(){
-        var me = {},
-        _private = {};
-        _private.modules = [];
-        _private.$commandBar = null;
-        _private.$content = null;
-        _private.$searchox = null;
-        _private.refreshAjaxRequestQueue = null;
-        _private.searchRequestQueue = null;
-        _private.boardKeyCapture = false;
-        _private.boardBarKeyCapture = false;
+    var me = {},
+    _private = {};
+    _private.$commandBar = null;
+    _private.$content = null;
+    _private.refreshAjaxRequestQueue = null;
+    _private.searchRequestQueue = null;
+    _private.boardKeyCapture = false;
+    _private.boardBarKeyCapture = false;
         
-        me.pager = {};
-        me.pager.$furtherEntries = null;
-        me.pager.startPosition = 0;
-        me.pager.entryCount = 5;
-        me.pager.hasMoreEntries = false;
+    me.pager = {};
+    me.pager.$nextEntries = null;
+    me.pager.startPosition = 0;
+    me.pager.entryCount = 5;
+    me.pager.hasMoreEntries = false;
        
+   
         
-        _private.bindBoardKeys = function(){
-                
-                
-                $('#board').hover(function(){
-                        _private.boardKeyCapture = true; 
-                },
-                function (){
-                        _private.boardKeyCapture = false; 
-                });
-                // on key down in board-bar
-                $(document).bind("keydown", function(event){
-                        if(_private.boardBarKeyCapture){
-                                if(event.ctrlKey == true && event.keyCode == 83){ // CTRL + S
-                                        if($('.command-bar-option.selected').length>0){ // adding a new entry
-                                                var module = me.findModule($('.command-bar-option.selected:first').data('module'));
-                                                module.newEntry();
-                                        }
-                                        event.preventDefault();
-                                }
-                                else if(event.ctrlKey == true && event.altKey == true){  // CTRL + ALT
-                                        if($('.command-bar-option.selected').length>0){
-                                                var next = $('.command-bar-option.selected').next('.command-bar-option');
-                                                if(next.length != 0){
-                                                        next.click();
-                                                }
-                                                else {
-                                                        $('.command-bar-option.selected').click();
-                                                }
-                                        }
-                                        else {
-                                                $('#command-bar .command-bar-option:first').click()
-                                        }
-                                        event.preventDefault();
-                                }
-                        }
-           
-                });
-    
-        };
-        
-        _private.bindBoardBarKeys = function(){
-                $('#board-bar').hover(function(){
-                        _private.boardBarKeyCapture = true; 
-                },
-                function (){
-                        _private.boardBarKeyCapture = false; 
-                });
+    _private.bindBoardKeys = function(){
+      
                
                
-                // on key down in board
-                $(document).bind("keydown", function(event){
-                        if(_private.boardKeyCapture){
-                                if(event.ctrlKey == true && event.keyCode == 69){ // CTRL + E
-                                        if(me.$selectedEntry!=null){
-                                                me.$selectedEntry.data('dashboardEntry').toggleMode();
-                                        }
-                                        event.preventDefault();
-                                }
-                                else if(event.ctrlKey == true && event.keyCode == 83){ // CTRL + S
-                                        if(me.$selectedEntry!=null){
-                                                me.$selectedEntry.data('dashboardEntry').save();
-                                        }
-                                        event.preventDefault();
-                                }
-                                else if(event.ctrlKey == true && event.keyCode == 68){  // CTRL + D
-                                        event.preventDefault();
-                                        if(me.$selectedEntry!=null){
-                                                var next = [];
-                                                me.$selectedEntry.data('dashboardEntry').deleteEntry({
-                                                        beforeDetach :  function(){ // before detach
-                                                                if(me.$selectedEntry!=null){
-                                                                        next = me.$selectedEntry.next();
-                                                                }
-                                                        },
-                                                        afterDetach :  function(){ // after detach
-                                                                if(next.length != 0){
-                                                                        // select next one
-                                                                        me.$selectedEntry = next;
-                                                                        me.$selectedEntry.addClass('selected');
-                                                                        me.$selectedEntry.focus();
-                                                                }
-                                                                else {
-                                                                        me.$selectedEntry = null;
-                                                                }
-                                                        }
-                                                });
-                                        }
-                                }
-                        }
-                });
-                
-        }
-        
-        
-        
-        me.$selectedEntry = null;
-        me.findModule = function(module){
-                for (var i = 0; i < _private.modules.length; i++) {
-                        if(_private.modules[i].name === module){
-                                return _private.modules[i].module;
-                        }
+        $('#board').hover(function(){
+            _private.boardKeyCapture = true; 
+        },
+        function (){
+            _private.boardKeyCapture = false; 
+        });
+               
+        // on key down in board
+        $(document).bind("keydown", function(event){
+            if(_private.boardKeyCapture){
+                if(event.ctrlKey == true && event.keyCode == 69){ // CTRL + E
+                    if(me.$selectedEntry!=null){
+                        me.$selectedEntry.data('dashboardEntry').toggleMode();
+                    }
+                    event.preventDefault();
                 }
-                return null;
-        };
-        me.registerModule = function(name, module){
-                _private.modules.push({
-                        name: name, 
-                        module : module
-                });
-                module.init();
-        };
-
-        me.init = function (){
-               
-
-                _private.$commandBar = $('#command-bar');
-                _private.$commandBar.show();
-                _private.$content = $('#content');
-                _private.$searchBox = $('#search-box');
-                 me.pager.$furtherEntries = $('#further-entries')
-                 me.pager.$furtherEntries.click(function(e){
-                     e.preventDefault();
-                     me.pager.startPosition =  me.pager.startPosition + me.pager.entryCount;
-                     me.refresh();
-                 })
-            
-                _private.searchRequestQueue = SimpleJSLib.SingleRequestQueue();
-                _private.searchRequestQueue.setTimeout(200);
-                _private.$searchBox.keyup(function(){
-                        _private.searchRequestQueue.addToQueue({}, function(data){
-                                me.pager.startPosition = 0;
-                                me.refresh();
-                        });
-                });
-            
-                // open command-bar
-                $('#command-bar-bottom > .command-bar-option').click(function (){
-                        if($(this).data('module')!== null){
-                                if(!$(this).hasClass('selected')){
-                                        me.hideCommandForms();
-                                        $('#command-bar-top').removeClass('closed');
-                                        $(this).addClass('selected');
-                                        me.findModule($(this).data('module')).showCommandForm();
+                else if(event.ctrlKey == true && event.keyCode == 83){ // CTRL + S
+                    if(me.$selectedEntry!=null){
+                        me.$selectedEntry.data('dashboardEntry').save();
+                    }
+                    event.preventDefault();
+                }
+                else if(event.ctrlKey == true && event.keyCode == 68){  // CTRL + D
+                    event.preventDefault();
+                    if(me.$selectedEntry!=null){
+                        var next = [];
+                        me.$selectedEntry.data('dashboardEntry').deleteEntry({
+                            beforeDetach :  function(){ // before detach
+                                if(me.$selectedEntry!=null){
+                                    next = me.$selectedEntry.next();
+                                }
+                            },
+                            afterDetach :  function(){ // after detach
+                                if(next.length != 0){
+                                    // select next one
+                                    me.$selectedEntry = next;
+                                    me.$selectedEntry.addClass('selected');
+                                    me.$selectedEntry.focus();
                                 }
                                 else {
-                                        me.hideCommandForms();
+                                    me.$selectedEntry = null;
                                 }
-                  
-                        } 
-                });
-                
-                _private.bindBoardKeys();
-                _private.bindBoardBarKeys();
-            
-            
-            
-               
-                        
-                $('#board').show();
-                $('#board-bar').show();
-                        
-            
-                _private.refreshAjaxRequestQueue = SimpleJSLib.SingleRequestQueue();
-                me.refresh();
-                        
-                $('#logout').click(function(event){
-                        $.getJSON('ajax/logout/',{}, function(data) {
-                                if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                                        // refresh page
-                                       document.location.reload();
-                                }
-                        });	
-                        event.preventDefault();
-                });
-        };
-                
-        me.hideCommandForms = function(){
-                $('#command-bar-top > .command-form').hide();
-                $('#command-bar-bottom > .command-bar-option.selected').removeClass('selected');
-                $('#command-bar-top').addClass('closed');
-        };
-        me.addToTop = function(entry){
-                var module = this.findModule(entry.module);
-                if(module!==null){
-                        var $entry = module.createDashboardEntry(entry);
-                                
-                        var first = $('.dashboard-entry:first');
-                        if(first.length != 0){
-                                first.before($entry);
-                        }
-                        else {
-                                _private.$content.append($entry);
-                        }
+                            }
+                        });
+                    }
                 }
-        };
+            }
+        });
+                
+    }
+        
+        
+        
+    me.$selectedEntry = null;
+    me.init = function (){
+               
+        _private.$content = $('#content');
+               
+        me.pager.$nextEntries = $('#next-entries')
+        me.pager.$nextEntries.click(function(e){
+            e.preventDefault();
+            me.pager.startPosition =  me.pager.startPosition + me.pager.entryCount;
+            me.refresh();
+            me.pager.$backEntries.show();
+        });
+        me.pager.$backEntries = $('#back-entries')
+        me.pager.$backEntries.click(function(e){
+            e.preventDefault();
+            me.pager.startPosition =  me.pager.startPosition - me.pager.entryCount;
+            me.refresh();
+            if(me.pager.startPosition == 0){
+                me.pager.$backEntries.hide();
+            }
+        });
+            
+        // searching
+        _private.$searchBox = $('#search-box');
+        _private.$searchBarButton = $('#side-bar .search');
+        _private.$searchBar = $('#search-bar');
+        _private.searchRequestQueue = SimpleJSLib.SingleRequestQueue();
+        _private.searchRequestQueue.setTimeout(200);
+        _private.$searchBarButton.click(function(){
+            _private.$searchBar.toggle();
+        });
+        _private.$searchBox.keyup(function(){
+            _private.searchRequestQueue.addToQueue({}, function(data){
+                me.pager.startPosition = 0;
+                me.refresh();
+            });
+        });
+                
+        // new entry
+        _private.$newEntryBox = $('#new-entry');
+        _private.$newEntryButton = $('#side-bar .new');
+        _private.$newEntryButton.click(function(){
+            _private.$newEntryBox.toggle();
+            if(_private.$newEntryBox.is(':visible') ) {
+                document.location.href = '#new-entry';
+            }
+        });
+        $('#new-entry .commands .save-button').click(function(){
+            $.getJSON('ajax/entry/add/', {
+                text :  $('#new-entry #new-entry-text').val()
+            }, function(data) {
+                if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
+                    Dashbird.Dashboard.addToTop(data[AJAX.DATA]);
+                    _private.$newEntryBox.hide();
+                }
+            }); 
+        });
+        $('#new-entry .commands .cancel-button').click(function(){
+            _private.$newEntryBox.hide();
+        });
+                
+        _private.$settings =  $('#settings');
+        $('#side-bar .settings').click(function(){
+            _private.$settings.toggle();
+        });
+  
+        _private.bindBoardKeys();
 
-        me.refresh = function(){
+            
+        $('#board').show();
+        $('#side-bar').show();
                         
-                var request = _private.refreshAjaxRequestQueue.runAsynchronRequest();
-                $.getJSON('ajax/get/dashboard/entries/', {
-                        search : _private.$searchBox.val(),
-                        'start-position' : me.pager.startPosition,
-                        'entry-count' : me.pager.entryCount
-                }, function(data) {
-                        if(request.isLatestRequest()){
-                                if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                                        me.pager.hasMoreEntries = data[AJAX.DATA]['has-more-entries'];
-                                        if(me.pager.hasMoreEntries===true){
-                                            me.pager.$furtherEntries.show();
-                                        }
-                                        else {
-                                             me.pager.$furtherEntries.hide();
-                                        }
-                                        _private.$content.html('');
-                                        var entries = data[AJAX.DATA]['entries'];
-                                        for (var i = 0; i <  entries.length; i++) {
-                                                var entry = entries[i];
-                                                var module = me.findModule(entry.module);
-                                                if(module!==null){
-                                                        var $entry = module.createDashboardEntry(entry);
-                                                        _private.$content.append($entry);
-                                                }
-                                        }
-                                }
-                        }
-                });		
-        };
-        me.htmlEntities = function (str) {
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        };
-        me._private = _private; // for inheritance
-        return me;
+            
+        _private.refreshAjaxRequestQueue = SimpleJSLib.SingleRequestQueue();
+        me.refresh();
+                        
+        $('#logout').click(function(event){
+            $.getJSON('ajax/logout/',{}, function(data) {
+                if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
+                    // refresh page
+                    document.location.reload();
+                }
+            });	
+            event.preventDefault();
+        });
+    };
+                
+    me.addToTop = function(entryData){
+        var entry = Dashbird.DashboardEntry();
+        entry.init(entryData);
+        var $entry = entry.create();      
+                              
+                              
+        var first = $('#board #content .entry:first');
+        if(first.length != 0){
+            first.before($entry);
+        }
+        else {
+            _private.$content.append($entry);
+        }
+                
+    };
+
+    me.refresh = function(){
+                        
+        var request = _private.refreshAjaxRequestQueue.runAsynchronRequest();
+        $.getJSON('ajax/get/dashboard/entries/', {
+            search : _private.$searchBox.val(),
+            'start-position' : me.pager.startPosition,
+            'entry-count' : me.pager.entryCount
+        }, function(data) {
+            if(request.isLatestRequest()){
+                if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
+                    me.pager.hasMoreEntries = data[AJAX.DATA]['has-more-entries'];
+                    if(me.pager.hasMoreEntries===true){
+                        me.pager.$nextEntries.show();
+                    }
+                    else {
+                        me.pager.$nextEntries.hide();
+                    }
+                    _private.$content.html('');
+                    var entries = data[AJAX.DATA]['entries'];
+                    for (var i = 0; i <  entries.length; i++) {
+                        var entryData = entries[i];
+                        var entry = Dashbird.DashboardEntry();
+                        entry.init(entryData);
+                        var $entry = entry.create();
+                        _private.$content.append($entry);
+                                                
+                    }
+                }
+            }
+        });		
+    };
+    me.htmlEntities = function (str) {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    };
+        
+     
+    me._private = _private; // for inheritance
+           
+    return me;
 }();

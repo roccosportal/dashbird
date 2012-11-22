@@ -15,8 +15,5 @@ class UserShare extends \Pvik\Database\Generic\Entity {
         $this->ModelTableName = 'UserShares';
     }
 
-    
-
 }
 
-?>

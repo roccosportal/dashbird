@@ -5,8 +5,6 @@ namespace Dashbird\Model\Entities;
  * @property int $UserId
  * @property string $Name
  * @property string $Password
- * @property \Pvik\Database\Generic\EntityArray $Links
- * @property \Pvik\Database\Generic\EntityArray $Notes
  * @property \Pvik\Database\Generic\EntityArray $UserShares
  */
 class User extends \Pvik\Database\Generic\Entity {

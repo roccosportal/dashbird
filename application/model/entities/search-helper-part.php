@@ -2,7 +2,7 @@
 namespace Dashbird\Model\Entities;
 /**
  * @property int $SearchHelperPartId
- * @property int $DashboardEntryId
+ * @property int $EntryId
  * @property string $Keyword
  * @property int $StartAt
  * @porperty int $EndAt

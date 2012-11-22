@@ -10,9 +10,9 @@ class EntryShares extends \Pvik\Database\Generic\ModelTable {
        
         $this->FieldDefinition['EntryShareId'] = array ('Type' => 'PrimaryKey');
 
-        $this->FieldDefinition['DashboardEntryId'] = array('Type' => 'ForeignKey', 'ModelTable' => 'DashboardEntries');
+        $this->FieldDefinition['EntryId'] = array('Type' => 'ForeignKey', 'ModelTable' => 'Entries');
        
-        $this->FieldDefinition['DashboardEntry'] = array('Type' => 'ForeignObject', 'ForeignKey' => 'DashboardEntryId');
+        $this->FieldDefinition['Entry'] = array('Type' => 'ForeignObject', 'ForeignKey' => 'EntryId');
        
         $this->FieldDefinition['UserId'] = array('Type' => 'ForeignKey', 'ModelTable' => 'Users');
        

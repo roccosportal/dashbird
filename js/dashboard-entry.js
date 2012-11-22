@@ -6,7 +6,6 @@ Dashbird.DashboardEntry = function(){
     _private = {};
         
     me.entryData = null;
-    me.moduleEntry = null;
     me.$entry = null;
     me.$meta = null;
     me.$comments = null;
@@ -15,52 +14,55 @@ Dashbird.DashboardEntry = function(){
     me.editMode = false;
     me.hasUnsavedChanges = false;
         
-    me.init = function (entryData, moduleEntry){
+    me.init = function (entryData){
         me.entryData = entryData;
-        me.moduleEntry = moduleEntry;
     }
 
-    me.create = function(htmlConfig){
+    me.create = function(){
                         
-        var html = '<div class="dashboard-entry ' + htmlConfig.cssClass +'">';
-        html =	html + '<div class="dashboard-entry-top-column">' + me.entryData.user.name + ' on ' +  me.entryData.datetime +'</div>';
-        html =	html + '<div class="dashboard-entry-left-column">' + htmlConfig.leftColumn +'</div>';
-        html =	html + '<div class="dashboard-entry-middle-column">' + htmlConfig.middleColumn +'</div>';
-        html =	html + '<div class="dashboard-entry-right-column">';
+        var html = '<div class="entry">';
+        html =	html + '<div class="top">';
+        html =	html + '<span class="username">'+ me.entryData.user.name +'</span>';
+        html =	html + '<span class="date">'+ me.entryData.datetime +'</span>';
+        html =	html + '<span class="commands">';
         html =	html + '<a class="comment-button" href="#">c</a>';
         if(Dashbird.Auth.getUser().userId === me.entryData.user.userId){
             html =	html + '<a class="edit-button" href="#">e</a>';
             html =	html + '<a class="entry-shares-button" href="#">s</a>';
             html =	html + '<a class="delete-button"  href="#">x</a>';
         }
+        html =	html + '</span>';
         html =	html + '</div>';
-        html =  html + '<div class="dashboard-entry-footer-column clear-fix" >';
-        html =  html + '<div class="dashboard-entry-meta" ><div class="tags"></div></div>';
-        html =  html + '<div class="dashboard-entry-comments" ></div>';
+        html =	html + '<div class="middle"><p>' + me.bbcode(me.entryData.text.replace(/\n/g,'<br />')) + '</p></div>';
+       
+       
+        html =  html + '<div class="footer clear-fix" >';
+        html =  html + '<div class="meta" ><div class="tags"></div></div>';
+        html =  html + '<div class="comments" ></div>';
         html =	html + '</div>';
         html =	html + '</div>';
         me.$entry = $(html);
-        me.$middleColumn = me.$entry.find('.dashboard-entry-middle-column');
-        me.$meta = me.$entry.find('.dashboard-entry-meta');
+        me.$middleColumn = me.$entry.find('.middle');
+        me.$meta = me.$entry.find('.meta');
         
         me.drawNormalTags();
-        me.$comments = me.$entry.find('.dashboard-entry-comments');
+        me.$comments = me.$entry.find('.comments');
         _private.drawComments();
                         
         me.$entry.mouseover(function (){
             Dashbird.Dashboard.$selectedEntry = me.$entry;
-            $('#content > .dashboard-entry.selected').removeClass('selected');
+            $('#content > .entry.selected').removeClass('selected');
             Dashbird.Dashboard.$selectedEntry.addClass('selected');
             Dashbird.Dashboard.$selectedEntry.focus();
         });
         me.$entry.mouseleave(function (){
             if(Dashbird.Dashboard.$selectedEntry.data('dashboardEntry').entryData.dashboardEntryId == me.entryData.dashboardEntryId){
-                $('#content > .dashboard-entry.selected').removeClass('selected');
+                $('#content > .entry.selected').removeClass('selected');
                 Dashbird.Dashboard.$selectedEntry = null;
             }
         });
                         
-        var $deleteButton = me.$entry.find('.dashboard-entry-right-column .delete-button');
+        var $deleteButton = me.$entry.find('.top .commands .delete-button');
         
         $deleteButton.click(function (){
             me.deleteEntry();
@@ -90,7 +92,8 @@ Dashbird.DashboardEntry = function(){
             me.changedEntryData = {};
             me.changedEntryData = $.extend(true, {}, me.entryData);
             me.drawEditableTags();
-            me.moduleEntry.switchToEditMode();
+            me.$middleColumn.html('<textarea class="text">' + me.entryData.text + '</textarea>');
+            me.$middleColumn.find('.text').focus();
             me.$middleColumn.find('input').keydown(function(){
                 me.unsavedChanges();
             });
@@ -108,7 +111,7 @@ Dashbird.DashboardEntry = function(){
         me.drawNormalTags();
                         
         me.hideUnsavedChages();
-        me.moduleEntry.switchToNormalMode();
+        me.$middleColumn.html('<p>' +  me.bbcode(me.entryData.text.replace(/\n/g,'<br />')) + '</p>');
     },
     me.toggleMode = function(){
         if(Dashbird.Auth.getUser().userId === me.entryData.user.userId){
@@ -123,7 +126,25 @@ Dashbird.DashboardEntry = function(){
     me.save = function(){
                 
         if(me.editMode){
-            me.moduleEntry.save();
+                // find text
+                me.changedEntryData.text = me.$middleColumn.find('.text').val();
+
+                // save status in db
+                $.getJSON('ajax/entry/edit/', {
+                        entryId : me.changedEntryData.entryId, 
+                        text : me.changedEntryData.text,
+                        tags: me.changedEntryData.tags
+                }, function(data) {
+                        if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
+                                // save status
+                                me.entryData =  me.changedEntryData;
+                                 // convert (is converted on serverside aswell)
+                                me.entryData.text = Dashbird.Dashboard.htmlEntities(me.entryData.text);
+                                me.changedEntryData = {};
+                                // switch to normal mode
+                                me.switchToNormalMode();
+                        }
+                });
         }
     },
                 
@@ -139,7 +160,13 @@ Dashbird.DashboardEntry = function(){
         $.extend(_params, params);
                         
         if(confirm('Do you really want to delete this entry?')){
-            me.moduleEntry.deleteEntry();
+            $.getJSON('ajax/entry/delete/', {
+                        entryId : me.entryData.entryId
+                }, function(data) {
+                        if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
+                                // do nothing
+                        }
+            });
             me.$entry.fadeOut("slow", function(){
                 if(_params.beforeDetach!=null){
                     _params.beforeDetach();
@@ -172,7 +199,7 @@ Dashbird.DashboardEntry = function(){
     me.drawEditableTags = function(){
         me.$meta.find('.tags').html('<div class="tags-box"><input class="tag-field" type="name" /></div>');
         var $tagField = me.$meta.find('.tag-field');
-        var width = 500;
+        var width = me.$middleColumn.width();
         var tag = null;
         $.each(me.entryData.tags,function(index, value){
             tag = Dashbird.Tag();
@@ -331,10 +358,14 @@ Dashbird.DashboardEntry = function(){
         var html = '';
         $.each(me.entryData.comments,function(index, comment){
             html = html + '<div class="comment" data-id="' + comment.commentId + '">';
-            html = html + '<div class="comment-header">' + comment.user.name + ' on ' +  comment.datetime;
+            html = html + '<div class="comment-header">'; 
+            html =	html + '<span class="username">'+ comment.user.name  +'</span>';
+            html =	html + '<span class="date">'+ comment.datetime +'</span>';
+            html =	html + '<span class="commands">';
             if(Dashbird.Auth.getUser().userId === comment.user.userId){
-                html = html + '<a href="#" class="delete-button">x</a>';
+               html =	html + '<a class="delete-button"  href="#">x</a>';
             }
+            html =	html + '</span>';
             html = html + '</div>';
             html = html + '<div class="comment-content">' + comment.text + '</div>';
             html = html + '</div>';
@@ -344,6 +375,33 @@ Dashbird.DashboardEntry = function(){
             var id = $(this).closest('.comment').data('id');
             me.deleteComment(id);
         });
+    }
+    
+    me.bbcode = function(text){
+        var search = new Array(
+              /\[img\](.*?)\[\/img\]/,
+              /\[url=([\w]+?:\/\/[^ \\"\n\r\t<]*?)\](.*?)\[\/url\]/,
+              /\[url\]((www|ftp|)\.[^ \\"\n\r\t<]*?)\[\/url\]/,
+              /\[url=((www|ftp|)\.[^ \\"\n\r\t<]*?)\](.*?)\[\/url\]/,
+              /\[b\](.*?)\[\/b\]/,
+              /\[url\](http:\/\/[^ \\"\n\r\t<]*?)\[\/url\]/,
+              /\[todo\](.*?)\[\/todo\]/,
+              /\[youtube\](.*?)\[\/youtube\]/
+         );
+     
+        var replace = new Array(
+              "<img src=\"$1\" alt=\"An image\">",
+              "<a href=\"$1\" target=\"blank\">$2</a>",
+              "<a href=\"http://$1\" target=\"blank\">$1</a>",
+              "<a href=\"$1\" target=\"blank\">$1</a>",
+              "<b>$1</b>",
+              "<a href=\"$1\" target=\"blank\">$1</a>",
+              '<span class="todo"><img src="/images/aroma/todo.png" alt="todo">$1</span',
+              "<iframe class='youtube' src='$1' frameborder='0' allowfullscreen></iframe>");
+        for(i = 0; i < search.length; i++) {
+             text = text.replace(search[i],replace[i]);
+        } 
+        return text;
     }
                 
     me._private = _private; // for inheritance
@@ -362,7 +420,7 @@ Dashbird.Tag = function(){
     me.init = function(dashboardEntry, title){
                 
         _private.dashboardEntry = dashboardEntry;
-        me.$tag =  $('<span class="tag">' + title + '<span class="delete-tag"></span></span>');
+        me.$tag =  $('<span class="tag">' + title + '<span class="delete-tag">x</span></span>');
         me.$tag.find('.delete-tag').click( function(){
             _private.dashboardEntry.deleteTag(title);
         });

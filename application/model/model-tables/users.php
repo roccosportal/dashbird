@@ -19,9 +19,6 @@ class Users extends \Pvik\Database\Generic\ModelTable {
         
         $this->FieldDefinition['UserShares'] = array ('Type' => 'ManyForeignObjects', 'ModelTable' => 'UserShares','ForeignKey' => 'UserId');
          
-        $this->FieldDefinition['Links'] = array ('Type' => 'ManyForeignObjects', 'ModelTable' => 'Links','ForeignKey' => 'UserId');
-
-        $this->FieldDefinition['Notes'] = array ('Type' => 'ManyForeignObjects', 'ModelTable' => 'Notes','ForeignKey' => 'UserId');
     }
     
     /**

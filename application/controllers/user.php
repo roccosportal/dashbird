@@ -29,6 +29,10 @@ class User extends Base {
         if ($User == null || $User->UserId == $this->GetUserId()) {
             return $this->ResponseWrongData();
         }
+        
+        if($this->GetUser()->UserShares->HasValue('ConnectedUserId', $User->UserId)){
+            return $this->ResponseWrongData();
+        }
 
 
         $UserShare = new \Dashbird\Model\Entities\UserShare();
@@ -36,22 +40,17 @@ class User extends Base {
         $UserShare->ConnectedUserId = $User->UserId;
         $UserShare->Insert();
         
-        $NoteModel = new \Dashbird\Model\Entities\Note();
-        $NoteModel->Text = 'Hello '.  $User->Name .",\nI started sharing with you!";
-        $NoteModel->UserId = $this->GetUserId();
-        $NoteModel->Insert();
+       
 
-        $DashboardEntry = new \Dashbird\Model\Entities\DashboardEntry();
-        $DashboardEntry->Module = 'Note';
-        $DashboardEntry->ReferenceId = $NoteModel->NoteId;
-        $DashboardEntry->SearchHelper = '';
-        $DashboardEntry->UserId = $this->GetUserId();
-        $DashboardEntry->Insert();
+        $Entry = new \Dashbird\Model\Entities\Entry();
+        $Entry->Text = 'Hello '.  $User->Name .",\nI started sharing with you!";
+        $Entry->SearchHelper = '';
+        $Entry->UserId = $this->GetUserId();
+        $Entry->Insert();
 
-        $DashboardEntry->AddTag('note');
-        $DashboardEntry->SetSearchHelpePart('note-text', $NoteModel->Text);
-        $DashboardEntry->SetEntryShares(array($User->UserId));
-        $DashboardEntry->Update();
+        $Entry->SetSearchHelperPart('text', $Entry->Text);
+        $Entry->SetEntryShares(array($User->UserId));
+        $Entry->Update();
         
       
         

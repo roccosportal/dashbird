@@ -8,49 +8,7 @@
 [Include] /var/www/dashbird/library/pvik/web/controller.php
 [Include] /var/www/dashbird/application/controllers/base.php
 [Include] /var/www/dashbird/application/controllers/dashboard.php
-Executing action: AjaxGetDashboardEntriesAction
+Executing action: AjaxSetEntrySharesAction
 [Include] /var/www/dashbird/application/library/services/user-service.php
 [Include] /var/www/dashbird/application/library/constants/session.php
-[Include] /var/www/dashbird/library/pvik/database/generic/query.php
-[Include] /var/www/dashbird/library/pvik/database/generic/model-table.php
-[Include] /var/www/dashbird/application/model/model-tables/dashboard-entries.php
-[Include] /var/www/dashbird/library/pvik/database/sql/builder.php
-[Include] /var/www/dashbird/library/pvik/database/mysql/builder.php
-[Include] /var/www/dashbird/library/pvik/database/generic/field-definition-helper.php
-[Include] /var/www/dashbird/application/model/model-tables/dashboard-entries-tags.php
-[Include] /var/www/dashbird/application/model/model-tables/search-helper-parts.php
-[Include] /var/www/dashbird/application/model/model-tables/entry-shares.php
-[Include] /var/www/dashbird/application/model/model-tables/comments.php
-[Include] /var/www/dashbird/library/pvik/database/sql/manager.php
-[Include] /var/www/dashbird/library/pvik/database/mysql/manager.php
-Use MySQL as database system
-Executing querystring: SELECT DashboardEntries.DashboardEntryId, DashboardEntries.Module, DashboardEntries.ReferenceId, DashboardEntries.DateTime, DashboardEntries.SearchHelper, DashboardEntries.UserId, GROUP_CONCAT(DISTINCT t.DashboardEntriesTagsId) as DashboardEntriesTags, GROUP_CONCAT(DISTINCT tt.SearchHelperPartId) as SearchHelperParts, GROUP_CONCAT(DISTINCT ttt.EntryShareId) as EntryShares, GROUP_CONCAT(DISTINCT tttt.CommentId) as Comments FROM DashboardEntries LEFT JOIN DashboardEntriesTags as t ON t.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN SearchhelperParts as tt ON tt.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN EntryShares as ttt ON ttt.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN Comments as tttt ON tttt.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN EntryShares as EntryShares ON EntryShares.DashboardEntryId = DashboardEntries.DashboardEntryId WHERE (DashboardEntries.UserId = "3" OR EntryShares.UserId = "3") GROUP BY DashboardEntries.DashboardEntryId, DashboardEntries.DashboardEntryId, DashboardEntries.DashboardEntryId, DashboardEntries.DashboardEntryId ORDER BY DashboardEntries.Datetime DESC LIMIT 0,5
-[Include] /var/www/dashbird/library/pvik/database/generic/entity-array.php
-[Include] /var/www/dashbird/library/pvik/database/generic/entity.php
-[Include] /var/www/dashbird/application/model/entities/dashboard-entry.php
-[Include] /var/www/dashbird/library/pvik/database/cache/model-table.php
-Executing querystring: SELECT DashboardEntriesTags.DashboardEntriesTagsId, DashboardEntriesTags.DashboardEntryId, DashboardEntriesTags.TagId FROM DashboardEntriesTags WHERE DashboardEntriesTags.DashboardEntriesTagsId IN ( "143","142","140","139","141")  
-[Include] /var/www/dashbird/application/model/entities/dashboard-entries-tags.php
-[Include] /var/www/dashbird/application/model/model-tables/tags.php
-Executing querystring: SELECT Tags.TagId, Tags.Title FROM Tags WHERE Tags.TagId IN ( "1","1","1","1","1")  
-[Include] /var/www/dashbird/application/model/entities/tag.php
-[Include] /var/www/dashbird/application/model/model-tables/todos.php
-[Include] /var/www/dashbird/application/model/model-tables/links.php
-[Include] /var/www/dashbird/application/model/model-tables/notes.php
-Executing querystring: SELECT Notes.NoteId, Notes.Text, Notes.UserId FROM Notes WHERE Notes.NoteId IN ( "34","33","32","31","30")  
-[Include] /var/www/dashbird/application/model/entities/module.php
-[Include] /var/www/dashbird/application/model/entities/note.php
-Executing querystring: SELECT EntryShares.EntryShareId, EntryShares.DashboardEntryId, EntryShares.UserId FROM EntryShares WHERE EntryShares.EntryShareId IN ( "11")  
-[Include] /var/www/dashbird/application/model/entities/entry-share.php
-[Include] /var/www/dashbird/application/model/model-tables/users.php
-[Include] /var/www/dashbird/application/model/model-tables/user-shares.php
-Executing querystring: SELECT Users.UserId, Users.Name, Users.Password, GROUP_CONCAT(DISTINCT t.UserShareId) as UserShares, GROUP_CONCAT(DISTINCT tt.LinkId) as Links, GROUP_CONCAT(DISTINCT ttt.NoteId) as Notes FROM Users LEFT JOIN UserShares as t ON t.UserId = Users.UserId LEFT JOIN Links as tt ON tt.UserId = Users.UserId LEFT JOIN Notes as ttt ON ttt.UserId = Users.UserId WHERE Users.UserId = "3" GROUP BY Users.UserId, Users.UserId, Users.UserId 
-[Include] /var/www/dashbird/application/model/entities/user.php
-Executing querystring: SELECT EntryShares.EntryShareId, EntryShares.DashboardEntryId, EntryShares.UserId FROM EntryShares WHERE EntryShares.EntryShareId IN ( "12")  
-Executing querystring: SELECT Comments.CommentId, Comments.Text, Comments.DateTime, Comments.UserId, Comments.DashboardEntryId FROM Comments WHERE Comments.CommentId IN ( "5","6")  
-[Include] /var/www/dashbird/application/model/entities/comment.php
-Executing querystring: SELECT Users.UserId, Users.Name, Users.Password, GROUP_CONCAT(DISTINCT t.UserShareId) as UserShares, GROUP_CONCAT(DISTINCT tt.LinkId) as Links, GROUP_CONCAT(DISTINCT ttt.NoteId) as Notes FROM Users LEFT JOIN UserShares as t ON t.UserId = Users.UserId LEFT JOIN Links as tt ON tt.UserId = Users.UserId LEFT JOIN Notes as ttt ON ttt.UserId = Users.UserId WHERE Users.UserId = "4" GROUP BY Users.UserId, Users.UserId, Users.UserId 
-Executing querystring: SELECT EntryShares.EntryShareId, EntryShares.DashboardEntryId, EntryShares.UserId FROM EntryShares WHERE EntryShares.EntryShareId IN ( "8")  
-Executing querystring: SELECT Comments.CommentId, Comments.Text, Comments.DateTime, Comments.UserId, Comments.DashboardEntryId FROM Comments WHERE Comments.CommentId IN ( "4")  
-Executing querystring: SELECT DashboardEntries.DashboardEntryId, DashboardEntries.Module, DashboardEntries.ReferenceId, DashboardEntries.DateTime, DashboardEntries.SearchHelper, DashboardEntries.UserId, GROUP_CONCAT(DISTINCT t.DashboardEntriesTagsId) as DashboardEntriesTags, GROUP_CONCAT(DISTINCT tt.SearchHelperPartId) as SearchHelperParts, GROUP_CONCAT(DISTINCT ttt.EntryShareId) as EntryShares, GROUP_CONCAT(DISTINCT tttt.CommentId) as Comments FROM DashboardEntries LEFT JOIN DashboardEntriesTags as t ON t.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN SearchhelperParts as tt ON tt.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN EntryShares as ttt ON ttt.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN Comments as tttt ON tttt.DashboardEntryId = DashboardEntries.DashboardEntryId LEFT JOIN EntryShares as EntryShares ON EntryShares.DashboardEntryId = DashboardEntries.DashboardEntryId WHERE (DashboardEntries.UserId = "3" OR EntryShares.UserId = "3") GROUP BY DashboardEntries.DashboardEntryId, DashboardEntries.DashboardEntryId, DashboardEntries.DashboardEntryId, DashboardEntries.DashboardEntryId ORDER BY DashboardEntries.Datetime DESC LIMIT 5,1
 [Include] /var/www/dashbird/application/library/constants/ajax.php

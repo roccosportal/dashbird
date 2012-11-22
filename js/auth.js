@@ -27,7 +27,7 @@ Dashbird.Auth = function (){
                 });
         };
 
-        me.login = function(name, password, callbackOnSuccess){
+        me.login = function(name, password, callbackOnSuccess, callbackOnFailure){
                 if(!this.isLoggedIn){
                         $.getJSON('ajax/login', {
                                 name : name, 
@@ -38,6 +38,9 @@ Dashbird.Auth = function (){
                                         callbackOnSuccess();
                                         me.isLoggedIn = true;
                                         me.fire('onLoggedIn');
+                                }
+                                else {
+                                      callbackOnFailure();
                                 }
                         });
                 }
