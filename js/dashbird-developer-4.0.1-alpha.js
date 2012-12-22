@@ -1277,13 +1277,13 @@ Dashbird.PluginManager = function (){
     }
     
      me.saveData = function(name, data){
-         $.getJSON('ajax/plugin/data/save/', {
+         $.post('ajax/plugin/data/save/', {
                     name : name,
                     data : JSON.stringify(data)
                   
          }, function(data) {
              
-         });
+         }, 'json');
     }
     
     

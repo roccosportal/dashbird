@@ -43,8 +43,8 @@ class PluginData extends Base {
             return $this->ResponseNotLoggedIn();
         }
         
-         $Name = $this->Request->GetGET('name');
-         $Data = $this->Request->GetGET('data');
+         $Name = $this->Request->GetPOST('name');
+         $Data = $this->Request->GetPOST('data');
          if($Name==null||$Data==null){
              return $this->ResponseWrongData();
          }
