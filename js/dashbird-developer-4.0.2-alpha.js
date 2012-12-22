@@ -1402,7 +1402,7 @@ Dashbird.Plugins.Notifications = function (){
         _private.$.find('.content').html('');
         _private.hideLoading();
         
-        if(_private.changedEntryIds.length > 1){
+        if(_private.changedEntryIds.length > 0){
             _private.showLoading();
     
             Dashbird.Dashboard.getEntries(_private.changedEntryIds, function(data){
