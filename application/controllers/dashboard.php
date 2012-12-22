@@ -16,6 +16,7 @@ class Dashboard extends Base {
             return $this->ResponseNotLoggedIn();
         }
 
+
         $Search = $this->Request->GetGET('search');
         $StartPosition = $this->Request->GetGET('start-position');
         if($StartPosition==null) $StartPosition = 0;
@@ -64,6 +65,36 @@ class Dashboard extends Base {
         
         $this->ResponseSuccess($Data);
     }
+    
+    public function AjaxGetHashesAction() {
+        if (!$this->IsLoggedIn()) {
+            return $this->ResponseNotLoggedIn();
+        }
+
+       
+        $Query = new \Pvik\Database\Generic\Query('Entries');
+        $ConditionString = 'LEFT JOIN EntryShares as EntryShares ON EntryShares.EntryId = Entries.EntryId';
+        $ConditionString .= ' WHERE (Entries.UserId = "%s"';
+        $Query->AddParameter($this->GetUserId());
+        $ConditionString .= ' OR EntryShares.UserId = "%s")';
+        $Query->AddParameter($this->GetUserId());
+      
+        $Query->SetConditions($ConditionString);
+        $Entries = $Query->Select();
+        
+     
+       
+        // optimization for tags
+        $Entries->LoadList('EntriesTags->Tag');
+      
+        $Data = array();
+        $Data['hashes'] = array();
+        foreach ($Entries as $Entry) {
+            $Data['hashes'][] = array ('entryId' => $Entry->EntryId,
+                    'hash' => $Entry->GetHash());
+        }
+        $this->ResponseSuccess($Data);
+    }
 
     public function AjaxSetEntrySharesAction() {
         if (!$this->IsLoggedIn()) {
@@ -81,7 +112,7 @@ class Dashboard extends Base {
         }
 
         $Entry = ModelTable::Get('Entries')->LoadByPrimaryKey($EntryId);
-        /* @var $DashboardEntry \Dashbird\Model\Entities\Entry */
+        /* @var $Entry \Dashbird\Model\Entities\Entry */
         if ($Entry != null && !$Entry->CurrentUserHasPermissionToChange()) {
             return $this->ResponseWrongData();
         }
@@ -96,6 +127,7 @@ class Dashboard extends Base {
         if (!$this->IsLoggedIn()) {
             return $this->ResponseNotLoggedIn();
         }
+        
 
         $Text = htmlentities(utf8_decode($this->Request->GetGET('text')));
         if (empty($Text)) {
@@ -103,17 +135,33 @@ class Dashboard extends Base {
         }
 
 
-        $EntryModel = new \Dashbird\Model\Entities\Entry();
-        $EntryModel->Text = $Text;
-        $EntryModel->SearchHelper = '';
-        $EntryModel->UserId = $this->GetUserId();
-        $EntryModel->Insert();
-        $EntryModel->SetSearchHelperPart('text',  $EntryModel->Text);
-        $EntryModel->SetSearchHelperPart('user-name',  $this->GetUser()->Name);
-        $EntryModel->Update();
+        $Entry = new \Dashbird\Model\Entities\Entry();
+        $Entry->Text = $Text;
+        $Entry->SearchHelper = '';
+        $Entry->UserId = $this->GetUserId();
+        
+        $Entry->Insert();
+        $Entry->SetSearchHelperPart('text',  $Entry->Text);
+        $Entry->SetSearchHelperPart('user-name',  $this->GetUser()->Name);
+         $Tags = $this->Request->GetGET('tags');
+        if (is_array($Tags)) {
+            $Entry->SetTags($Tags);
+        } else {
+            $Entry->SetTags(array());
+        }
+        $Entry->Update();
+        
+        $Shares = $this->Request->GetGET('shares');
+       
+        if (is_array($Shares)) {
+            $Entry->SetEntryShares($Shares);
+        }
+        
+       
+       
 
 
-        return $this->ResponseSuccess($EntryModel->ToArray());
+        return $this->ResponseSuccess($Entry->ToArray());
     }
 
     public function AjaxDeleteAction() {
@@ -140,6 +188,7 @@ class Dashboard extends Base {
         if (!$this->IsLoggedIn()) {
             return $this->ResponseNotLoggedIn();
         }
+        
 
         $EntryId = $this->Request->GetGET('entryId');
         $Text = htmlentities(utf8_decode($this->Request->GetGET('text')));
@@ -160,8 +209,65 @@ class Dashboard extends Base {
         $Entry->SetSearchHelperPart('text', $Entry->Text);
 
         $Entry->Update();
-        return $this->ResponseSuccess();
+        return $this->ResponseSuccess($Entry->ToArray());
     }
+    
+    public function AjaxGetAction() {
+        if (!$this->IsLoggedIn()) {
+            return $this->ResponseNotLoggedIn();
+        }
+        
+        $EntryId = $this->Request->GetGET('entryId');
+        $Entry = ModelTable::Get('Entries')->LoadByPrimaryKey($EntryId);
+         /* @var $Entry \Dashbird\Model\Entities\Entry */
+        if($Entry==null||!$Entry->CurrentUserIsAllowedToSee()){
+            return $this->ResponseWrongData();
+        }
+        return $this->ResponseSuccess($Entry->ToArray());
+    }
+    
+    public function AjaxGetMultipleAction() {
+        if (!$this->IsLoggedIn()) {
+            return $this->ResponseNotLoggedIn();
+        }
+
+        $EntryIds = $this->Request->GetGET('entryIds');
+        if(!is_array($EntryIds)){
+              return $this->ResponseWrongData();
+        }
+        $Entries = ModelTable::Get('Entries')->LoadByPrimaryKeys($EntryIds);
+        
+        if($Entries==null){
+            return $this->ResponseWrongData();
+        }
+        /* @var $Entry \Dashbird\Model\Entities\Entry */
+        $Array = array();
+        foreach($Entries as $Entry){
+            if($Entry->CurrentUserIsAllowedToSee()){
+                $Array[] = $Entry->ToArray();
+            }
+        }
+        
+        return $this->ResponseSuccess($Array);
+    }
+    
+    
+    
+     public function AjaxGetHashAction() {
+        if (!$this->IsLoggedIn()) {
+            return $this->ResponseNotLoggedIn();
+        }
+        
+        $EntryId = $this->Request->GetGET('entryId');
+        $Entry = ModelTable::Get('Entries')->LoadByPrimaryKey($EntryId);
+         /* @var $Entry \Dashbird\Model\Entities\Entry */
+        if($Entry==null||!$Entry->CurrentUserIsAllowedToSee()){
+            return $this->ResponseWrongData();
+        }
+        return $this->ResponseSuccess(array ('entryId' => $Entry->EntryId,'hash' => $Entry->GetHash()));
+    }
+    
+    
 }
 
 ?>

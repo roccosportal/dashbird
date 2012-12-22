@@ -17,4 +17,4 @@ $compiled = $less->compileFile("../application/less/dashboard.less");
 
 $Version = Config::$Config['Version'];
 
-file_put_contents('../css/dashboard-' . $Version .'.css', $compiled);
+file_put_contents('../css/dashbird-' . $Version .'.css', $compiled);

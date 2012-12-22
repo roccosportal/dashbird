@@ -56,8 +56,41 @@ class User extends Base {
         
         
         
-        return $this->ResponseSuccess();
+        return $this->ResponseSuccess(array ('user' => $User->ToArraySimple()));
     }
+    
+      public function AjaxChangePasswordAction(){
+		if(!$this->IsLoggedIn()){
+                    return $this->ResponseNotLoggedIn();
+                }
+                $OldPassword = $this->Request->GetPOST('old-password');
+                $NewPassword = $this->Request->GetPOST('new-password');
+                if(empty($NewPassword)){
+                    return $this->ResponseWrongData();
+                }
+
+               
+                $User = $this->GetUser();
+                /* @var $User \Dashbird\Model\Entities\User */
+                if(!$User){
+                    return $this->ResponseWrongData();
+                }
+                if (crypt($OldPassword, $User->Password) != $User->Password) {
+                     return $this->ResponseWrongData();
+                }
+                
+                $Random = md5(uniqid(mt_rand(), true));
+                $Salt = '$2a$07$'. $Random .'$';
+                $User->Password = crypt($NewPassword, $Salt);
+                $User->Update();
+                
+               
+                return $this->ResponseSuccess();
+		
+			
+	
+		
+	}
 
 }
 

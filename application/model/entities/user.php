@@ -1,6 +1,7 @@
 <?php
 
 namespace Dashbird\Model\Entities;
+
 /**
  * @property int $UserId
  * @property string $Name
@@ -8,10 +9,22 @@ namespace Dashbird\Model\Entities;
  * @property \Pvik\Database\Generic\EntityArray $UserShares
  */
 class User extends \Pvik\Database\Generic\Entity {
-    public function __construct(){
+
+    public function __construct() {
         $this->ModelTableName = 'Users';
     }
+
+    public function ToArraySimple() {
+        return array('userId' => $this->UserId,
+            'name' => $this->Name);
+    }
     
+     public function ToArray() {
+        return array('userId' => $this->UserId,
+            'name' => $this->Name,
+            'userShares' => $this->UserSharesToArray());
+    }
+
     /**
      * Returns an array of user ids
      * @return array
@@ -20,9 +33,11 @@ class User extends \Pvik\Database\Generic\Entity {
         $Array = array();
         foreach ($this->UserShares as $UserShare) {
             /* @var $UserShare \Dashbird\Model\Entities\UserShare */
-            $Array[] = array ('userId' => $UserShare->ConnectedUserId, 'name' => $UserShare->ConnectedUser->Name);
+            $Array[] = array('userId' => $UserShare->ConnectedUserId, 'name' => $UserShare->ConnectedUser->Name);
         }
         return $Array;
     }
+
 }
+
 ?>

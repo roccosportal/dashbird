@@ -31,6 +31,21 @@ class Entry extends \Pvik\Database\Generic\Entity {
     public function CurrentUserHasPermissionToChange() {
         return (\Dashbird\Library\Services\UserService::Instance()->GetUserId() == $this->UserId);
     }
+    
+    public function CurrentUserIsAllowedToSee() {
+       if($this->CurrentUserHasPermissionToChange()){
+           return true;
+       }
+       $UserId = \Dashbird\Library\Services\UserService::Instance()->GetUserId();
+       
+       foreach($this->EntryShares as $EntryShare){
+           /* @var $EntryShare EntryShare */
+           if($EntryShare->UserId==$UserId){
+               return true;
+           }
+       }
+       return false;
+    }
 
     public function ToArray() {
         $TagTitle = array();
@@ -38,12 +53,12 @@ class Entry extends \Pvik\Database\Generic\Entity {
             $TagTitle[] = $EntriesTags->Tag->Title;
         }
         $EntrySharesUserIds = array();
-        if ($this->CurrentUserHasPermissionToChange()) {
+        //if ($this->CurrentUserHasPermissionToChange()) {
             foreach ($this->EntryShares as $EntryShare) {
                 /* @var $EntryShare \Dashbird\Model\Entities\EntryShare */
                 $EntrySharesUserIds[] = $EntryShare->UserId;
             }
-        }
+        //}
 
         $Comments = array();
         foreach ($this->Comments as $Comment) {
@@ -59,8 +74,14 @@ class Entry extends \Pvik\Database\Generic\Entity {
             'tags' => $TagTitle,
             'user' => array('userId' => $this->UserId, 'name' => $this->User->Name),
             'entryShares' => $EntrySharesUserIds,
-            'comments' => $Comments
+            'comments' => $Comments,
+            'hash' => $this->GetHash()
         );
+    }
+    
+    public function GetHash(){
+        return md5($this->EntryId . $this->Text . count($this->Comments));
+        //return md5($this->EntryId . $this->DateTime . $this->Text . count($this->Comments));
     }
 
     /**

@@ -7,14 +7,12 @@ class Auth extends Base {
 	// action
 	public function AjaxLoginAction(){
 		if(!$this->IsLoggedIn()){
-			$Name = $this->Request->GetGET('name');
-			$Password = $this->Request->GetGET('password');
+			$Name = $this->Request->GetPOST('name');
+			$Password = $this->Request->GetPOST('password');
 
 			$Query = new Query('Users');
 			$Query->SetConditions('WHERE Users.Name = "%s"');
 			$Query->AddParameter($Name);
-			//$Query->AddParameter(crypt($Password, \Pvik\Core\Config::$Config['Salt']));
-
 			$User = $Query->SelectSingle();
                         /* @var $User \Dashbird\Model\Entities\User */
 			if(!$User){
@@ -26,7 +24,7 @@ class Auth extends Base {
 
                         $_SESSION[SESSION::LOGGED_IN] = true;
                         $_SESSION[SESSION::USER_ID] = $User->UserId;
-                        return $this->ResponseSuccess(array ('user' => array ('userId' => $User->UserId)));
+                        return $this->ResponseSuccess(array ('user' => $this->GetUser()->ToArray()));
 		
 			
 		}
@@ -43,7 +41,7 @@ class Auth extends Base {
 		$Response[AJAX::STATUS] = AJAX::STATUS_SUCCESS;
 		if($this->IsLoggedIn()){
 			$Response[AJAX::MESSAGE] = AJAX::IS_LOGGED_IN;
-                        $Response[AJAX::DATA] = array ('user' => array ('userId' => $this->GetUserId()));
+                        $Response[AJAX::DATA] = array ('user' => $this->GetUser()->ToArray());
 		}
 		else {
 			$Response[AJAX::MESSAGE] = AJAX::IS_NOT_LOGGED_IN;
@@ -74,5 +72,7 @@ class Auth extends Base {
             echo json_encode($Response);
             return true;
         }
+        
+      
 }
 ?>

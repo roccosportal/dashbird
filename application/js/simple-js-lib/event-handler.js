@@ -7,10 +7,10 @@ SimpleJSLib.EventHandler = function(){
     
         _private.listeners = [];
 
-        me.fire = function (name){
+        me.fire = function (name, data){
                 for (var i = 0; i < _private.listeners.length; i++) {
                         if(_private.listeners[i].name==name){
-                                _private.listeners[i].callback();
+                                _private.listeners[i].callback(data);
                         }
                 }
         };
