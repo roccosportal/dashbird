@@ -12,11 +12,16 @@ Dashbird.Search = function(){
         _private.$searchBox = $('#search-box');
         _private.searchRequestQueue = SimpleJSLib.SingleRequestQueue();
         _private.searchRequestQueue.setTimeout(300);
-        _private.$searchBox.keyup(function(){
-            _private.searchRequestQueue.addToQueue({}, function(data){
-                Dashbird.Dashboard.refreshEntries();
-                 $('#navbar .nav .show-board').tab('show');
-            });
+        _private.$searchBox.keypress(function(e){
+            if(e.keyCode == 13){
+                e.preventDefault();
+            }
+            else {
+                _private.searchRequestQueue.addToQueue({}, function(data){
+                     Dashbird.Dashboard.refreshEntries();
+                     $('#navbar .nav .show-board').tab('show');
+                });
+            }
         });
     };
         
