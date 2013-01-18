@@ -120,8 +120,8 @@ Dashbird.Plugins.Notifications = function (){
                     $.each(entries, function(key, element){
                         var $notification = $('#templates #template-notification .notification').clone();
                         var text = element.text;
-                        if(text.length > 20){
-                            text = text.substring(0,20);
+                        if(text.length > 120){
+                            text = text.substring(0,120);
                         }
                         text += '...';
                         $notification.find('.text').html(text);
