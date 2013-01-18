@@ -1,20 +1,17 @@
 <?php
 require "lessc.inc.php";
 
-class Config {
-    public static $Config;
-    
-    public static function Load(){
-        require '../application/configs/config.php';
-    }
-}
-Config::Load();
+chdir('../');
+require_once ("./library/pvik/core/core.php");
+    $Core = new Pvik\Core\Core();
+    $Core->Init()
+        ->LoadConfig();
 
 $less = new lessc;
-$compiled = $less->compileFile("../application/less/dashboard.less");
+$compiled = $less->compileFile(Pvik\Core\Path::RealPath("~/application/less/dashboard.less"));
 
 
 
-$Version = Config::$Config['Version'];
+$Version = Pvik\Core\Config::$Config['Version'];
 
-file_put_contents('../css/dashbird-' . $Version .'.css', $compiled);
+file_put_contents(Pvik\Core\Path::RealPath('~/css/dashbird-' . $Version .'.css'), $compiled);
