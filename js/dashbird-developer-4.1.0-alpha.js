@@ -1411,8 +1411,8 @@ Dashbird.Plugins.Notifications = function (){
                     $.each(entries, function(key, element){
                         var $notification = $('#templates #template-notification .notification').clone();
                         var text = element.text;
-                        if(text.length > 20){
-                            text = text.substring(0,20);
+                        if(text.length > 120){
+                            text = text.substring(0,120);
                         }
                         text += '...';
                         $notification.find('.text').html(text);
@@ -1512,11 +1512,16 @@ Dashbird.Search = function(){
         _private.$searchBox = $('#search-box');
         _private.searchRequestQueue = SimpleJSLib.SingleRequestQueue();
         _private.searchRequestQueue.setTimeout(300);
-        _private.$searchBox.keyup(function(){
-            _private.searchRequestQueue.addToQueue({}, function(data){
-                Dashbird.Dashboard.refreshEntries();
-                 $('#navbar .nav .show-board').tab('show');
-            });
+        _private.$searchBox.keypress(function(e){
+            if(e.keyCode == 13){
+                e.preventDefault();
+            }
+            else {
+                _private.searchRequestQueue.addToQueue({}, function(data){
+                     Dashbird.Dashboard.refreshEntries();
+                     $('#navbar .nav .show-board').tab('show');
+                });
+            }
         });
     };
         
