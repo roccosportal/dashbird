@@ -8,14 +8,16 @@
 [Include] /var/www/dashbird/library/pvik/web/controller.php
 [Include] /var/www/dashbird/application/controllers/base.php
 [Include] /var/www/dashbird/application/controllers/dashboard.php
-Executing action: AjaxGetHashesAction
+Executing action: AjaxGetMultipleAction
 [Include] /var/www/dashbird/application/library/services/user-service.php
 [Include] /var/www/dashbird/application/library/constants/session.php
-[Include] /var/www/dashbird/library/pvik/database/generic/query.php
 [Include] /var/www/dashbird/library/pvik/database/generic/model-table.php
 [Include] /var/www/dashbird/application/model/model-tables/entries.php
+[Include] /var/www/dashbird/library/pvik/database/generic/entity-array.php
+[Include] /var/www/dashbird/library/pvik/database/cache/model-table.php
 [Include] /var/www/dashbird/library/pvik/database/sql/builder.php
 [Include] /var/www/dashbird/library/pvik/database/mysql/builder.php
+[Include] /var/www/dashbird/library/pvik/database/generic/query.php
 [Include] /var/www/dashbird/library/pvik/database/generic/field-definition-helper.php
 [Include] /var/www/dashbird/application/model/model-tables/entries-tags.php
 [Include] /var/www/dashbird/application/model/model-tables/search-helper-parts.php
@@ -24,21 +26,24 @@ Executing action: AjaxGetHashesAction
 [Include] /var/www/dashbird/library/pvik/database/sql/manager.php
 [Include] /var/www/dashbird/library/pvik/database/mysql/manager.php
 Use MySQL as database system
-Executing querystring: SELECT Entries.EntryId, Entries.Text, Entries.DateTime, Entries.SearchHelper, Entries.UserId, GROUP_CONCAT(DISTINCT t.EntriesTagsId) as EntriesTags, GROUP_CONCAT(DISTINCT tt.SearchHelperPartId) as SearchHelperParts, GROUP_CONCAT(DISTINCT ttt.EntryShareId) as EntryShares, GROUP_CONCAT(DISTINCT tttt.CommentId) as Comments FROM Entries LEFT JOIN EntriesTags as t ON t.EntryId = Entries.EntryId LEFT JOIN SearchhelperParts as tt ON tt.EntryId = Entries.EntryId LEFT JOIN EntryShares as ttt ON ttt.EntryId = Entries.EntryId LEFT JOIN Comments as tttt ON tttt.EntryId = Entries.EntryId LEFT JOIN EntryShares as EntryShares ON EntryShares.EntryId = Entries.EntryId WHERE (Entries.UserId = "4" OR EntryShares.UserId = "4") GROUP BY Entries.EntryId, Entries.EntryId, Entries.EntryId, Entries.EntryId 
-[Include] /var/www/dashbird/library/pvik/database/generic/entity-array.php
+Executing querystring: SELECT Entries.EntryId, Entries.Text, Entries.DateTime, Entries.SearchHelper, Entries.UserId, GROUP_CONCAT(DISTINCT t.EntriesTagsId) as EntriesTags, GROUP_CONCAT(DISTINCT tt.SearchHelperPartId) as SearchHelperParts, GROUP_CONCAT(DISTINCT ttt.EntryShareId) as EntryShares, GROUP_CONCAT(DISTINCT tttt.CommentId) as Comments FROM Entries LEFT JOIN EntriesTags as t ON t.EntryId = Entries.EntryId LEFT JOIN SearchhelperParts as tt ON tt.EntryId = Entries.EntryId LEFT JOIN EntryShares as ttt ON ttt.EntryId = Entries.EntryId LEFT JOIN Comments as tttt ON tttt.EntryId = Entries.EntryId WHERE Entries.EntryId IN ( "6","75","81") GROUP BY Entries.EntryId, Entries.EntryId, Entries.EntryId, Entries.EntryId 
 [Include] /var/www/dashbird/library/pvik/database/generic/entity.php
 [Include] /var/www/dashbird/application/model/entities/entry.php
-[Include] /var/www/dashbird/library/pvik/database/cache/model-table.php
-Executing querystring: SELECT EntriesTags.EntriesTagsId, EntriesTags.EntryId, EntriesTags.TagId FROM EntriesTags WHERE EntriesTags.EntriesTagsId IN ( "136","137","129","141","139","140","147","154","155","290","287","288","289","293","292","310","311","315")  
+Executing querystring: SELECT EntriesTags.EntriesTagsId, EntriesTags.EntryId, EntriesTags.TagId FROM EntriesTags WHERE EntriesTags.EntriesTagsId IN ( "2")  
 [Include] /var/www/dashbird/application/model/entities/entries-tags.php
 [Include] /var/www/dashbird/application/model/model-tables/tags.php
-Executing querystring: SELECT Tags.TagId, Tags.Title FROM Tags WHERE Tags.TagId IN ( "1","5","6","1","1","1","1","5","6","4","20","56","57","19","4","4","58","5")  
+Executing querystring: SELECT Tags.TagId, Tags.Title FROM Tags WHERE Tags.TagId = "1"  
 [Include] /var/www/dashbird/application/model/entities/tag.php
-Executing querystring: SELECT Comments.CommentId, Comments.Text, Comments.DateTime, Comments.UserId, Comments.EntryId FROM Comments WHERE Comments.CommentId IN ( "4")  
-[Include] /var/www/dashbird/application/model/entities/comment.php
-Executing querystring: SELECT Comments.CommentId, Comments.Text, Comments.DateTime, Comments.UserId, Comments.EntryId FROM Comments WHERE Comments.CommentId IN ( "7")  
-Executing querystring: SELECT Comments.CommentId, Comments.Text, Comments.DateTime, Comments.UserId, Comments.EntryId FROM Comments WHERE Comments.CommentId IN ( "9","14","16","29")  
-Executing querystring: SELECT Comments.CommentId, Comments.Text, Comments.DateTime, Comments.UserId, Comments.EntryId FROM Comments WHERE Comments.CommentId IN ( "32")  
-Executing querystring: SELECT Comments.CommentId, Comments.Text, Comments.DateTime, Comments.UserId, Comments.EntryId FROM Comments WHERE Comments.CommentId IN ( "31")  
+[Include] /var/www/dashbird/application/model/model-tables/users.php
+[Include] /var/www/dashbird/application/model/model-tables/user-shares.php
+Executing querystring: SELECT Users.UserId, Users.Name, Users.Password, GROUP_CONCAT(DISTINCT t.UserShareId) as UserShares FROM Users LEFT JOIN UserShares as t ON t.UserId = Users.UserId WHERE Users.UserId = "3" GROUP BY Users.UserId 
+[Include] /var/www/dashbird/application/model/entities/user.php
+Executing querystring: SELECT EntriesTags.EntriesTagsId, EntriesTags.EntryId, EntriesTags.TagId FROM EntriesTags WHERE EntriesTags.EntriesTagsId IN ( "310","311")  
+Executing querystring: SELECT Tags.TagId, Tags.Title FROM Tags WHERE Tags.TagId = "4"  
+Executing querystring: SELECT Tags.TagId, Tags.Title FROM Tags WHERE Tags.TagId = "58"  
+Executing querystring: SELECT EntryShares.EntryShareId, EntryShares.EntryId, EntryShares.UserId FROM EntryShares WHERE EntryShares.EntryShareId IN ( "99","100")  
+[Include] /var/www/dashbird/application/model/entities/entry-share.php
 Executing querystring: SELECT Comments.CommentId, Comments.Text, Comments.DateTime, Comments.UserId, Comments.EntryId FROM Comments WHERE Comments.CommentId IN ( "33","34","35","36")  
+[Include] /var/www/dashbird/application/model/entities/comment.php
+Executing querystring: SELECT Users.UserId, Users.Name, Users.Password, GROUP_CONCAT(DISTINCT t.UserShareId) as UserShares FROM Users LEFT JOIN UserShares as t ON t.UserId = Users.UserId WHERE Users.UserId = "4" GROUP BY Users.UserId 
 [Include] /var/www/dashbird/application/library/constants/ajax.php

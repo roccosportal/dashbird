@@ -6,6 +6,7 @@ use Pvik\Utils\KeyValueArray;
 use Pvik\Web\ControllerManager;
 use Pvik\Core\Config;
 use Pvik\Core\Path;
+use Pvik\Core\Log;
 
 /**
  * This class contains the logic for a web site.
@@ -72,10 +73,12 @@ class Controller {
         if ($Folder == null) {
             $Folder = Config::$Config['DefaultViewsFolder'];
         }
+        
         //$ViewPath = ControllerManager::GetViewPathByAction($ActionName, $Folder);
         $ViewPath = Path::RealPath($Folder . Path::ConvertNameToPath($this->ControllerName) . '/' . Path::ConvertNameToPath($ActionName) . '.php');
         \Pvik\Core\Log::WriteLine('Executing view: ' . $ViewPath);
         $View = new View($ViewPath, $this);
+        
     }
 
     /**

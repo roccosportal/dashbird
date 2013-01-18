@@ -1,0 +1,36 @@
+body {
+    color:#000;
+    font-size: 12px;
+}
+#global {
+    width : 300px;
+    margin: auto;
+    padding-top:40px;
+}
+#main {
+    border: 1px solid black;
+    padding: 20px 0px; 
+}
+table {
+    margin:auto;
+}
+td {
+    width:80px;
+}
+
+label {
+     font-weight: bold;
+     padding: 0px 20px 2px;
+      margin: 0px 20px 8px 20px;
+      display: block;
+      width: 220px;
+      border-bottom: #bbbbbb dashed 1px; 
+}
+
+
+.error-message {
+    color:#f00;
+    font-weight: bold;
+    padding:  4px 0px;
+    display: block;
+}

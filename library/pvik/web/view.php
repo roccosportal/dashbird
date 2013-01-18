@@ -3,6 +3,9 @@
 namespace Pvik\Web;
 
 use Pvik\Utils\KeyValueArray;
+use Pvik\Core\Log;
+use Pvik\Core\Path;
+
 
 /**
  * Class that contains a partial view code.
@@ -67,7 +70,7 @@ class View {
 
         if ($this->MasterPagePath != null) {
             Log::WriteLine('Executing masterpage: ' . $this->MasterPagePath);
-            $BaseMasterPage = new MasterPage($MasterPagePath, $View);
+            $BaseMasterPage = new MasterPage($this->RealPath($this->MasterPagePath), $this);
         }
     }
 
@@ -141,7 +144,7 @@ class View {
      * @return string
      */
     protected function RelativePath($Path) {
-        return \Pvik\Core\Path::RelativePath($Path);
+        return Path::RelativePath($Path);
     }
 
     /**
@@ -150,7 +153,7 @@ class View {
      * @return string
      */
     protected function RealPath($Path) {
-        return \Pvik\Core\Path::RealPath($Path);
+        return Path::RealPath($Path);
     }
 
 }

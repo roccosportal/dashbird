@@ -19,6 +19,12 @@ class MasterPage {
      * @var \Pvik\Utils\KeyValueArray 
      */
     protected $ViewData = null;
+    
+    /**
+     * Contains the Html Helper.
+     * @var ViewHelpers\HtmlHelper
+     */
+    protected $Helper = null;
 
     /**
      *
@@ -31,6 +37,7 @@ class MasterPage {
         // set the view that uses the masterpage
         $this->View = $View;
         $this->ViewData = $View->GetViewData();
+        $this->Helper = new \Pvik\Web\ViewHelpers\HtmlHelper();
 
         $this->ExecutePartialCode();
     }

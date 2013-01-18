@@ -1,0 +1,18 @@
+RewriteEngine on
+
+
+#No access to sensitive directory
+RewriteRule ^configs\/.*$ no-access.php [L]
+RewriteRule ^controllers\/.*$ no-access.php [L]
+RewriteRule ^library\/.*$ no-access.php [L]
+RewriteRule ^views\/.*$ no-access.php [L]
+RewriteRule ^load.php$ no-access.php [L]
+
+
+RewriteCond  %{REQUEST_FILENAME} !-f
+RewriteCond  %{REQUEST_FILENAME} !-d
+RewriteRule ^/?(.*)$ no-access.php [L]
+
+
+
+

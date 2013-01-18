@@ -60,7 +60,7 @@ class ClassLoader {
 
                     $Name = $Class;
                     foreach ($Instance->GetNamespaceAssociationList() as $Namespace => $Path) {
-                        if (strpos($Name, $Namespace) === 0) { // starts with
+                        if (strpos($Name, $Namespace .'\\') === 0) { // starts with
                             $Name = str_replace($Namespace, $Path, $Name);
                             break;
                         }

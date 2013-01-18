@@ -1,0 +1,151 @@
+body {
+    font-family: Verdana;
+    font-size: 12px;
+    color: #000;
+}
+
+a {
+    color: #5d7fff;
+}
+a:hover{
+    text-decoration: underline;
+}
+
+.clear-fix {
+    clear:both;
+}
+
+#global {
+    width: 960px;
+    margin: 20px auto;
+}
+
+#content {
+    float:left;
+    width: 700px;
+    margin: 0px 20px 0px 0px;
+}
+
+#content h2 {
+      font-weight: bold;
+      font-size: 14px;
+      margin: 0px 0px 10px 0px;
+}
+/**
+    tables and fiels form section
+*/
+#content #tables .form-message-success, #content #files .form-message-success {
+    background-color: #6ce26c;
+    border: 2px solid #008200;
+    color: #008200;
+    font-weight: bold;
+    width: 660px;
+    padding: 20px;
+    margin: 0px 0px 20px 0px;
+}
+
+#content #tables .field, #content #files .field {
+      display: block;
+      margin: 0px 0px 15px 0px;
+}
+
+#content #tables .field .label-field, #content #files .field .label-field {
+      font-weight: bold;
+      margin: 0px 0px 4px 0px;
+      display: block;
+      width: 700px;
+      border-bottom: #bbbbbb dashed 1px; 
+      
+}
+
+
+#content #tables .field .input-field, #content #files .field .input-field {
+      width: 300px;
+}
+
+#content #tables .field .select-field {
+      width: 300px;
+}
+
+#content #tables .field .textarea-field {
+      width: 700px;
+}
+
+#content #tables .field .error-message, #content #files .field .error-message{
+        display: block;
+      color: #f00;
+      font-weight : bold;
+}
+
+#content #tables .submit-field, #content #files .submit-field {
+      background-color: #bbbbbb;
+      font-weight: bold;
+      border: 1px solid black;
+}
+
+
+#content #tables .table{
+    margin: 5px 0px 10px 0px;
+    width: 700px;
+}
+
+#content #tables .table th{
+    font-weight: bold;
+    text-align: left;
+    padding: 0px 0px 0px 0px;
+    border-bottom: 1px dashed #bbbbbb;
+    border-right: 1px dashed #bbbbbb;
+}
+
+#content #tables .table td{
+    border-bottom: 1px dashed #bbbbbb;
+    border-right: 1px dashed #bbbbbb;
+}
+
+#content #tables .table .options{
+    border-right: none;
+}
+
+#content #tables .foreign-tables-field {
+    margin: 20px 0px 0px 0px;
+}
+#content #tables .foreign-tables-field .table{
+    margin-left: 10px;
+    margin-bottom: 30px;
+    width: 690px;
+}
+
+
+#content .option-name{
+    display:inline-block;
+    width: 200px;
+}
+
+#content .option-links{
+    margin: 0px 0px 0px 10px;
+}
+
+#menu {
+    width: 240px;
+    float:left;
+}
+
+
+#menu .menu-entry {
+    margin: 0px 0px 20px 0px;
+}
+#menu h2 {
+    font-weight: bold;
+    margin: 0px 0px 3px 0px;
+    font-size: 14px;
+}
+
+#menu ul {
+    margin: 0px 0px 0px 5px;
+}
+
+#menu ul li{
+    margin: 0px 0px 1px 0px;
+}
+
+
