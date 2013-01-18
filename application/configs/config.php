@@ -38,8 +38,9 @@ self::$Config['Routes'] = array (
 
 self::$Config['Version'] = '4.0.2-alpha';
 
-<?php
-require(\Pvik\Core\Path::RealPath('~/library/pvik-admin-tools/load.php'));
 // include pvik-admin-tools config
 require(\Pvik\Core\Path::RealPath('~/application/configs/pvik-admin-tools.php')); 
+// 
+require(\Pvik\Core\Path::RealPath('~/library/pvik-admin-tools/load.php'));
+
 

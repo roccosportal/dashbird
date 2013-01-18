@@ -1,5 +1,5 @@
 <?php
-
+self::$Config['PvikAdminTools'] = array();
 self::$Config['PvikAdminTools']['Url'] = '/admin/';
 self::$Config['PvikAdminTools']['Login']= array ();
 self::$Config['PvikAdminTools']['Login']['Username'] = 'Admin';
