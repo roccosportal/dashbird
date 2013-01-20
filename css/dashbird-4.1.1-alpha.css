@@ -1,0 +1,140 @@
+#content {
+  margin-top: 50px;
+  margin-left: 50px;
+}
+#content #new-entry {
+  width: 500px;
+}
+#content #new-entry .add-tag-input {
+  margin-right: 50px;
+}
+#content #settings {
+  width: 500px;
+}
+#content #settings .nav {
+  margin-right: 10px;
+}
+#content #settings .nav li a {
+  width: 100px;
+}
+#content #settings .nav li a i {
+  float: right;
+}
+#content #notifications {
+  width: 500px;
+}
+#content #notifications .notification {
+  border-left: 5px solid #EEEEEE;
+  margin-bottom: 30px;
+  padding: 0 0 0 15px;
+  position: relative;
+}
+#content #notifications .notification .command-bar {
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  position: absolute;
+  right: 20px;
+  background-color: #EEEEEE;
+  padding: 5px;
+  display: none;
+}
+#content #notifications .notification p {
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 25px;
+  margin-bottom: 0;
+}
+#content #notifications .notification .meta {
+  color: #999999;
+  display: block;
+  line-height: 20px;
+  font-size: 85%;
+}
+#content #notifications .notification .meta li {
+  padding-left: 0px;
+}
+#content #board {
+  width: 500px;
+}
+#content #board .view-all {
+  margin-bottom: 20px;
+}
+#content #board .entries .entry {
+  margin-bottom: 30px;
+}
+#content #board .entries .entry .content,
+#content #board .entries .entry .comment {
+  word-wrap: break-word;
+  position: relative;
+  border-left: 5px solid #EEEEEE;
+  margin-bottom: 5px;
+  padding: 0 0 0 15px;
+}
+#content #board .entries .entry .content .command-bar.popup,
+#content #board .entries .entry .comment .command-bar.popup {
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  position: absolute;
+  right: 20px;
+  background-color: #EEEEEE;
+  padding: 5px;
+  display: none;
+}
+#content #board .entries .entry .content .command,
+#content #board .entries .entry .comment .command {
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  padding: 5px;
+  background-color: #F5F5F5;
+  display: none;
+}
+#content #board .entries .entry .content .command form,
+#content #board .entries .entry .comment .command form {
+  margin-bottom: 0px;
+}
+#content #board .entries .entry .content .command form .form-actions,
+#content #board .entries .entry .comment .command form .form-actions {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+#content #board .entries .entry .content .command.command-edit .add-tag-input,
+#content #board .entries .entry .comment .command.command-edit .add-tag-input {
+  margin-right: 50px;
+}
+#content #board .entries .entry .content p,
+#content #board .entries .entry .comment p {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 25px;
+  margin-bottom: 0;
+}
+#content #board .entries .entry .content p iframe,
+#content #board .entries .entry .comment p iframe {
+  margin-top: 25px;
+}
+#content #board .entries .entry .content .meta,
+#content #board .entries .entry .comment .meta {
+  color: #999999;
+  display: block;
+  line-height: 20px;
+  font-size: 85%;
+}
+#content #board .entries .entry .content .meta li,
+#content #board .entries .entry .comment .meta li {
+  padding-left: 0px;
+}
+#content #board .entries .entry .content .meta li.tags,
+#content #board .entries .entry .comment .meta li.tags {
+  padding-right: 0px;
+}
+#content #board .entries .entry .comments {
+  margin-left: 40px;
+}
+#login-box {
+  margin-top: 50px;
+  margin-left: 50px;
+}
