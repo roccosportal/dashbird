@@ -313,8 +313,7 @@
             var Dashbird = {};
             Dashbird.baseUrl = '<?php echo $this->RelativePath('~/'); ?>';
         </script>
-        <?php //$this->Helper->JavaScriptLink('~/js/jquery-1.6.1.min.js'); ?>
-        <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+	<?php $this->Helper->JavaScriptLink('~/js/jquery-1.8.3.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/bootstrap.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/jquery-fieldselection.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/dashbird-developer-' .  Pvik\Core\Config::$Config['Version'] .'.js'); ?>
