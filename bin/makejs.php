@@ -1,38 +1,49 @@
 <?php
 chdir('../');
-require_once ("./library/pvik/core/core.php");
-    $Core = new Pvik\Core\Core();
-    $Core->Init()
-        ->LoadConfig();
+ require './Library/Pvik/Core/Path.php';
+    \Pvik\Core\Path::Init();
+    
+    // set up class loader
+    require \Pvik\Core\Path::RealPath('~/Library/Pvik/Core/ClassLoader.php');
+    $ClassLoader = new \Pvik\Core\ClassLoader();
+    $ClassLoader->SetNamespaceAssociation('\\Pvik', '~/Library/Pvik/');
+    $ClassLoader->Init();
+    
+    $Core = new \Pvik\Core\Core();
+    $Core->LoadConfig(array(
+			'~/Application/Configs/DefaultConfig.php',
+			'~/Application/Configs/Config.php')
+			);
+
     
 $Version = \Pvik\Core\Config::$Config['Version'];
 
 $Files = array (
-    '~/application/js/simple-js-lib/event-handler.js',
-    '~/application/js/simple-js-lib/single-request-queue.js',
-    '~/application/js/constants.js',
-    '~/application/js/dashboard-entry.js',
-    '~/application/js/commands/base.js',
-    '~/application/js/commands/comment.js',
-    '~/application/js/commands/edit.js',
-    '~/application/js/commands/remove.js',
-    '~/application/js/commands/share.js',
-    '~/application/js/bbcode/bold.js',
-    '~/application/js/bbcode/image.js',
-    '~/application/js/bbcode/link.js',
-    '~/application/js/bbcode/video.js',
-    '~/application/js/dashboard.js',
-    '~/application/js/login-box.js',
-    '~/application/js/modal.js',
-    '~/application/js/new-entry.js',
-    '~/application/js/plugin-manager.js',
-    '~/application/js/plugins/notifications.js',
-    '~/application/js/search.js',
-    '~/application/js/settings.js',
-    '~/application/js/user.js',
-    '~/application/js/templates.js',
-    '~/application/js/general.js',
-    '~/application/js/init.js',
+    '~/Application/js/simple-js-lib/event-handler.js',
+    '~/Application/js/simple-js-lib/single-request-queue.js',
+    '~/Application/js/constants.js',
+    '~/Application/js/dashboard-entry.js',
+    '~/Application/js/commands/base.js',
+    '~/Application/js/commands/comment.js',
+    '~/Application/js/commands/edit.js',
+    '~/Application/js/commands/remove.js',
+    '~/Application/js/commands/share.js',
+    '~/Application/js/bbcode/bold.js',
+    '~/Application/js/bbcode/image.js',
+    '~/Application/js/bbcode/link.js',
+    '~/Application/js/bbcode/video.js',
+    '~/Application/js/dashboard.js',
+    '~/Application/js/login-box.js',
+    '~/Application/js/modal.js',
+    '~/Application/js/new-entry.js',
+    '~/Application/js/plugin-manager.js',
+    '~/Application/js/plugins/notifications.js',
+    '~/Application/js/search.js',
+    '~/Application/js/settings.js',
+    '~/Application/js/user.js',
+    '~/Application/js/templates.js',
+    '~/Application/js/general.js',
+    '~/Application/js/init.js',
 );
 
 $Javascript = '';

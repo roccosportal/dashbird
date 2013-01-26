@@ -1,6 +1,6 @@
-[submodule "library/pvik"]
-	path = library/pvik
+[submodule "Library/Pvik"]
+	path = Library/Pvik
 	url = git@github.com:roccosportal/pvik.git
-[submodule "library/pvik-admin-tools"]
-	path = library/pvik-admin-tools
+[submodule "Library/PvikAdminTools"]
+	path = Library/PvikAdminTools
 	url = git@github.com:roccosportal/pvik-admin-tools.git

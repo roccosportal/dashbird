@@ -2,10 +2,22 @@
 require "lessc.inc.php";
 
 chdir('../');
-require_once ("./library/pvik/core/core.php");
-    $Core = new Pvik\Core\Core();
-    $Core->Init()
-        ->LoadConfig();
+// set up path mapper
+    require './Library/Pvik/Core/Path.php';
+    \Pvik\Core\Path::Init();
+    
+    // set up class loader
+    require \Pvik\Core\Path::RealPath('~/Library/Pvik/Core/ClassLoader.php');
+    $ClassLoader = new \Pvik\Core\ClassLoader();
+    $ClassLoader->SetNamespaceAssociation('\\Pvik', '~/Library/Pvik/');
+    $ClassLoader->SetNamespaceAssociation('\\Dashbird', '~/Application/');
+    $ClassLoader->Init();
+    
+    $Core = new \Pvik\Core\Core();
+    $Core->LoadConfig(array(
+			'~/Application/Configs/DefaultConfig.php',
+			'~/Application/Configs/Config.php')
+			);
 
 $less = new lessc;
 $compiled = $less->compileFile(Pvik\Core\Path::RealPath("~/application/less/dashboard.less"));

@@ -1,2 +1,4 @@
-[Include] /var/www/dashbird/library/pvik/core/log.php
-[Info] Loaded: ~/application/configs/default-config.php,~/application/configs/config.php
+[Info] Loaded: ~/Application/Configs/DefaultConfig.php,~/Application/Configs/Config.php,~/Application/Configs/PvikAdminTools.php,~/Library/PvikAdminTools/Configs/Configure.php
+[Include] /var/www/dashbird/Library/Pvik/Web/ErrorManager.php
+[Include] /var/www/dashbird/Library/Pvik/Web/RouteManager.php
+[Include] /var/www/dashbird/Library/Pvik/Web/NoRouteFoundException.php
