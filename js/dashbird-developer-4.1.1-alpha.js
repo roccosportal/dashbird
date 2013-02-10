@@ -1134,7 +1134,7 @@ Dashbird.NewPost = function(){
        
             _private.$.find('.add-tag-input button').click(_private.addTag);
             _private.$.find('.add-tag-input input').keydown(function(e){
-                if(e.keyCode == 32 || e.keyCode == 13){ // space and enter
+                if(e.keyCode == 32 || e.keyCode == 13 || e.keyCode == 186 || e.keyCode == 188){ // space, enter, ";", ","
                     _private.addTag(e);
                 }
             });
