@@ -249,7 +249,7 @@ Dashbird.Post = function(){
         var search = new Array(
             /\[img\](.*?)\[\/img\]/g,
             /\[b\](.*?)\[\/b\]/g,
-            /\[url\](http:\/\/[^ \\"\n\r\t<]*?)\[\/url\]/g,
+            /\[url\](http(s?):\/\/[^ \\"\n\r\t<]*?)\[\/url\]/g,
             /\[youtube\](.*?)\[\/youtube\]/g,
             /\[vimeo](.*?)\[\/vimeo]/g
             );

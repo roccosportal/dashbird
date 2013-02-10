@@ -39,7 +39,7 @@ Dashbird.BBCode.Video = function(){
         if(video.indexOf('youtube.com') !== -1){
             var pos = video.indexOf('=');
             if(pos !== -1){
-                video = 'http://www.youtube.com/embed/' + video.substring(pos + 1, video.length);
+                video = 'https://www.youtube.com/embed/' + video.substring(pos + 1, video.length);
                 _private.$textarea.insertAtCaret('[youtube]' + video +'[/youtube]');
                 return true;
             }
@@ -47,7 +47,7 @@ Dashbird.BBCode.Video = function(){
         else if(video.indexOf('vimeo.com') !== -1){
             var pos = video.indexOf('vimeo.com/');
             if(pos !== -1){
-                video = 'http://player.vimeo.com/video/' + video.substring(pos + 10, video.length);
+                video = 'https://player.vimeo.com/video/' + video.substring(pos + 10, video.length);
                 _private.$textarea.insertAtCaret('[vimeo]' + video +'[/vimeo]');
                 return true;
             }
