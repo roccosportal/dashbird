@@ -35,6 +35,7 @@ class Auth extends Base {
 	}
 
 	public function ApiAuthIsLoggedInAction(){
+                header('Content-type: application/json');
 		$Response = array ();
 		$Response[AJAX::STATUS] = AJAX::STATUS_SUCCESS;
 		if($this->IsLoggedIn()){
@@ -51,6 +52,7 @@ class Auth extends Base {
 	// action
 	public function ApiAuthLogoutAction(){
 		$Response = array ();
+                header('Content-type: application/json');
 		if($this->IsLoggedIn()){
 			$_SESSION[SESSION::LOGGED_IN] = false;
 			$Response[AJAX::STATUS] = AJAX::STATUS_SUCCESS;
@@ -64,6 +66,7 @@ class Auth extends Base {
 	}
         
         protected function ResponseAlreadyLoggedIn(){
+            header('Content-type: application/json');
             $Response = array();
             $Response[AJAX::STATUS] = AJAX::STATUS_ERROR;
             $Response[AJAX::MESSAGE] = AJAX::ALREADY_LOGGED_IN;

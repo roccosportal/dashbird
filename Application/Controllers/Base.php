@@ -20,6 +20,7 @@ class Base extends \Pvik\Web\Controller {
         }
         
         protected function ResponseNotLoggedIn(){
+            header('Content-type: application/json');
             $Response = array();
             $Response[AJAX::STATUS] = AJAX::STATUS_ERROR;
             $Response[AJAX::MESSAGE] = AJAX::IS_NOT_LOGGED_IN;
@@ -30,6 +31,7 @@ class Base extends \Pvik\Web\Controller {
 
         
         protected function ResponseWrongData(){
+            header('Content-type: application/json');
             $Response = array();
             $Response[AJAX::STATUS] = AJAX::STATUS_ERROR;
             $Response[AJAX::MESSAGE] = AJAX::WRONG_DATA;
@@ -38,6 +40,7 @@ class Base extends \Pvik\Web\Controller {
         }
         
         protected function ResponseSuccess($Data = null){
+            header('Content-type: application/json');
             $Response = array();
             $Response[AJAX::STATUS] = AJAX::STATUS_SUCCESS;
             if($Data !== null){
