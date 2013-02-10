@@ -56,6 +56,8 @@ Dashbird.NewPost = function(){
         _private.$.find('textarea').val('');
         _private.hideTagAlert();
         _private.drawShares();
+        _private.$.find('.add-tag-input input').val('');
+        _private.$.find('.tags').empty();
         _private.$.find('textarea').focus();
     };
     

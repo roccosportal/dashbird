@@ -459,8 +459,8 @@ Dashbird.Commands.Edit = function(post){
             });
             me.$.find('.add-tag-input button').click(me.addTag);
             me.$.find('.add-tag-input input').keydown(function(e){
-                if(e.keyCode == 32 || e.keyCode == 13){ // space and enter
-                    me.addTag(e);
+                if(e.keyCode == 32 || e.keyCode == 13 || e.keyCode == 186 || e.keyCode == 188){ // space, enter, ";", ","
+                    _private.addTag(e);
                 }
             });
         
@@ -1166,6 +1166,8 @@ Dashbird.NewPost = function(){
         _private.$.find('textarea').val('');
         _private.hideTagAlert();
         _private.drawShares();
+        _private.$.find('.add-tag-input input').val('');
+        _private.$.find('.tags').empty();
         _private.$.find('textarea').focus();
     };
     
