@@ -77,8 +77,8 @@ Dashbird.Board = function(){
     
    
     
-    me.apiPostsUpdatedGet = function(callback){
-        $.getJSON('/api/posts/updated/get/', {}, function(data) {
+    me.apiPostsUpdatedGet = function(options, callback){
+        $.getJSON('/api/posts/updated/get/', options, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                 callback(data[AJAX.DATA]);
             }

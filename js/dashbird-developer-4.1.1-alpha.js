@@ -897,8 +897,8 @@ Dashbird.Board = function(){
     
    
     
-    me.apiPostsUpdatedGet = function(callback){
-        $.getJSON('/api/posts/updated/get/', {}, function(data) {
+    me.apiPostsUpdatedGet = function(options, callback){
+        $.getJSON('/api/posts/updated/get/', options, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                 callback(data[AJAX.DATA]);
             }
@@ -1324,6 +1324,7 @@ Dashbird.Plugins.Notifications = function (){
     _private.$ = null;
     _private.changedPostIds = [];
     _private.originalTitle = null;
+    _private.MAXCOUNT = 50;
         
     me.init = function(){
         _private.originalTitle = $('title').text();
@@ -1331,8 +1332,11 @@ Dashbird.Plugins.Notifications = function (){
         $('#navbar .nav .show-notifications').on('show', _private.onShow);
         _private.$ = $('#notifications');
         me.loadData(function(){
-            me.onFirstTime(function(){
+            me.onFirstTime(function(isFirstTime){
                 me.refresh();
+                if(!isFirstTime){
+                    _private.cleanUp();
+                }
             });
         });
  
@@ -1366,17 +1370,17 @@ Dashbird.Plugins.Notifications = function (){
         
     me.onFirstTime = function(callback){
         if($.isEmptyObject(_private.data)){
-            Dashbird.Board.apiPostsUpdatedGet(function(data){
+            Dashbird.Board.apiPostsUpdatedGet({'post-count' : _private.MAXCOUNT},function(data){
                 _private.data = {
                     options : {},
                     lastViews : data.dates
                 }
                 me.saveData();
-                callback();
+                callback(true);
             });
         }
         else {
-            callback();
+            callback(false);
         }
     }
         
@@ -1391,7 +1395,7 @@ Dashbird.Plugins.Notifications = function (){
     
     _private.check = function(callback){
         _private.changedPostIds = [];
-        Dashbird.Board.apiPostsUpdatedGet(function(data){
+        Dashbird.Board.apiPostsUpdatedGet({'post-count' : _private.MAXCOUNT},function(data){
             var lastView = null;
             $.each(data.dates, function(){
                 lastView = _private.getLastViewFromData(this.postId)
@@ -1517,6 +1521,22 @@ Dashbird.Plugins.Notifications = function (){
     _private.visitedPostByChangingComment = function(data){
         _private.updateLastView(data.post.postData.postId, data.post.postData.updated);
         me.refresh();
+    }
+    
+    _private.cleanUp = function(){
+        if(_private.data.lastViews.length > _private.MAXCOUNT){
+            _private.data.lastViews.sort(function (a, b) {
+                var contentA = a.updated;
+                var contentB = b.updated;
+                return (contentA > contentB) ? -1 : (contentA < contentB) ? 1 : 0;
+            });
+            var newLastViews = [];
+            for(var i = 0; i < _private.MAXCOUNT; i++){
+                newLastViews.push(_private.data.lastViews[i]);
+            }
+            _private.data.lastViews = newLastViews;
+            me.saveData();
+        }
     }
         
     return me;
