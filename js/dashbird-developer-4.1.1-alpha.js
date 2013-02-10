@@ -1323,8 +1323,10 @@ Dashbird.Plugins.Notifications = function (){
     _private.$count = null;
     _private.$ = null;
     _private.changedPostIds = [];
+    _private.originalTitle = null;
         
     me.init = function(){
+        _private.originalTitle = $('title').text();
         _private.$count = $('#navbar .show-notifications span');
         $('#navbar .nav .show-notifications').on('show', _private.onShow);
         _private.$ = $('#notifications');
@@ -1405,6 +1407,12 @@ Dashbird.Plugins.Notifications = function (){
     
     _private.updateCountDisplay = function(){
         _private.$count.html(_private.changedPostIds.length);
+        if(_private.changedPostIds.length > 0){
+             $('title').text('('+ _private.changedPostIds.length +') ' + _private.originalTitle);
+        }
+        else {
+              $('title').text(_private.originalTitle);
+        }
     }
     
     _private.showLoading = function(){
