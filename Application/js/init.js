@@ -7,10 +7,10 @@ $(document).ready(function (){
         $('#navbar .navbar-search').show();
         Dashbird.Modal.init();
         Dashbird.Settings.init();
-        Dashbird.Dashboard.init();
+        Dashbird.Board.init();
         Dashbird.Search.init();
-        Dashbird.Dashboard.loadEntries();
-        Dashbird.NewEntry.init();
+        Dashbird.Board.loadPosts();
+        Dashbird.NewPost.init();
         Dashbird.PluginManager.init();
        
     });

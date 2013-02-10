@@ -6,14 +6,14 @@ if(typeof Dashbird.Commands == "undefined"){
     Dashbird.Commands  = {};
     
 }
-Dashbird.Commands.Share = function(entry){
-    var me = Dashbird.Commands.Base(entry),
+Dashbird.Commands.Share = function(post){
+    var me = Dashbird.Commands.Base(post),
     _private = {};
         
     _private.isOnDemandInited = false;
         
     me.init = function(){
-        entry.commands.$bar.find('.command-share').click(me.show);
+        post.commands.$bar.find('.command-share').click(me.show);
         me.set$('command-share');
        
     };
@@ -22,7 +22,7 @@ Dashbird.Commands.Share = function(entry){
         if(!_private.isOnDemandInited){
             me.$.find('.submit-button').click(function(e){
                 e.preventDefault();
-                entry.setEntryShares(_private.entryShares);
+                post.setPostShares(_private.postShares);
                 me.$.fadeOut();
             });
 
@@ -39,7 +39,7 @@ Dashbird.Commands.Share = function(entry){
         e.preventDefault();
         _private.onDemandInit();
         me.hideCommands(function(){
-            _private.entryShares = entry.entryData.entryShares;
+            _private.postShares = post.postData.postShares;
             _private.draw();
             // show option
             me.$.fadeIn(function(){
@@ -54,7 +54,7 @@ Dashbird.Commands.Share = function(entry){
         $.each(Dashbird.User.getUserShares(), function(key, element){
             $share = $('#templates #template-share-editable .checkbox').clone();
             $share.find('span').html(element.name);
-            if($.inArray(this.userId,_private.entryShares)!== -1){
+            if($.inArray(this.userId,_private.postShares)!== -1){
                 $share.find('input').attr('checked', 'checked');
             }
             $share.find('input').change(function(){
@@ -66,12 +66,12 @@ Dashbird.Commands.Share = function(entry){
     
     _private.shareChange = function($shareInput, userId){
         if($shareInput.attr('checked')){
-            _private.entryShares.push(userId);
+            _private.postShares.push(userId);
         }
         else {
-            var position = $.inArray(userId, _private.entryShares);
+            var position = $.inArray(userId, _private.postShares);
             if(position!== -1){ 
-                _private.entryShares.splice(position, 1);
+                _private.postShares.splice(position, 1);
             }
         }
     }

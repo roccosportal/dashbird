@@ -13,7 +13,7 @@ Dashbird.PluginManager = function (){
     };
     
     me.loadData = function(name, callback){
-         $.getJSON('ajax/plugin/data/get/', {
+         $.getJSON('api/plugin/data/get/', {
                     name : name
                   
          }, function(data) {
@@ -24,7 +24,7 @@ Dashbird.PluginManager = function (){
     }
     
      me.saveData = function(name, data){
-         $.post('ajax/plugin/data/save/', {
+         $.post('api/plugin/data/save/', {
                     name : name,
                     data : JSON.stringify(data)
                   

@@ -5,7 +5,7 @@ use Dashbird\Library\Constants\SESSION;
 use Pvik\Database\Generic\Query;
 class Auth extends Base {
 	// action
-	public function AjaxLoginAction(){
+	public function ApiAuthLoginAction(){
 		if(!$this->IsLoggedIn()){
 			$Name = $this->Request->GetPOST('name');
 			$Password = $this->Request->GetPOST('password');
@@ -34,9 +34,7 @@ class Auth extends Base {
 		
 	}
 
-
-
-	public function AjaxIsLoggedInAction(){
+	public function ApiAuthIsLoggedInAction(){
 		$Response = array ();
 		$Response[AJAX::STATUS] = AJAX::STATUS_SUCCESS;
 		if($this->IsLoggedIn()){
@@ -51,7 +49,7 @@ class Auth extends Base {
 	}
 
 	// action
-	public function AjaxLogoutAction(){
+	public function ApiAuthLogoutAction(){
 		$Response = array ();
 		if($this->IsLoggedIn()){
 			$_SESSION[SESSION::LOGGED_IN] = false;
@@ -72,7 +70,5 @@ class Auth extends Base {
             echo json_encode($Response);
             return true;
         }
-        
-      
+
 }
-?>

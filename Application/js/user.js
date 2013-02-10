@@ -14,7 +14,7 @@ Dashbird.User = function (){
         me.init = function(){
                 me.attach('onLoggedIn', _private.onLoggedIn);
                 // check if logged in
-                $.getJSON('ajax/auth/is/logged/in/', function(data) {
+                $.getJSON('api/auth/is/logged/in/', function(data) {
                         if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                                 if(data[AJAX.MESSAGE] === AJAX.IS_NOT_LOGGED_IN){
                                         Dashbird.LoginBox.show();
@@ -34,7 +34,7 @@ Dashbird.User = function (){
         };
         
          me.logout = function(){
-         $.getJSON('ajax/auth/logout/',{}, function(data) {
+         $.getJSON('api/auth/logout/',{}, function(data) {
                 if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                     // refresh page
                     document.location.reload();
@@ -44,7 +44,7 @@ Dashbird.User = function (){
 
         me.login = function(name, password, callbackOnSuccess, callbackOnFailure){
                 if(!this.isLoggedIn){
-                        $.post('ajax/auth/login', {
+                        $.post('api/auth/login', {
                                 name : name, 
                                 password : password
                         }, function(data) {
@@ -63,7 +63,7 @@ Dashbird.User = function (){
         
         _private.onLoggedIn = function(){
             setInterval(function(){
-                $.getJSON('ajax/auth/is/logged/in/', function(data) {
+                $.getJSON('api/auth/is/logged/in/', function(data) {
                        if(data[AJAX.MESSAGE] === AJAX.IS_NOT_LOGGED_IN){
                                document.location.href = "";
                         }
@@ -78,7 +78,7 @@ Dashbird.User = function (){
         }
         
         me.addUserShare = function(name, callback){
-            $.getJSON('ajax/user/shares/add/', {
+            $.getJSON('api/user/shares/add/', {
                 name : name
             }, function(data){
                 if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
@@ -89,7 +89,7 @@ Dashbird.User = function (){
         };
         
         me.changePassword = function(oldPassword, newPassword, callback){
-            $.post('ajax/user/password/change/', {
+            $.post('api/user/password/change/', {
                 'old-password' : oldPassword,
                 'new-password' : newPassword
             }, function(data){

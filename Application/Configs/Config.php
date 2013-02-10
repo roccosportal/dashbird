@@ -13,26 +13,26 @@ self::$Config['MySQL']['Database'] = 'dashbird';
 
 
 self::$Config['Routes'] = array (
-    array ('Url' => '/', 'Controller' => 'Dashboard', 'Action' => 'Index'),
-    array ('Url' => '/ajax/auth/login/', 'Controller' => 'Auth', 'Action' => 'AjaxLogin'),
-    array ('Url' => '/ajax/auth/logout/', 'Controller' => 'Auth', 'Action' => 'AjaxLogout'),
-    array ('Url' => '/ajax/auth/is/logged/in/', 'Controller' => 'Auth', 'Action' => 'AjaxIsLoggedIn'),
-    array ('Url' => '/ajax/entries/load/', 'Controller' => 'Dashboard', 'Action' => 'AjaxGetDashboardEntries'),
-    array ('Url' => '/ajax/entries/get/', 'Controller' => 'Dashboard', 'Action' => 'AjaxGetMultiple'),
-    array ('Url' => '/ajax/entries/hashes/get/', 'Controller' => 'Dashboard', 'Action' => 'AjaxGetHashes'),
-    array ('Url' => '/ajax/user/shares/get/', 'Controller' => 'User', 'Action' => 'AjaxGetUserShares'),
-    array ('Url' => '/ajax/user/shares/add/', 'Controller' => 'User', 'Action' => 'AjaxAddUserShare'),
-    array ('Url' => '/ajax/user/password/change/', 'Controller' => 'User', 'Action' => 'AjaxChangePassword'),
-    array ('Url' => '/ajax/entry/get/', 'Controller' => 'Dashboard', 'Action' => 'AjaxGet'),
-    array ('Url' => '/ajax/entry/add/', 'Controller' => 'Dashboard', 'Action' => 'AjaxAdd'),
-    array ('Url' => '/ajax/entry/delete/', 'Controller' => 'Dashboard', 'Action' => 'AjaxDelete'),
-    array ('Url' => '/ajax/entry/edit/', 'Controller' => 'Dashboard', 'Action' => 'AjaxEdit'),
-    array ('Url' => '/ajax/entry/hash/get/', 'Controller' => 'Dashboard', 'Action' => 'AjaxGetHash'),
-    array ('Url' => '/ajax/entry/comment/add/', 'Controller' => 'Comment', 'Action' => 'AjaxAddComment'),
-    array ('Url' => '/ajax/entry/comment/delete/', 'Controller' => 'Comment', 'Action' => 'AjaxDeleteComment'),
-    array ('Url' => '/ajax/entry/shares/set/', 'Controller' => 'Dashboard', 'Action' => 'AjaxSetEntryShares'),
-    array ('Url' => '/ajax/plugin/data/get/', 'Controller' => 'PluginData', 'Action' => 'AjaxGet'),
-    array ('Url' => '/ajax/plugin/data/save/', 'Controller' => 'PluginData', 'Action' => 'AjaxSave')
+    array ('Url' => '/', 'Controller' => 'Posts', 'Action' => 'Index'),
+    array ('Url' => '/api/auth/login/', 'Controller' => 'Auth', 'Action' => 'ApiAuthLogin'),
+    array ('Url' => '/api/auth/logout/', 'Controller' => 'Auth', 'Action' => 'ApiAuthLogout'),
+    array ('Url' => '/api/auth/is/logged/in/', 'Controller' => 'Auth', 'Action' => 'ApiAuthIsLoggedIn'),
+    array ('Url' => '/api/posts/load/', 'Controller' => 'Posts', 'Action' => 'ApiPostsLoad'),
+    array ('Url' => '/api/posts/get/', 'Controller' => 'Posts', 'Action' => 'ApiPostsGet'),
+    array ('Url' => '/api/posts/updated/get/', 'Controller' => 'Posts', 'Action' => 'ApiPostsUpdatedGet'),
+    array ('Url' => '/api/user/shares/get/', 'Controller' => 'User', 'Action' => 'ApiUserSharesGet'),
+    array ('Url' => '/api/user/shares/add/', 'Controller' => 'User', 'Action' => 'ApiUserSharesAdd'),
+    array ('Url' => '/api/user/password/change/', 'Controller' => 'User', 'Action' => 'ApiUserChangePassword'),
+    array ('Url' => '/api/post/get/', 'Controller' => 'Posts', 'Action' => 'ApiPostGet'),
+    array ('Url' => '/api/post/add/', 'Controller' => 'Posts', 'Action' => 'ApiPostAdd'),
+    array ('Url' => '/api/post/delete/', 'Controller' => 'Posts', 'Action' => 'ApiPostDelete'),
+    array ('Url' => '/api/post/edit/', 'Controller' => 'Posts', 'Action' => 'ApiPostEdit'),
+    array ('Url' => '/api/post/hash/get/', 'Controller' => 'Posts', 'Action' => 'ApiPostHashGet'),
+    array ('Url' => '/api/post/comment/add/', 'Controller' => 'Comment', 'Action' => 'ApiPostCommentAdd'),
+    array ('Url' => '/api/post/comment/delete/', 'Controller' => 'Comment', 'Action' => 'ApiPostCommentDelete'),
+    array ('Url' => '/api/post/shares/set/', 'Controller' => 'Posts', 'Action' => 'ApiPostSharesSet'),
+    array ('Url' => '/api/plugin/data/get/', 'Controller' => 'PluginData', 'Action' => 'ApiPluginDataGet'),
+    array ('Url' => '/api/plugin/data/save/', 'Controller' => 'PluginData', 'Action' => 'ApiPluginDataSave')
    
 );
 

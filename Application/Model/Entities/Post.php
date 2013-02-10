@@ -3,31 +3,34 @@
 namespace Dashbird\Model\Entities;
 
 /**
- * @property int $EntryId
+ * @property int $PostId
  * @property string $Text
- * @property string $DateTime
+ * @property string $Created
+ * @property string $Updated
  * @property string $SearchHelper
  * @property int $UserId
  * @property User $User
- * @property \Pvik\Database\Generic\EntityArray $EntriesTags
+ * @property \Pvik\Database\Generic\EntityArray $PostsTags
  * @property \Pvik\Database\Generic\EntityArray $SearchHelperParts
- * @property \Pvik\Database\Generic\EntityArray $EntryShares
+ * @property \Pvik\Database\Generic\EntityArray $PostShares
  * @property \Pvik\Database\Generic\EntityArray $Comments
  */
-class Entry extends \Pvik\Database\Generic\Entity {
+class Post extends \Pvik\Database\Generic\Entity {
 
     public function __construct() {
-        $this->ModelTableName = 'Entries';
+        $this->ModelTableName = 'Posts';
     }
 
     public function Insert() {
-        if ($this->DateTime == null) {
-            $this->DateTime = date('Y.m.d  H:i:s');
+        if ($this->Created == null) {
+            $this->Created = date('Y-m-d H:i:s');
+            $this->Updated = $this->Created;
         }
 
         parent::Insert();
     }
-
+    
+ 
     public function CurrentUserHasPermissionToChange() {
         return (\Dashbird\Library\Services\UserService::Instance()->GetUserId() == $this->UserId);
     }
@@ -38,9 +41,9 @@ class Entry extends \Pvik\Database\Generic\Entity {
        }
        $UserId = \Dashbird\Library\Services\UserService::Instance()->GetUserId();
        
-       foreach($this->EntryShares as $EntryShare){
-           /* @var $EntryShare EntryShare */
-           if($EntryShare->UserId==$UserId){
+       foreach($this->PostShares as $PostShare){
+           /* @var $PostShare PostShare */
+           if($PostShare->UserId==$UserId){
                return true;
            }
        }
@@ -49,14 +52,14 @@ class Entry extends \Pvik\Database\Generic\Entity {
 
     public function ToArray() {
         $TagTitle = array();
-        foreach ($this->EntriesTags as $EntriesTags) {
-            $TagTitle[] = $EntriesTags->Tag->Title;
+        foreach ($this->PostsTags as $PostsTags) {
+            $TagTitle[] = $PostsTags->Tag->Title;
         }
-        $EntrySharesUserIds = array();
+        $PostSharesUserIds = array();
         //if ($this->CurrentUserHasPermissionToChange()) {
-            foreach ($this->EntryShares as $EntryShare) {
-                /* @var $EntryShare \Dashbird\Model\Entities\EntryShare */
-                $EntrySharesUserIds[] = $EntryShare->UserId;
+            foreach ($this->PostShares as $PostShare) {
+                /* @var $PostShare \Dashbird\Model\Entities\PostShare */
+                $PostSharesUserIds[] = $PostShare->UserId;
             }
         //}
 
@@ -68,22 +71,17 @@ class Entry extends \Pvik\Database\Generic\Entity {
 
 
         return array(
-            'entryId' => $this->EntryId,
-            'datetime' => $this->DateTime,
+            'postId' => $this->PostId,
+            'created' => $this->Created,
+            'updated' => $this->Updated,
             'text' => $this->Text,
             'tags' => $TagTitle,
             'user' => array('userId' => $this->UserId, 'name' => $this->User->Name),
-            'entryShares' => $EntrySharesUserIds,
-            'comments' => $Comments,
-            'hash' => $this->GetHash()
+            'postShares' => $PostSharesUserIds,
+            'comments' => $Comments
         );
     }
     
-    public function GetHash(){
-        return md5($this->EntryId . $this->Text . count($this->Comments));
-        //return md5($this->EntryId . $this->DateTime . $this->Text . count($this->Comments));
-    }
-
     /**
      * Find a search helper part by the keyword
      * @param string $Keyword
@@ -150,7 +148,7 @@ class Entry extends \Pvik\Database\Generic\Entity {
         if (!$AlreadyExists) {
             // we need to create a new search helper part at the end
             $SearchHelperPart = new \Dashbird\Model\Entities\SearchHelperPart();
-            $SearchHelperPart->EntryId = $this->EntryId;
+            $SearchHelperPart->PostId = $this->PostId;
             $SearchHelperPart->Keyword = $Keyword;
             $SearchHelperPart->StartAt = strlen($this->SearchHelper);
             $SearchHelperPart->EndAt = $SearchHelperPart->StartAt + (strlen($Value) - 1);
@@ -172,14 +170,14 @@ class Entry extends \Pvik\Database\Generic\Entity {
             $Comment->Delete();
         }
 
-        foreach ($this->EntryShares as $EntryShare) {
-            /* @var $EntryShare EntryShare */
-            $EntryShare->Delete();
+        foreach ($this->PostShares as $PostShare) {
+            /* @var $PostShare PostShare */
+            $PostShare->Delete();
         }
 
-        foreach ($this->EntriesTags as $EntriesTag) {
-            /* @var $DashboardEntriesTag DashboardEntriesTags */
-            $EntriesTag->Delete();
+        foreach ($this->PostsTags as $PostsTag) {
+            /* @var $DashboardPostsTag DashboardPostsTags */
+            $PostsTag->Delete();
         }
 
         parent::Delete();
@@ -188,22 +186,22 @@ class Entry extends \Pvik\Database\Generic\Entity {
     public function SetTags(array $TagTitles) {
 
         $TagTitles = $this->ValidateTagTitles($TagTitles);
-        // delete previous tags refering on dashboardentry
+        // delete previous tags refering on dashboardpost
 
-        \Pvik\Database\SQL\Manager::GetInstance()->DeleteWithParameters('DELETE FROM EntriesTags WHERE EntriesTags.EntryId = %s', array($this->EntryId));
+        \Pvik\Database\SQL\Manager::GetInstance()->DeleteWithParameters('DELETE FROM PostsTags WHERE PostsTags.PostId = %s', array($this->PostId));
 
         // CAUTION: DashboardEntrieTags and Tags in the cache maybe still have a reference to this object
-//                // manually delete cache entries
-        $CacheEntriesTags = \Pvik\Database\Generic\ModelTable::Get('EntriesTags')->GetCache()->GetAllCacheInstances();
-        foreach ($CacheEntriesTags as $CacheEntryTag) {
-            /* @var $CacheEntryTag EntriesTags */
-            if ($CacheEntryTag->EntryId == $this->EntryId) {
-                \Pvik\Database\Generic\ModelTable::Get('EntriesTags')->GetCache()->Delete($CacheEntryTag);
+//                // manually delete cache posts
+        $CachePostsTags = \Pvik\Database\Generic\ModelTable::Get('PostsTags')->GetCache()->GetAllCacheInstances();
+        foreach ($CachePostsTags as $CachePostTag) {
+            /* @var $CachePostTag PostsTags */
+            if ($CachePostTag->PostId == $this->PostId) {
+                \Pvik\Database\Generic\ModelTable::Get('PostsTags')->GetCache()->Delete($CachePostTag);
             }
         }
 
         // clear all reference keys 
-        $this->SetFieldData('EntriesTags', null);
+        $this->SetFieldData('PostsTags', null);
 
 
 
@@ -244,12 +242,12 @@ class Entry extends \Pvik\Database\Generic\Entity {
             }
         }
 
-        // insert relations tags - dashboardentry
+        // insert relations tags - dashboardpost
         foreach ($TagModels as $TagModel) {
-            $EntriesTags = new \Dashbird\Model\Entities\EntriesTags();
-            $EntriesTags->EntryId = $this->EntryId;
-            $EntriesTags->TagId = $TagModel->TagId;
-            $EntriesTags->Insert();
+            $PostsTags = new \Dashbird\Model\Entities\PostsTags();
+            $PostsTags->PostId = $this->PostId;
+            $PostsTags->TagId = $TagModel->TagId;
+            $PostsTags->Insert();
         }
     }
 
@@ -270,23 +268,23 @@ class Entry extends \Pvik\Database\Generic\Entity {
             $Tag->Title = $TagTitle;
             $Tag->Insert();
 
-            $EntriesTags = new \Dashbird\Model\Entities\EntriesTags();
-            $EntriesTags->EntryId = $this->EntryId;
-            $EntriesTags->TagId = $Tag->TagId;
-            $EntriesTags->Insert();
+            $PostsTags = new \Dashbird\Model\Entities\PostsTags();
+            $PostsTags->PostId = $this->PostId;
+            $PostsTags->TagId = $Tag->TagId;
+            $PostsTags->Insert();
         } else {
             $AlreadyExists = false;
-            foreach ($this->EntriesTags as $EntriesTags) {
-                if ($EntriesTags->TagId == $Tag->TagId) {
+            foreach ($this->PostsTags as $PostsTags) {
+                if ($PostsTags->TagId == $Tag->TagId) {
                     $AlreadyExists = true;
                     break;
                 }
             }
             if (!$AlreadyExists) {
-                $EntriesTags = new \Dashbird\Model\Entities\EntriesTags();
-                $EntriesTags->EntryId = $this->EntryId;
-                $EntriesTags->TagId = $Tag->TagId;
-                $EntriesTags->Insert();
+                $PostsTags = new \Dashbird\Model\Entities\PostsTags();
+                $PostsTags->PostId = $this->PostId;
+                $PostsTags->TagId = $Tag->TagId;
+                $PostsTags->Insert();
             }
         }
     }
@@ -298,9 +296,9 @@ class Entry extends \Pvik\Database\Generic\Entity {
 
         $Tag = $Query->SelectSingle();
         if ($Tag != null) {
-            foreach ($this->EntriesTags as $EntriesTags) {
-                if ($EntriesTags->TagId == $Tag->TagId) {
-                    $EntriesTags->Delete();
+            foreach ($this->PostsTags as $PostsTags) {
+                if ($PostsTags->TagId == $Tag->TagId) {
+                    $PostsTags->Delete();
                     break;
                 }
             }
@@ -308,11 +306,13 @@ class Entry extends \Pvik\Database\Generic\Entity {
     }
 
     public function Update() {
+        $this->Updated = date('Y-m-d H:i:s');
+
         $TagTitles = '';
         // for perfomance, we don't need lazy loading in this loop
-        $this->EntriesTags->LoadList('Tag');
-        foreach ($this->EntriesTags as $EntriesTags) {
-            $TagTitles .= $EntriesTags->Tag->Title;
+        $this->PostsTags->LoadList('Tag');
+        foreach ($this->PostsTags as $PostsTags) {
+            $TagTitles .= $PostsTags->Tag->Title;
         }
         $this->SetSearchHelperPart('tags', $TagTitles);
         parent::Update();
@@ -332,21 +332,21 @@ class Entry extends \Pvik\Database\Generic\Entity {
         return $TagTitlesTemp;
     }
 
-    public function SetEntryShares($UserIds) {
-        \Pvik\Database\SQL\Manager::GetInstance()->DeleteWithParameters('DELETE FROM EntryShares WHERE EntryShares.EntryId = %s', array($this->EntryId));
+    public function SetPostShares($UserIds) {
+        \Pvik\Database\SQL\Manager::GetInstance()->DeleteWithParameters('DELETE FROM PostShares WHERE PostShares.PostId = %s', array($this->PostId));
 
-        // CAUTION: EntryShares in the cache maybe still have a reference to this object
-        // manually delete cache entries
-        $CacheEntryShares = \Pvik\Database\Generic\ModelTable::Get('EntryShares')->GetCache()->GetAllCacheInstances();
-        foreach ($CacheEntryShares as $CacheEntryShare) {
-            /* @var $CacheEntryShare EntryShare */
-            if ($CacheEntryShare->EntryId == $this->EntryId) {
-                \Pvik\Database\Generic\ModelTable::Get('EntryShares')->GetCache()->Delete($CacheEntryShare);
+        // CAUTION: PostShares in the cache maybe still have a reference to this object
+        // manually delete cache posts
+        $CachePostShares = \Pvik\Database\Generic\ModelTable::Get('PostShares')->GetCache()->GetAllCacheInstances();
+        foreach ($CachePostShares as $CachePostShare) {
+            /* @var $CachePostShare PostShare */
+            if ($CachePostShare->PostId == $this->PostId) {
+                \Pvik\Database\Generic\ModelTable::Get('PostShares')->GetCache()->Delete($CachePostShare);
             }
         }
 
         // clear all reference keys 
-        $this->SetFieldData('EntryShares', null);
+        $this->SetFieldData('PostShares', null);
 
 
         // validate userIds
@@ -359,10 +359,10 @@ class Entry extends \Pvik\Database\Generic\Entity {
         }
         $UserIds = $FilteredUserIds;
         foreach ($UserIds as $UserId) {
-            $EntryShare = new \Dashbird\Model\Entities\EntryShare();
-            $EntryShare->EntryId = $this->EntryId;
-            $EntryShare->UserId = $UserId;
-            $EntryShare->Insert();
+            $PostShare = new \Dashbird\Model\Entities\PostShare();
+            $PostShare->PostId = $this->PostId;
+            $PostShare->UserId = $UserId;
+            $PostShare->Insert();
         }
     }
 

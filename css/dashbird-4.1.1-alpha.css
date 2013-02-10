@@ -2,10 +2,10 @@
   margin-top: 50px;
   margin-left: 50px;
 }
-#content #new-entry {
+#content #new-post {
   width: 500px;
 }
-#content #new-entry .add-tag-input {
+#content #new-post .add-tag-input {
   margin-right: 50px;
 }
 #content #settings {
@@ -61,19 +61,19 @@
 #content #board .view-all {
   margin-bottom: 20px;
 }
-#content #board .entries .entry {
+#content #board .posts .post {
   margin-bottom: 30px;
 }
-#content #board .entries .entry .content,
-#content #board .entries .entry .comment {
+#content #board .posts .post .content,
+#content #board .posts .post .comment {
   word-wrap: break-word;
   position: relative;
   border-left: 5px solid #EEEEEE;
   margin-bottom: 5px;
   padding: 0 0 0 15px;
 }
-#content #board .entries .entry .content .command-bar.popup,
-#content #board .entries .entry .comment .command-bar.popup {
+#content #board .posts .post .content .command-bar.popup,
+#content #board .posts .post .comment .command-bar.popup {
   border-radius: 4px;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
@@ -83,8 +83,8 @@
   padding: 5px;
   display: none;
 }
-#content #board .entries .entry .content .command,
-#content #board .entries .entry .comment .command {
+#content #board .posts .post .content .command,
+#content #board .posts .post .comment .command {
   border-radius: 4px;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
@@ -92,46 +92,46 @@
   background-color: #F5F5F5;
   display: none;
 }
-#content #board .entries .entry .content .command form,
-#content #board .entries .entry .comment .command form {
+#content #board .posts .post .content .command form,
+#content #board .posts .post .comment .command form {
   margin-bottom: 0px;
 }
-#content #board .entries .entry .content .command form .form-actions,
-#content #board .entries .entry .comment .command form .form-actions {
+#content #board .posts .post .content .command form .form-actions,
+#content #board .posts .post .comment .command form .form-actions {
   margin-top: 0px;
   margin-bottom: 0px;
 }
-#content #board .entries .entry .content .command.command-edit .add-tag-input,
-#content #board .entries .entry .comment .command.command-edit .add-tag-input {
+#content #board .posts .post .content .command.command-edit .add-tag-input,
+#content #board .posts .post .comment .command.command-edit .add-tag-input {
   margin-right: 50px;
 }
-#content #board .entries .entry .content p,
-#content #board .entries .entry .comment p {
+#content #board .posts .post .content p,
+#content #board .posts .post .comment p {
   font-size: 16px;
   font-weight: 300;
   line-height: 25px;
   margin-bottom: 0;
 }
-#content #board .entries .entry .content p iframe,
-#content #board .entries .entry .comment p iframe {
+#content #board .posts .post .content p iframe,
+#content #board .posts .post .comment p iframe {
   margin-top: 25px;
 }
-#content #board .entries .entry .content .meta,
-#content #board .entries .entry .comment .meta {
+#content #board .posts .post .content .meta,
+#content #board .posts .post .comment .meta {
   color: #999999;
   display: block;
   line-height: 20px;
   font-size: 85%;
 }
-#content #board .entries .entry .content .meta li,
-#content #board .entries .entry .comment .meta li {
+#content #board .posts .post .content .meta li,
+#content #board .posts .post .comment .meta li {
   padding-left: 0px;
 }
-#content #board .entries .entry .content .meta li.tags,
-#content #board .entries .entry .comment .meta li.tags {
+#content #board .posts .post .content .meta li.tags,
+#content #board .posts .post .comment .meta li.tags {
   padding-right: 0px;
 }
-#content #board .entries .entry .comments {
+#content #board .posts .post .comments {
   margin-left: 40px;
 }
 #login-box {

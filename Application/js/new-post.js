@@ -1,22 +1,22 @@
 if(Dashbird===undefined){
     var Dashbird = {};
 }
-Dashbird.NewEntry = function(){
+Dashbird.NewPost = function(){
     var me = SimpleJSLib.EventHandler(),
     _private = {};
     _private.tags = [];
     _private.bbcode= {};
     
     me.init = function(){
-        // new entry
-        $('#navbar .nav .show-new-entry').on('show', _private.onShow);  
+        // new post
+        $('#navbar .nav .show-new-post').on('show', _private.onShow);  
     };
     
     _private.isOnDemandInited = false;
     
     _private.onDemandInit = function(){
         if(!_private.isOnDemandInited){
-            _private.$ = $('#new-entry');
+            _private.$ = $('#new-post');
             
             _private.$.find('.submit-button').click(_private.onSaveClick);
             _private.$.find('.cancel-button').click(_private.onCancelClick);
@@ -52,7 +52,7 @@ Dashbird.NewEntry = function(){
     _private.onShow = function(){
         _private.onDemandInit();
         _private.tags = [];
-        _private.entryShares = [];
+        _private.postShares = [];
         _private.$.find('textarea').val('');
         _private.hideTagAlert();
         _private.drawShares();
@@ -62,14 +62,14 @@ Dashbird.NewEntry = function(){
     _private.onSaveClick = function(e){
         e.preventDefault();
         _private.addTag();
-        $.getJSON('ajax/entry/add/', {
+        $.getJSON('api/post/add/', {
             text :  _private.$.find('textarea').val(),
             tags :  _private.tags,
-            shares : _private.entryShares
+            shares : _private.postShares
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                me.fire('newEntry', data[AJAX.DATA]);
-                Dashbird.Dashboard.refreshEntries();
+                me.fire('newPost', data[AJAX.DATA]);
+                Dashbird.Board.refreshPosts();
                 $('#navbar .nav .show-board').tab('show');
                   
             }
@@ -134,7 +134,7 @@ Dashbird.NewEntry = function(){
         $.each(Dashbird.User.getUserShares(), function(key, element){
             $share = $('#templates #template-share-editable .checkbox').clone();
             $share.find('span').html(element.name);
-            if($.inArray(this.userId,_private.entryShares)!== -1){
+            if($.inArray(this.userId,_private.postShares)!== -1){
                 $share.find('input').attr('checked', 'checked');
             }
             $share.find('input').change(function(){
@@ -146,12 +146,12 @@ Dashbird.NewEntry = function(){
     
     _private.shareChange = function($shareInput, userId){
         if($shareInput.attr('checked')){
-            _private.entryShares.push(userId);
+            _private.postShares.push(userId);
         }
         else {
-            var position = $.inArray(userId, _private.entryShares);
+            var position = $.inArray(userId, _private.postShares);
             if(position!== -1){ 
-                _private.entryShares.splice(position, 1);
+                _private.postShares.splice(position, 1);
             }
         }
     }

@@ -6,15 +6,15 @@ if(typeof Dashbird.Commands == "undefined"){
     Dashbird.Commands  = {};
     
 }
-Dashbird.Commands.Comment = function(entry){
-    var me = Dashbird.Commands.Base(entry),
+Dashbird.Commands.Comment = function(post){
+    var me = Dashbird.Commands.Base(post),
     _private = {};
      
     _private.isOnDemandInited = false;
 
 
     me.init = function(){
-        entry.commands.$bar.find('.command-comment').click(me.show);
+        post.commands.$bar.find('.command-comment').click(me.show);
         me.set$('command-comment');
       
     };
@@ -27,7 +27,7 @@ Dashbird.Commands.Comment = function(entry){
         
             me.$.find('.submit-button').click(function(e){
                 e.preventDefault();
-                entry.addComment(me.$.find('textarea').val(), function(){
+                post.addComment(me.$.find('textarea').val(), function(){
                     me.$.fadeOut(); 
                 })
             });

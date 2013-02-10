@@ -20,7 +20,7 @@ chdir('../');
 			);
 
 $less = new lessc;
-$compiled = $less->compileFile(Pvik\Core\Path::RealPath("~/application/less/dashboard.less"));
+$compiled = $less->compileFile(Pvik\Core\Path::RealPath("~/Application/less/dashboard.less"));
 
 
 

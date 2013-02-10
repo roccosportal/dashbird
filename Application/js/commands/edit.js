@@ -6,8 +6,8 @@ if(typeof Dashbird.Commands == "undefined"){
     Dashbird.Commands  = {};
     
 }
-Dashbird.Commands.Edit = function(entry){
-    var me = Dashbird.Commands.Base(entry),
+Dashbird.Commands.Edit = function(post){
+    var me = Dashbird.Commands.Base(post),
     _private = {};
         
     _private.tags = null;
@@ -16,7 +16,7 @@ Dashbird.Commands.Edit = function(entry){
     _private.isOnDemandInited = false;
      
     me.init = function(){
-        entry.commands.$bar.find('.command-edit').click(me.show);
+        post.commands.$bar.find('.command-edit').click(me.show);
         me.set$('command-edit');
     };
     
@@ -25,7 +25,7 @@ Dashbird.Commands.Edit = function(entry){
             me.$.find('.submit-button').click(function(e){
                 e.preventDefault();
                 me.addTag();
-                entry.update(me.$.find('textarea').val(), _private.tags);
+                post.update(me.$.find('textarea').val(), _private.tags);
                 me.$.fadeOut();
             });
             
@@ -63,10 +63,10 @@ Dashbird.Commands.Edit = function(entry){
     me.show = function(e){
         e.preventDefault();
         _private.onDemandInit();
-        _private.tags = entry.entryData.tags;
+        _private.tags = post.postData.tags;
         // fade out all opend options
         me.hideCommands(function(){
-            me.$.find('textarea').html(entry.entryData.text);
+            me.$.find('textarea').html(post.postData.text);
             me.hideTagAlert();
             me.drawTags();
             // show option

@@ -98,41 +98,41 @@ var AJAX = {
 if(typeof Dashbird == "undefined"){
     var Dashbird = {};
 }
-Dashbird.DashboardEntry = function(){
+Dashbird.Post = function(){
     var me = {},
     _private = {};
     
-    _private.editEntryBoxTags = null;
-    _private.entrySharesBoxEntryShares = null;
+    _private.editPostBoxTags = null;
+    _private.postSharesBoxPostShares = null;
      
-    me.entryData = null;
-    me.$entry = null;
+    me.postData = null;
+    me.$post = null;
     me.$meta = null;
     me.$comments = null;
     me.commands = {
         $bar : null
     }
-    me.init = function (entryData){
-        me.entryData = entryData;
+    me.init = function (postData){
+        me.postData = postData;
     }
     me.create = function(){
-        if(Dashbird.User.getUser().userId === me.entryData.user.userId){
-            me.$entry = Dashbird.Templates.getTemplate('entry');
+        if(Dashbird.User.getUser().userId === me.postData.user.userId){
+            me.$post = Dashbird.Templates.getTemplate('post');
         }
         else {
-            me.$entry = Dashbird.Templates.getTemplate('foreign-entry');
+            me.$post = Dashbird.Templates.getTemplate('foreign-post');
         }
         
         // create jquery shortcuts
-        me.$meta =  me.$entry.find('.content .meta');
-        me.commands.$bar = me.$entry.find('.content .command-bar.popup');
-        me.$comments = me.$entry.find('.comments');
+        me.$meta =  me.$post.find('.content .meta');
+        me.commands.$bar = me.$post.find('.content .command-bar.popup');
+        me.$comments = me.$post.find('.comments');
         
         me.drawText();
-        me.$meta.find('.info .username').html(me.entryData.user.name);
-        me.$meta.find('.info .date').html(Dashbird.Dashboard.convertDate(me.entryData.datetime));
+        me.$meta.find('.info .username').html(me.postData.user.name);
+        me.$meta.find('.info .date').html(Dashbird.Board.convertDate(me.postData.created));
         
-        if(Dashbird.User.getUser().userId === me.entryData.user.userId){
+        if(Dashbird.User.getUser().userId === me.postData.user.userId){
             me.commands.edit = Dashbird.Commands.Edit(me);
             me.commands.edit.init();
             
@@ -143,39 +143,40 @@ Dashbird.DashboardEntry = function(){
             me.commands.remove.init();
         }
         me.drawTags();
-        me.drawEntryShares();
+        me.drawPostShares();
         _private.drawComments();
         
         me.commands.comment = Dashbird.Commands.Comment(me);
         me.commands.comment.init();
       
         // show options
-        me.$entry.mouseover(function(){
+        me.$post.mouseover(function(){
             me.commands.$bar.show();
         });
-        me.$entry.mouseleave(function (){
+        me.$post.mouseleave(function (){
             me.commands.$bar.hide();
         });     
         
-        me.$entry.data('dashboardEntry', me);
-        return me.$entry;
+        me.$post.data('post', me);
+        return me.$post;
     },
     
     me.drawText = function(){
-        me.$entry.find('.content .text').html(me.bbcode(me.entryData.text.replace(/\n/g,'<br />')));
+        me.$post.find('.content .text').html(me.bbcode(me.postData.text.replace(/\n/g,'<br />')));
     };
     
     me.update = function(text, tags){
-        $.getJSON('ajax/entry/edit/', {
-            entryId : me.entryData.entryId, 
+        $.getJSON('api/post/edit/', {
+            postId : me.postData.postId, 
             text : text,
             tags: tags
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                Dashbird.Dashboard.fire('entry#save', data[AJAX.DATA]);
+                Dashbird.Board.fire('post#save', data[AJAX.DATA]);
                 // save status
-                me.entryData.tags =  data[AJAX.DATA].tags;
-                me.entryData.text =  data[AJAX.DATA].text;
+                me.postData.tags =  data[AJAX.DATA].tags;
+                me.postData.text =  data[AJAX.DATA].text;
+                me.postData.updated = data[AJAX.DATA].updated;
                 me.drawText();
                 me.drawTags();
             }
@@ -184,23 +185,23 @@ Dashbird.DashboardEntry = function(){
     
    
                 
-    me.deleteEntry = function(){
-        $.getJSON('ajax/entry/delete/', {
-            entryId : me.entryData.entryId
+    me.deletePost = function(){
+        $.getJSON('api/post/delete/', {
+            postId : me.postData.postId
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
             // do nothing
             }
         });
-        me.$entry.fadeOut("slow", function(){       
-            me.$entry.detach();
+        me.$post.fadeOut("slow", function(){       
+            me.$post.detach();
         });                     
     };
     
     me.drawTags = function(){
         var $tag = null;
         me.$meta.find('.tags ul').html('');
-        $.each(me.entryData.tags, function(key, element){
+        $.each(me.postData.tags, function(key, element){
             $tag = $('#templates #template-tag .tag').clone();
             $tag.find('span').html(element);
             me.$meta.find('.tags ul').append($tag);
@@ -208,18 +209,18 @@ Dashbird.DashboardEntry = function(){
       
     };
     
-    me.drawEntryShares = function(){
-        if(me.entryData.entryShares.length == 0){
+    me.drawPostShares = function(){
+        if(me.postData.postShares.length == 0){
             me.$meta.find('.sharing').hide();
             me.$meta.find('.private-sharing').css('display', '');
         }
         else {
             me.$meta.find('.private-sharing').hide();
            
-            me.$meta.find('.sharing a span.count').html(me.entryData.entryShares.length);
+            me.$meta.find('.sharing a span.count').html(me.postData.postShares.length);
             // if multiple persons add a trailing s;
            
-            if(me.entryData.entryShares.length > 1 ){
+            if(me.postData.postShares.length > 1 ){
                 me.$meta.find('.sharing a span.persons').html('persons');
             }
             else{
@@ -228,7 +229,7 @@ Dashbird.DashboardEntry = function(){
             
             var names = '';
             var first = true;
-            $.each(me.entryData.entryShares, function(key, element){
+            $.each(me.postData.postShares, function(key, element){
                 if(first){
                     first = false;
                 }
@@ -243,32 +244,34 @@ Dashbird.DashboardEntry = function(){
         }
     }
         
-    me.setEntryShares = function(userIds){
-        $.getJSON('ajax/entry/shares/set/', {
-            entryId : me.entryData.entryId, 
+    me.setPostShares = function(userIds){
+        $.getJSON('api/post/shares/set/', {
+            postId : me.postData.postId, 
             userIds : userIds
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                me.entryData.entryShares = userIds;
-                me.drawEntryShares();
+                me.postData.postShares = userIds;
+                me.drawPostShares();
             }
         });
     }
     
     
     me.addComment = function(text, callback){
-        $.getJSON('ajax/entry/comment/add/', {
-            entryId : me.entryData.entryId, 
+        $.getJSON('api/post/comment/add/', {
+            postId : me.postData.postId, 
             text : text
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                Dashbird.Dashboard.fire('entry#addComment', {
-                    entryId : me.entryData.entryId, 
+                me.postData.updated = data[AJAX.DATA].post.updated;
+                
+                Dashbird.Board.fire('post#addComment', {
+                    post : me, 
                     data : data[AJAX.DATA]
                 })
-                me.entryData.comments.push(data[AJAX.DATA]);
+                me.postData.comments.push(data[AJAX.DATA].comment);
                 _private.drawComments();
-               
+              
             }
             if(callback != null){
                 callback();
@@ -276,21 +279,24 @@ Dashbird.DashboardEntry = function(){
         });
     }
     me.deleteComment = function(id){
-        $.getJSON('ajax/entry/comment/delete/', {
+        $.getJSON('api/post/comment/delete/', {
             commentId : id
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                Dashbird.Dashboard.fire('entry#deleteComment', {
-                    entryId : me.entryData.entryId
+                me.postData.updated = data[AJAX.DATA].post.updated;
+                
+                Dashbird.Board.fire('post#deleteComment', {
+                    post : me,
+                    data : data[AJAX.DATA]
                 })
                 // rebuild comments
                 var comments = [];
-                $.each(me.entryData.comments,function(index, comment){
-                    if(comment.commentId !== id.toString()){
+                $.each(me.postData.comments,function(index, comment){
+                    if(comment.commentId.toString() !== id.toString()){
                         comments.push(comment);
                     }
                 });
-                me.entryData.comments = comments;
+                me.postData.comments = comments;
                 _private.drawComments();
             }
         });
@@ -298,12 +304,12 @@ Dashbird.DashboardEntry = function(){
     
     _private.drawComments = function(){
         me.$comments.empty();
-        var $template = Dashbird.Templates.getTemplate('entry-comment');
-        $.each(me.entryData.comments,function(index, comment){
+        var $template = Dashbird.Templates.getTemplate('post-comment');
+        $.each(me.postData.comments,function(index, comment){
             var $comment = $template.clone();
             $comment.find('.text').html(comment.text.replace(/\n/g,'<br />'));
             $comment.find('.meta .info .username').html(comment.user.name);
-            $comment.find('.meta .info .date').html(Dashbird.Dashboard.convertDate(comment.datetime));
+            $comment.find('.meta .info .date').html(Dashbird.Board.convertDate(comment.datetime));
             if(Dashbird.User.getUser().userId === comment.user.userId){
                 // show options
                 $comment.mouseover(function(){
@@ -356,15 +362,15 @@ Dashbird.DashboardEntry = function(){
 };
 if(typeof Dashbird == "undefined"){var Dashbird = {};}
 if(typeof Dashbird.Commands == "undefined"){Dashbird.Commands  = {};}
-Dashbird.Commands.Base = function(entry){
+Dashbird.Commands.Base = function(post){
     var me = {};
     
     me.set$ = function(selector){
-         me.$ = entry.$entry.find('.content .command.' + selector);
+         me.$ = post.$post.find('.content .command.' + selector);
     }
     
     me.hideCommands = function(callback){
-         entry.$entry.find('.content .command').fadeOut().promise().done(callback);
+         post.$post.find('.content .command').fadeOut().promise().done(callback);
     }
     
     return me;
@@ -376,14 +382,14 @@ if(typeof Dashbird.Commands == "undefined"){
     Dashbird.Commands  = {};
     
 }
-Dashbird.Commands.Comment = function(entry){
-    var me = Dashbird.Commands.Base(entry),
+Dashbird.Commands.Comment = function(post){
+    var me = Dashbird.Commands.Base(post),
     _private = {};
      
     _private.isOnDemandInited = false;
 
     me.init = function(){
-        entry.commands.$bar.find('.command-comment').click(me.show);
+        post.commands.$bar.find('.command-comment').click(me.show);
         me.set$('command-comment');
       
     };
@@ -396,7 +402,7 @@ Dashbird.Commands.Comment = function(entry){
         
             me.$.find('.submit-button').click(function(e){
                 e.preventDefault();
-                entry.addComment(me.$.find('textarea').val(), function(){
+                post.addComment(me.$.find('textarea').val(), function(){
                     me.$.fadeOut(); 
                 })
             });
@@ -424,8 +430,8 @@ if(typeof Dashbird.Commands == "undefined"){
     Dashbird.Commands  = {};
     
 }
-Dashbird.Commands.Edit = function(entry){
-    var me = Dashbird.Commands.Base(entry),
+Dashbird.Commands.Edit = function(post){
+    var me = Dashbird.Commands.Base(post),
     _private = {};
         
     _private.tags = null;
@@ -434,7 +440,7 @@ Dashbird.Commands.Edit = function(entry){
     _private.isOnDemandInited = false;
      
     me.init = function(){
-        entry.commands.$bar.find('.command-edit').click(me.show);
+        post.commands.$bar.find('.command-edit').click(me.show);
         me.set$('command-edit');
     };
     
@@ -443,7 +449,7 @@ Dashbird.Commands.Edit = function(entry){
             me.$.find('.submit-button').click(function(e){
                 e.preventDefault();
                 me.addTag();
-                entry.update(me.$.find('textarea').val(), _private.tags);
+                post.update(me.$.find('textarea').val(), _private.tags);
                 me.$.fadeOut();
             });
             
@@ -477,10 +483,10 @@ Dashbird.Commands.Edit = function(entry){
     me.show = function(e){
         e.preventDefault();
         _private.onDemandInit();
-        _private.tags = entry.entryData.tags;
+        _private.tags = post.postData.tags;
         // fade out all opend options
         me.hideCommands(function(){
-            me.$.find('textarea').html(entry.entryData.text);
+            me.$.find('textarea').html(post.postData.text);
             me.hideTagAlert();
             me.drawTags();
             // show option
@@ -547,23 +553,23 @@ Dashbird.Commands.Edit = function(entry){
 };
 if(typeof Dashbird == "undefined"){var Dashbird = {};}
 if(typeof Dashbird.Commands == "undefined"){Dashbird.Commands  = {};}
-Dashbird.Commands.Remove = function(entry){
-     var me = Dashbird.Commands.Base(entry),
+Dashbird.Commands.Remove = function(post){
+     var me = Dashbird.Commands.Base(post),
      _private = {};
      
      me.init = function(){
-        entry.commands.$bar.find('.command-remove').click(_private.removeEntryClick);
+        post.commands.$bar.find('.command-remove').click(_private.removePostClick);
     };
     
-    _private.removeEntryClick = function(e){
+    _private.removePostClick = function(e){
         e.preventDefault();
         Dashbird.Modal.show({
-            headline: 'Deleting entry', 
-            text : 'Do you really want to remove this entry?',
+            headline: 'Deleting post', 
+            text : 'Do you really want to remove this post?',
             'cancel-button-text' : 'No, no, I am sorry', 
             'submit-button-text' : 'Remove the rubish!', 
             callback : function(){
-                entry.deleteEntry();
+                post.deletePost();
             }
         });
     }
@@ -577,14 +583,14 @@ if(typeof Dashbird.Commands == "undefined"){
     Dashbird.Commands  = {};
     
 }
-Dashbird.Commands.Share = function(entry){
-    var me = Dashbird.Commands.Base(entry),
+Dashbird.Commands.Share = function(post){
+    var me = Dashbird.Commands.Base(post),
     _private = {};
         
     _private.isOnDemandInited = false;
         
     me.init = function(){
-        entry.commands.$bar.find('.command-share').click(me.show);
+        post.commands.$bar.find('.command-share').click(me.show);
         me.set$('command-share');
        
     };
@@ -593,7 +599,7 @@ Dashbird.Commands.Share = function(entry){
         if(!_private.isOnDemandInited){
             me.$.find('.submit-button').click(function(e){
                 e.preventDefault();
-                entry.setEntryShares(_private.entryShares);
+                post.setPostShares(_private.postShares);
                 me.$.fadeOut();
             });
             me.$.find('.cancel-button').click(function(e){
@@ -609,7 +615,7 @@ Dashbird.Commands.Share = function(entry){
         e.preventDefault();
         _private.onDemandInit();
         me.hideCommands(function(){
-            _private.entryShares = entry.entryData.entryShares;
+            _private.postShares = post.postData.postShares;
             _private.draw();
             // show option
             me.$.fadeIn(function(){
@@ -624,7 +630,7 @@ Dashbird.Commands.Share = function(entry){
         $.each(Dashbird.User.getUserShares(), function(key, element){
             $share = $('#templates #template-share-editable .checkbox').clone();
             $share.find('span').html(element.name);
-            if($.inArray(this.userId,_private.entryShares)!== -1){
+            if($.inArray(this.userId,_private.postShares)!== -1){
                 $share.find('input').attr('checked', 'checked');
             }
             $share.find('input').change(function(){
@@ -636,12 +642,12 @@ Dashbird.Commands.Share = function(entry){
     
     _private.shareChange = function($shareInput, userId){
         if($shareInput.attr('checked')){
-            _private.entryShares.push(userId);
+            _private.postShares.push(userId);
         }
         else {
-            var position = $.inArray(userId, _private.entryShares);
+            var position = $.inArray(userId, _private.postShares);
             if(position!== -1){ 
-                _private.entryShares.splice(position, 1);
+                _private.postShares.splice(position, 1);
             }
         }
     }
@@ -815,37 +821,38 @@ Dashbird.BBCode.Video = function(){
 if(Dashbird===undefined){
     var Dashbird = {};
 }
-Dashbird.Dashboard = function(){
+Dashbird.Board = function(){
     var me = SimpleJSLib.EventHandler(),
     _private = {};
     _private.$commandBar = null;
-    _private.$entries = null;
-    _private.loadEntriesAjaxRequestQueue = null;
+    _private.$posts = null;
+    _private.posts = [];
+    _private.loadPostsAjaxRequestQueue = null;
     _private.boardKeyCapture = false;
     _private.boardBarKeyCapture = false;
         
     me.pager = {};
-    me.pager.$moreEntries = null;
+    me.pager.$morePosts = null;
     me.pager.startPosition = 0;
-    me.pager.entryCount = 10;
-    me.pager.hasMoreEntries = false;
+    me.pager.postCount = 10;
+    me.pager.hasMorePosts = false;
     
     me.$loading = null;
 
     me.init = function (){    
-        _private.$entries = $('#board .entries');
+        _private.$posts = $('#board .posts');
         _private.$loading = $('#board .loading');
         _private.$viewAll = $('#board .view-all')
         _private.$viewAll.click(function(e){
              e.preventDefault();
              _private.$viewAll.hide();
-             me.refreshEntries();
+             me.refreshPosts();
         })
-        me.pager.$moreEntries = $('#board .more-entries')
-        me.pager.$moreEntries.click(function(e){
+        me.pager.$morePosts = $('#board .more-posts')
+        me.pager.$morePosts.click(function(e){
             e.preventDefault();
-            me.pager.startPosition =  me.pager.startPosition + me.pager.entryCount;
-            me.loadEntries();
+            me.pager.startPosition =  me.pager.startPosition + me.pager.postCount;
+            me.loadPosts();
         });
 
        
@@ -853,109 +860,119 @@ Dashbird.Dashboard = function(){
         $('#board').show();
         $('#side-bar').show();
         
-        _private.loadEntriesAjaxRequestQueue = SimpleJSLib.SingleRequestQueue();
+        _private.loadPostsAjaxRequestQueue = SimpleJSLib.SingleRequestQueue();
     };
                 
-    me.addToTop = function(entryData){
-        var entry = Dashbird.DashboardEntry();
-        entry.init(entryData);
-        var $entry = entry.create();      
+    me.addToTop = function(postData){
+        var post = Dashbird.Post();
+        post.init(postData);
+        var $post = post.create();      
                                              
-        var first = $('#board .entries .entry:first');
+        var first = $('#board .posts .post:first');
         if(first.length != 0){
-            first.before($entry);
+            first.before($post);
         }
         else {
-            _private.$entries.append($entry);
+            _private.$posts.append($post);
         }     
     };
     
-    me.refreshEntries = function(){
+    me.reorderPosts = function(){
+        var $posts =  $('.posts .post');
+        $posts.detach();
+        $posts.sort(function (a, b) {
+            var contentA = $(a).data('post').postData.updated;
+            var contentB =$(b).data('post').postData.updated;
+            return (contentA > contentB) ? -1 : (contentA < contentB) ? 1 : 0;
+        });
+        _private.$posts.append($posts);
+    }
+    
+    me.refreshPosts = function(){
          me.pager.startPosition = 0;
-        _private.$entries.html('');
-        me.loadEntries();
+        _private.$posts.html('');
+        _private.posts = [];
+        me.loadPosts();
     };
     
    
     
-    me.getHashes = function(callback){
-        $.getJSON('ajax/entries/hashes/get/', {}, function(data) {
+    me.apiPostsUpdatedGet = function(callback){
+        $.getJSON('/api/posts/updated/get/', {}, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                 callback(data[AJAX.DATA]);
             }
         });
     }
     
-    me.getHash = function(entryId, callback){
-        $.getJSON('ajax/entry/hash/get/', {entryId : entryId}, function(data) {
+    me.getHash = function(postId, callback){
+        $.getJSON('api/post/hash/get/', {postId : postId}, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                 callback(data[AJAX.DATA]);
             }
         });
     }
 
-    me.loadEntries = function(){
-        me.pager.$moreEntries.hide();
-        _private.$loading.show();                
-        var request = _private.loadEntriesAjaxRequestQueue.runAsynchronRequest();
-        $.getJSON('ajax/entries/load/', {
+    me.loadPosts = function(){
+        me.pager.$morePosts.hide();
+        _private.$loading.show();              
+        var request = _private.loadPostsAjaxRequestQueue.runAsynchronRequest();
+        $.getJSON('api/posts/load/', {
             search : Dashbird.Search.getSearchPhrase(),
             'start-position' : me.pager.startPosition,
-            'entry-count' : me.pager.entryCount
+            'post-count' : me.pager.postCount
         }, function(data) {
             if(request.isLatestRequest()){
                 if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                     _private.$loading.hide();            
-                    me.pager.hasMoreEntries = data[AJAX.DATA]['has-more-entries'];
-                    if(me.pager.hasMoreEntries===true){
-                        me.pager.$moreEntries.show();
+                    var posts = data[AJAX.DATA]['posts'];
+                    for (var i = 0; i <  posts.length; i++) {
+                        var postData = posts[i];
+                        var post = Dashbird.Post();
+                        post.init(postData);
+                        _private.posts.push(post);
+                        var $post = post.create();
+                        _private.$posts.append($post);                         
                     }
-                    else {
-                        me.pager.$moreEntries.hide();
-                    }
-                    var entries = data[AJAX.DATA]['entries'];
-                    for (var i = 0; i <  entries.length; i++) {
-                        var entryData = entries[i];
-                        var entry = Dashbird.DashboardEntry();
-                        entry.init(entryData);
-                        var $entry = entry.create();
-                        _private.$entries.append($entry);                         
+                    if(posts.length>0){
+                        me.pager.$morePosts.show();
                     }
                 }
             }
-        });		
+        });
+       
     };
     me.htmlEntities = function (str) {
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     };
      
-    me.showSingleEntry = function(entryId){
-        me.pager.$moreEntries.hide();
+    me.showSinglePost = function(postId){
+        me.pager.$morePosts.hide();
         _private.$viewAll.show();
-        _private.$entries.html('');
+        _private.$posts.html('');
         $('#navbar .nav .show-board').tab('show');
         _private.$loading.show();        
-         me.getEntry(entryId, function(data) {
+         me.getPost(postId, function(data) {
             _private.$loading.hide();     
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                me.fire('showSingleEntry', data[AJAX.DATA]);
+                me.fire('showSinglePost', data[AJAX.DATA]);
                 me.addToTop(data[AJAX.DATA]);
             }
         });
     }
     
     
-    me.getEntry = function(entryId, callback){
-        $.getJSON('ajax/entry/get/', {
-            entryId : entryId
+    me.getPost = function(postId, callback){
+        $.getJSON('api/post/get/', {
+            postId : postId
         }, function(data) {
            callback(data);
         });
     };
     
-    me.getEntries = function(entryIds, callback){
-         $.getJSON('ajax/entries/get/', {
-            entryIds : entryIds
+    me.getPosts = function(postIds, callback){
+         $.getJSON('api/posts/get/', {
+            postIds : postIds
         }, function(data) {
            callback(data);
         });
@@ -1095,22 +1112,22 @@ Dashbird.Modal = function(){
 if(Dashbird===undefined){
     var Dashbird = {};
 }
-Dashbird.NewEntry = function(){
+Dashbird.NewPost = function(){
     var me = SimpleJSLib.EventHandler(),
     _private = {};
     _private.tags = [];
     _private.bbcode= {};
     
     me.init = function(){
-        // new entry
-        $('#navbar .nav .show-new-entry').on('show', _private.onShow);  
+        // new post
+        $('#navbar .nav .show-new-post').on('show', _private.onShow);  
     };
     
     _private.isOnDemandInited = false;
     
     _private.onDemandInit = function(){
         if(!_private.isOnDemandInited){
-            _private.$ = $('#new-entry');
+            _private.$ = $('#new-post');
             
             _private.$.find('.submit-button').click(_private.onSaveClick);
             _private.$.find('.cancel-button').click(_private.onCancelClick);
@@ -1145,7 +1162,7 @@ Dashbird.NewEntry = function(){
     _private.onShow = function(){
         _private.onDemandInit();
         _private.tags = [];
-        _private.entryShares = [];
+        _private.postShares = [];
         _private.$.find('textarea').val('');
         _private.hideTagAlert();
         _private.drawShares();
@@ -1155,14 +1172,14 @@ Dashbird.NewEntry = function(){
     _private.onSaveClick = function(e){
         e.preventDefault();
         _private.addTag();
-        $.getJSON('ajax/entry/add/', {
+        $.getJSON('api/post/add/', {
             text :  _private.$.find('textarea').val(),
             tags :  _private.tags,
-            shares : _private.entryShares
+            shares : _private.postShares
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                me.fire('newEntry', data[AJAX.DATA]);
-                Dashbird.Dashboard.refreshEntries();
+                me.fire('newPost', data[AJAX.DATA]);
+                Dashbird.Board.refreshPosts();
                 $('#navbar .nav .show-board').tab('show');
                   
             }
@@ -1225,7 +1242,7 @@ Dashbird.NewEntry = function(){
         $.each(Dashbird.User.getUserShares(), function(key, element){
             $share = $('#templates #template-share-editable .checkbox').clone();
             $share.find('span').html(element.name);
-            if($.inArray(this.userId,_private.entryShares)!== -1){
+            if($.inArray(this.userId,_private.postShares)!== -1){
                 $share.find('input').attr('checked', 'checked');
             }
             $share.find('input').change(function(){
@@ -1237,12 +1254,12 @@ Dashbird.NewEntry = function(){
     
     _private.shareChange = function($shareInput, userId){
         if($shareInput.attr('checked')){
-            _private.entryShares.push(userId);
+            _private.postShares.push(userId);
         }
         else {
-            var position = $.inArray(userId, _private.entryShares);
+            var position = $.inArray(userId, _private.postShares);
             if(position!== -1){ 
-                _private.entryShares.splice(position, 1);
+                _private.postShares.splice(position, 1);
             }
         }
     }
@@ -1266,7 +1283,7 @@ Dashbird.PluginManager = function (){
     };
     
     me.loadData = function(name, callback){
-         $.getJSON('ajax/plugin/data/get/', {
+         $.getJSON('api/plugin/data/get/', {
                     name : name
                   
          }, function(data) {
@@ -1277,7 +1294,7 @@ Dashbird.PluginManager = function (){
     }
     
      me.saveData = function(name, data){
-         $.post('ajax/plugin/data/save/', {
+         $.post('api/plugin/data/save/', {
                     name : name,
                     data : JSON.stringify(data)
                   
@@ -1303,7 +1320,7 @@ Dashbird.Plugins.Notifications = function (){
     _private.data = null;
     _private.$count = null;
     _private.$ = null;
-    _private.changedEntryIds = [];
+    _private.changedPostIds = [];
         
     me.init = function(){
         _private.$count = $('#navbar .show-notifications span');
@@ -1319,11 +1336,11 @@ Dashbird.Plugins.Notifications = function (){
               
               
               
-        Dashbird.Dashboard.attach('showSingleEntry', _private.visitedEntry);
-        Dashbird.NewEntry.attach('newEntry', _private.visitedEntry);
-        Dashbird.Dashboard.attach('entry#save', _private.visitedEntry);
-        Dashbird.Dashboard.attach('entry#addComment', _private.visitedEntryByChangingComment);
-        Dashbird.Dashboard.attach('entry#deleteComment',_private.visitedEntryByChangingComment);
+        Dashbird.Board.attach('showSinglePost', _private.visitedPost);
+        Dashbird.NewPost.attach('newPost', _private.visitedPost);
+        Dashbird.Board.attach('post#save', _private.visitedPost);
+        Dashbird.Board.attach('post#addComment', _private.visitedPostByChangingComment);
+        Dashbird.Board.attach('post#deleteComment',_private.visitedPostByChangingComment);
     }
     
     _private.onShow = function(){
@@ -1345,10 +1362,10 @@ Dashbird.Plugins.Notifications = function (){
         
     me.onFirstTime = function(callback){
         if($.isEmptyObject(_private.data)){
-            Dashbird.Dashboard.getHashes(function(data){
+            Dashbird.Board.apiPostsUpdatedGet(function(data){
                 _private.data = {
                     options : {},
-                    hashes : data.hashes
+                    lastViews : data.dates
                 }
                 me.saveData();
                 callback();
@@ -1361,22 +1378,21 @@ Dashbird.Plugins.Notifications = function (){
         
             
     me.refresh = function(){
-        _private.checkHashes(function(){
+        _private.check(function(){
             _private.updateCountDisplay();
             _private.showNotifications();
         });
         
     }
     
-    _private.checkHashes = function(callback){
-        _private.changedEntryIds = [];
-        Dashbird.Dashboard.getHashes(function(data){
-            var oldHash = null;
-            $.each(data.hashes, function(){
-                oldHash = _private.getHashFromData(this.entryId)
-                if(this.hash != oldHash){
-                    _private.changedEntryIds.push(this.entryId);
-                  
+    _private.check = function(callback){
+        _private.changedPostIds = [];
+        Dashbird.Board.apiPostsUpdatedGet(function(data){
+            var lastView = null;
+            $.each(data.dates, function(){
+                lastView = _private.getLastViewFromData(this.postId)
+                if(this.updated != lastView){
+                    _private.changedPostIds.push(this.postId);
                 }
             });
             if(callback != null){
@@ -1386,7 +1402,7 @@ Dashbird.Plugins.Notifications = function (){
     };
     
     _private.updateCountDisplay = function(){
-        _private.$count.html(_private.changedEntryIds.length);
+        _private.$count.html(_private.changedPostIds.length);
     }
     
     _private.showLoading = function(){
@@ -1402,13 +1418,13 @@ Dashbird.Plugins.Notifications = function (){
         _private.$.find('.content').html('');
         _private.hideLoading();
         
-        if(_private.changedEntryIds.length > 0){
+        if(_private.changedPostIds.length > 0){
             _private.showLoading();
     
-            Dashbird.Dashboard.getEntries(_private.changedEntryIds, function(data){
+            Dashbird.Board.getPosts(_private.changedPostIds, function(data){
                 if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                    var entries = data[AJAX.DATA];
-                    $.each(entries, function(key, element){
+                    var posts = data[AJAX.DATA];
+                    $.each(posts, function(key, element){
                         var $notification = $('#templates #template-notification .notification').clone();
                         var text = element.text;
                         if(text.length > 120){
@@ -1417,7 +1433,7 @@ Dashbird.Plugins.Notifications = function (){
                         text += '...';
                         $notification.find('.text').html(text);
                         $notification.find('.meta .info .username').html(element.user.name);
-                        $notification.find('.meta .info .date').html(Dashbird.Dashboard.convertDate(element.datetime));
+                        $notification.find('.meta .info .date').html(Dashbird.Board.convertDate(element.updated));
                     
                         $notification.find('.meta .comments span').html(element.comments.length);
                     
@@ -1429,15 +1445,15 @@ Dashbird.Plugins.Notifications = function (){
                         });
                         $notification.find('.command-bar.popup .command-mark-as-read').click(function(e){
                             e.preventDefault();
-                            _private.visitedEntry(element);
+                            _private.visitedPost(element);
                         });
                         $notification.find('.text').click(function(e){
                             e.preventDefault();
-                            Dashbird.Dashboard.showSingleEntry(element.entryId);
+                            Dashbird.Board.showSinglePost(element.postId);
                         });
                         $notification.find('.read').click(function(e){
                             e.preventDefault();
-                            Dashbird.Dashboard.showSingleEntry(element.entryId);
+                            Dashbird.Board.showSinglePost(element.postId);
                         });
                     
                         _private.$.find('.content').append($notification)
@@ -1452,47 +1468,45 @@ Dashbird.Plugins.Notifications = function (){
         
     }
     
-    _private.getHashFromData = function(entryId){
-        var hash = null;
-        $.each(_private.data.hashes, function(){
-            if(this.entryId == entryId){
-                hash = this.hash;
+    _private.getLastViewFromData = function(postId){
+        var lastView = null;
+        $.each(_private.data.lastViews, function(){
+            if(this.postId == postId){
+                lastView = this.updated;
                 return false;
             }
             return true;
         });
-        return hash;
+        return lastView;
     };
     
-    _private.updateHash = function(entryId, hash){
+    _private.updateLastView = function(postId, lastView){
         var inArray = false;
-        $.each(_private.data.hashes, function(){
-            if(this.entryId == entryId){
-                this.hash = hash;
+        $.each(_private.data.lastViews, function(){
+            if(this.postId == postId){
+                this.updated = lastView;
                 inArray = true;
                 return false;
             }
             return true;
         });
         if(!inArray){
-            _private.data.hashes.push({
-                entryId : entryId, 
-                hash : hash
+            _private.data.lastViews.push({
+                postId : postId, 
+                updated : lastView
             });
         }
         me.saveData();
     };
     
-    _private.visitedEntry = function(data){
-        _private.updateHash(data.entryId, data.hash);
+    _private.visitedPost = function(data){
+        _private.updateLastView(data.postId, data.updated);
         me.refresh();
     }
     
-    _private.visitedEntryByChangingComment = function(data){
-        Dashbird.Dashboard.getHash(data.entryId, function(data){
-            _private.updateHash(data.entryId, data.hash);
-            me.refresh();
-        })
+    _private.visitedPostByChangingComment = function(data){
+        _private.updateLastView(data.post.postData.postId, data.post.postData.updated);
+        me.refresh();
     }
         
     return me;
@@ -1518,7 +1532,7 @@ Dashbird.Search = function(){
             }
             else {
                 _private.searchRequestQueue.addToQueue({}, function(data){
-                     Dashbird.Dashboard.refreshEntries();
+                     Dashbird.Board.refreshPosts();
                      $('#navbar .nav .show-board').tab('show');
                 });
             }
@@ -1619,7 +1633,7 @@ Dashbird.User = function (){
         me.init = function(){
                 me.attach('onLoggedIn', _private.onLoggedIn);
                 // check if logged in
-                $.getJSON('ajax/auth/is/logged/in/', function(data) {
+                $.getJSON('api/auth/is/logged/in/', function(data) {
                         if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                                 if(data[AJAX.MESSAGE] === AJAX.IS_NOT_LOGGED_IN){
                                         Dashbird.LoginBox.show();
@@ -1639,7 +1653,7 @@ Dashbird.User = function (){
         };
         
          me.logout = function(){
-         $.getJSON('ajax/auth/logout/',{}, function(data) {
+         $.getJSON('api/auth/logout/',{}, function(data) {
                 if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
                     // refresh page
                     document.location.reload();
@@ -1648,7 +1662,7 @@ Dashbird.User = function (){
         };
         me.login = function(name, password, callbackOnSuccess, callbackOnFailure){
                 if(!this.isLoggedIn){
-                        $.post('ajax/auth/login', {
+                        $.post('api/auth/login', {
                                 name : name, 
                                 password : password
                         }, function(data) {
@@ -1667,7 +1681,7 @@ Dashbird.User = function (){
         
         _private.onLoggedIn = function(){
             setInterval(function(){
-                $.getJSON('ajax/auth/is/logged/in/', function(data) {
+                $.getJSON('api/auth/is/logged/in/', function(data) {
                        if(data[AJAX.MESSAGE] === AJAX.IS_NOT_LOGGED_IN){
                                document.location.href = "";
                         }
@@ -1682,7 +1696,7 @@ Dashbird.User = function (){
         }
         
         me.addUserShare = function(name, callback){
-            $.getJSON('ajax/user/shares/add/', {
+            $.getJSON('api/user/shares/add/', {
                 name : name
             }, function(data){
                 if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
@@ -1693,7 +1707,7 @@ Dashbird.User = function (){
         };
         
         me.changePassword = function(oldPassword, newPassword, callback){
-            $.post('ajax/user/password/change/', {
+            $.post('api/user/password/change/', {
                 'old-password' : oldPassword,
                 'new-password' : newPassword
             }, function(data){
@@ -1731,34 +1745,34 @@ Dashbird.Templates = function(){
     
     me.init = function(){
         _private.$ = $('#templates');
-        _private.templates.$entry = _private.$.find('#template-entry');
-        _private.templates.$entry.remove();
-        _private.templates.$entry = _private.templates.$entry.find('.entry');
+        _private.templates.$post = _private.$.find('#template-post');
+        _private.templates.$post.remove();
+        _private.templates.$post = _private.templates.$post.find('.post');
         
         
-        _private.templates.$foreignEntry = _private.templates.$entry.clone();
+        _private.templates.$foreignPost = _private.templates.$post.clone();
         // remove unneccessary stuff
-        _private.templates.$foreignEntry.find('.content .command-bar.popup .command-edit').remove();
-        _private.templates.$foreignEntry.find('.content .command-bar.popup .command-share').remove();
-        _private.templates.$foreignEntry.find('.content .command-bar.popup .command-remove').remove();
-        _private.templates.$foreignEntry.find('.content .command.command-edit').remove();
-        _private.templates.$foreignEntry.find('.content .command.command-share').remove();
+        _private.templates.$foreignPost.find('.content .command-bar.popup .command-edit').remove();
+        _private.templates.$foreignPost.find('.content .command-bar.popup .command-share').remove();
+        _private.templates.$foreignPost.find('.content .command-bar.popup .command-remove').remove();
+        _private.templates.$foreignPost.find('.content .command.command-edit').remove();
+        _private.templates.$foreignPost.find('.content .command.command-share').remove();
         
-        _private.templates.$entryComment = _private.$.find('#template-entry-comment');
-        _private.templates.$entryComment.remove();
-        _private.templates.$entryComment = _private.templates.$entryComment.find('.comment');
+        _private.templates.$postComment = _private.$.find('#template-post-comment');
+        _private.templates.$postComment.remove();
+        _private.templates.$postComment = _private.templates.$postComment.find('.comment');
     };
     
     me.getTemplate = function(name){
         switch (name){ 
-            case "entry":
-                return _private.templates.$entry.clone();
+            case "post":
+                return _private.templates.$post.clone();
                 break;
-            case "foreign-entry":
-                return _private.templates.$foreignEntry.clone();
+            case "foreign-post":
+                return _private.templates.$foreignPost.clone();
                 break;
-            case "entry-comment":
-                return _private.templates.$entryComment.clone();
+            case "post-comment":
+                return _private.templates.$postComment.clone();
                 break;
         }
         return null;
@@ -1802,10 +1816,10 @@ $(document).ready(function (){
         $('#navbar .navbar-search').show();
         Dashbird.Modal.init();
         Dashbird.Settings.init();
-        Dashbird.Dashboard.init();
+        Dashbird.Board.init();
         Dashbird.Search.init();
-        Dashbird.Dashboard.loadEntries();
-        Dashbird.NewEntry.init();
+        Dashbird.Board.loadPosts();
+        Dashbird.NewPost.init();
         Dashbird.PluginManager.init();
        
     });

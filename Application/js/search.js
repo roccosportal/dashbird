@@ -18,7 +18,7 @@ Dashbird.Search = function(){
             }
             else {
                 _private.searchRequestQueue.addToQueue({}, function(data){
-                     Dashbird.Dashboard.refreshEntries();
+                     Dashbird.Board.refreshPosts();
                      $('#navbar .nav .show-board').tab('show');
                 });
             }

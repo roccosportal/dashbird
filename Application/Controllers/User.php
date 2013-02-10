@@ -6,15 +6,7 @@ use Pvik\Database\Generic\ModelTable;
 
 class User extends Base {
 
-    public function AjaxGetUserSharesAction() {
-        if (!$this->IsLoggedIn()) {
-            return $this->ResponseNotLoggedIn();
-        }
-        $Data = $this->GetUser()->UserSharesToArray();
-        return $this->ResponseSuccess($Data);
-    }
-
-    public function AjaxAddUserShareAction() {
+    public function ApiUserSharesAddAction() {
         if (!$this->IsLoggedIn()) {
             return $this->ResponseNotLoggedIn();
         }
@@ -42,15 +34,15 @@ class User extends Base {
         
        
 
-        $Entry = new \Dashbird\Model\Entities\Entry();
-        $Entry->Text = 'Hello '.  $User->Name .",\nI started sharing with you!";
-        $Entry->SearchHelper = '';
-        $Entry->UserId = $this->GetUserId();
-        $Entry->Insert();
+        $Post = new \Dashbird\Model\Entities\Post();
+        $Post->Text = 'Hello '.  $User->Name .",\nI started sharing with you!";
+        $Post->SearchHelper = '';
+        $Post->UserId = $this->GetUserId();
+        $Post->Insert();
 
-        $Entry->SetSearchHelperPart('text', $Entry->Text);
-        $Entry->SetEntryShares(array($User->UserId));
-        $Entry->Update();
+        $Post->SetSearchHelperPart('text', $Post->Text);
+        $Post->SetPostShares(array($User->UserId));
+        $Post->Update();
         
       
         
@@ -59,7 +51,7 @@ class User extends Base {
         return $this->ResponseSuccess(array ('user' => $User->ToArraySimple()));
     }
     
-      public function AjaxChangePasswordAction(){
+      public function ApiUserChangePasswordAction(){
 		if(!$this->IsLoggedIn()){
                     return $this->ResponseNotLoggedIn();
                 }

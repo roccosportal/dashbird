@@ -10,7 +10,7 @@ class PluginData extends Base {
         $this->ExecuteView();
     }
 
-    public function AjaxGetAction() {
+    public function ApiPluginDataGetAction() {
         if (!$this->IsLoggedIn()) {
             return $this->ResponseNotLoggedIn();
         }
@@ -38,7 +38,7 @@ class PluginData extends Base {
     }
     
     
-    public function AjaxSaveAction() {
+    public function ApiPluginDataSaveAction() {
         if (!$this->IsLoggedIn()) {
             return $this->ResponseNotLoggedIn();
         }

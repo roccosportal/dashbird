@@ -1,15 +1,15 @@
 if(typeof Dashbird == "undefined"){
     var Dashbird = {};
 }
-Dashbird.DashboardEntry = function(){
+Dashbird.Post = function(){
     var me = {},
     _private = {};
     
-    _private.editEntryBoxTags = null;
-    _private.entrySharesBoxEntryShares = null;
+    _private.editPostBoxTags = null;
+    _private.postSharesBoxPostShares = null;
      
-    me.entryData = null;
-    me.$entry = null;
+    me.postData = null;
+    me.$post = null;
     me.$meta = null;
     me.$comments = null;
 
@@ -17,28 +17,28 @@ Dashbird.DashboardEntry = function(){
         $bar : null
     }
 
-    me.init = function (entryData){
-        me.entryData = entryData;
+    me.init = function (postData){
+        me.postData = postData;
     }
 
     me.create = function(){
-        if(Dashbird.User.getUser().userId === me.entryData.user.userId){
-            me.$entry = Dashbird.Templates.getTemplate('entry');
+        if(Dashbird.User.getUser().userId === me.postData.user.userId){
+            me.$post = Dashbird.Templates.getTemplate('post');
         }
         else {
-            me.$entry = Dashbird.Templates.getTemplate('foreign-entry');
+            me.$post = Dashbird.Templates.getTemplate('foreign-post');
         }
         
         // create jquery shortcuts
-        me.$meta =  me.$entry.find('.content .meta');
-        me.commands.$bar = me.$entry.find('.content .command-bar.popup');
-        me.$comments = me.$entry.find('.comments');
+        me.$meta =  me.$post.find('.content .meta');
+        me.commands.$bar = me.$post.find('.content .command-bar.popup');
+        me.$comments = me.$post.find('.comments');
         
         me.drawText();
-        me.$meta.find('.info .username').html(me.entryData.user.name);
-        me.$meta.find('.info .date').html(Dashbird.Dashboard.convertDate(me.entryData.datetime));
+        me.$meta.find('.info .username').html(me.postData.user.name);
+        me.$meta.find('.info .date').html(Dashbird.Board.convertDate(me.postData.created));
         
-        if(Dashbird.User.getUser().userId === me.entryData.user.userId){
+        if(Dashbird.User.getUser().userId === me.postData.user.userId){
             me.commands.edit = Dashbird.Commands.Edit(me);
             me.commands.edit.init();
             
@@ -49,39 +49,40 @@ Dashbird.DashboardEntry = function(){
             me.commands.remove.init();
         }
         me.drawTags();
-        me.drawEntryShares();
+        me.drawPostShares();
         _private.drawComments();
         
         me.commands.comment = Dashbird.Commands.Comment(me);
         me.commands.comment.init();
       
         // show options
-        me.$entry.mouseover(function(){
+        me.$post.mouseover(function(){
             me.commands.$bar.show();
         });
-        me.$entry.mouseleave(function (){
+        me.$post.mouseleave(function (){
             me.commands.$bar.hide();
         });     
         
-        me.$entry.data('dashboardEntry', me);
-        return me.$entry;
+        me.$post.data('post', me);
+        return me.$post;
     },
     
     me.drawText = function(){
-        me.$entry.find('.content .text').html(me.bbcode(me.entryData.text.replace(/\n/g,'<br />')));
+        me.$post.find('.content .text').html(me.bbcode(me.postData.text.replace(/\n/g,'<br />')));
     };
     
     me.update = function(text, tags){
-        $.getJSON('ajax/entry/edit/', {
-            entryId : me.entryData.entryId, 
+        $.getJSON('api/post/edit/', {
+            postId : me.postData.postId, 
             text : text,
             tags: tags
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                Dashbird.Dashboard.fire('entry#save', data[AJAX.DATA]);
+                Dashbird.Board.fire('post#save', data[AJAX.DATA]);
                 // save status
-                me.entryData.tags =  data[AJAX.DATA].tags;
-                me.entryData.text =  data[AJAX.DATA].text;
+                me.postData.tags =  data[AJAX.DATA].tags;
+                me.postData.text =  data[AJAX.DATA].text;
+                me.postData.updated = data[AJAX.DATA].updated;
                 me.drawText();
                 me.drawTags();
             }
@@ -90,23 +91,23 @@ Dashbird.DashboardEntry = function(){
     
    
                 
-    me.deleteEntry = function(){
-        $.getJSON('ajax/entry/delete/', {
-            entryId : me.entryData.entryId
+    me.deletePost = function(){
+        $.getJSON('api/post/delete/', {
+            postId : me.postData.postId
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
             // do nothing
             }
         });
-        me.$entry.fadeOut("slow", function(){       
-            me.$entry.detach();
+        me.$post.fadeOut("slow", function(){       
+            me.$post.detach();
         });                     
     };
     
     me.drawTags = function(){
         var $tag = null;
         me.$meta.find('.tags ul').html('');
-        $.each(me.entryData.tags, function(key, element){
+        $.each(me.postData.tags, function(key, element){
             $tag = $('#templates #template-tag .tag').clone();
             $tag.find('span').html(element);
             me.$meta.find('.tags ul').append($tag);
@@ -114,18 +115,18 @@ Dashbird.DashboardEntry = function(){
       
     };
     
-    me.drawEntryShares = function(){
-        if(me.entryData.entryShares.length == 0){
+    me.drawPostShares = function(){
+        if(me.postData.postShares.length == 0){
             me.$meta.find('.sharing').hide();
             me.$meta.find('.private-sharing').css('display', '');
         }
         else {
             me.$meta.find('.private-sharing').hide();
            
-            me.$meta.find('.sharing a span.count').html(me.entryData.entryShares.length);
+            me.$meta.find('.sharing a span.count').html(me.postData.postShares.length);
             // if multiple persons add a trailing s;
            
-            if(me.entryData.entryShares.length > 1 ){
+            if(me.postData.postShares.length > 1 ){
                 me.$meta.find('.sharing a span.persons').html('persons');
             }
             else{
@@ -134,7 +135,7 @@ Dashbird.DashboardEntry = function(){
             
             var names = '';
             var first = true;
-            $.each(me.entryData.entryShares, function(key, element){
+            $.each(me.postData.postShares, function(key, element){
                 if(first){
                     first = false;
                 }
@@ -150,14 +151,14 @@ Dashbird.DashboardEntry = function(){
     }
 
         
-    me.setEntryShares = function(userIds){
-        $.getJSON('ajax/entry/shares/set/', {
-            entryId : me.entryData.entryId, 
+    me.setPostShares = function(userIds){
+        $.getJSON('api/post/shares/set/', {
+            postId : me.postData.postId, 
             userIds : userIds
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                me.entryData.entryShares = userIds;
-                me.drawEntryShares();
+                me.postData.postShares = userIds;
+                me.drawPostShares();
             }
         });
     }
@@ -165,18 +166,20 @@ Dashbird.DashboardEntry = function(){
 
     
     me.addComment = function(text, callback){
-        $.getJSON('ajax/entry/comment/add/', {
-            entryId : me.entryData.entryId, 
+        $.getJSON('api/post/comment/add/', {
+            postId : me.postData.postId, 
             text : text
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                Dashbird.Dashboard.fire('entry#addComment', {
-                    entryId : me.entryData.entryId, 
+                me.postData.updated = data[AJAX.DATA].post.updated;
+                
+                Dashbird.Board.fire('post#addComment', {
+                    post : me, 
                     data : data[AJAX.DATA]
                 })
-                me.entryData.comments.push(data[AJAX.DATA]);
+                me.postData.comments.push(data[AJAX.DATA].comment);
                 _private.drawComments();
-               
+              
             }
             if(callback != null){
                 callback();
@@ -185,21 +188,24 @@ Dashbird.DashboardEntry = function(){
     }
 
     me.deleteComment = function(id){
-        $.getJSON('ajax/entry/comment/delete/', {
+        $.getJSON('api/post/comment/delete/', {
             commentId : id
         }, function(data) {
             if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                Dashbird.Dashboard.fire('entry#deleteComment', {
-                    entryId : me.entryData.entryId
+                me.postData.updated = data[AJAX.DATA].post.updated;
+                
+                Dashbird.Board.fire('post#deleteComment', {
+                    post : me,
+                    data : data[AJAX.DATA]
                 })
                 // rebuild comments
                 var comments = [];
-                $.each(me.entryData.comments,function(index, comment){
-                    if(comment.commentId !== id.toString()){
+                $.each(me.postData.comments,function(index, comment){
+                    if(comment.commentId.toString() !== id.toString()){
                         comments.push(comment);
                     }
                 });
-                me.entryData.comments = comments;
+                me.postData.comments = comments;
                 _private.drawComments();
             }
         });
@@ -207,12 +213,12 @@ Dashbird.DashboardEntry = function(){
     
     _private.drawComments = function(){
         me.$comments.empty();
-        var $template = Dashbird.Templates.getTemplate('entry-comment');
-        $.each(me.entryData.comments,function(index, comment){
+        var $template = Dashbird.Templates.getTemplate('post-comment');
+        $.each(me.postData.comments,function(index, comment){
             var $comment = $template.clone();
             $comment.find('.text').html(comment.text.replace(/\n/g,'<br />'));
             $comment.find('.meta .info .username').html(comment.user.name);
-            $comment.find('.meta .info .date').html(Dashbird.Dashboard.convertDate(comment.datetime));
+            $comment.find('.meta .info .date').html(Dashbird.Board.convertDate(comment.datetime));
             if(Dashbird.User.getUser().userId === comment.user.userId){
                 // show options
                 $comment.mouseover(function(){

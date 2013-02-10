@@ -13,7 +13,7 @@
                 <div class="navbar-inner">
                     <a class="brand" href="/">Dashbird</a>
                     <ul class="nav" style="display:none">
-                        <li><a class="show-new-entry" href="#new-entry" data-toggle="tab"><i class="icon-plus"></i> New</a></a></li>
+                        <li><a class="show-new-post" href="#new-post" data-toggle="tab"><i class="icon-plus"></i> New</a></a></li>
                         <li class="active"><a class="show-board" href="#board" data-toggle="tab"><i class="icon-home"></i> Board</a></li>
                         <li><a class="show-settings" href="#settings" data-toggle="tab"><i class="icon-wrench"></i> Settings</a></a></li>
                         <li><a class="show-notifications" href="#notifications" data-toggle="tab"><i class="icon-envelope"></i> (<span>0</span>)</a></a></li>
@@ -28,10 +28,10 @@
             </div>
             <div id="content" class="tabbable" style="display:none">
                 <div class="tab-content">
-                    <div id="new-entry"  class="tab-pane">
+                    <div id="new-post"  class="tab-pane">
                             <form>
                                 <fieldset>
-                                    <label><strong>New entry</strong></label>
+                                    <label><strong>New post</strong></label>
                                     <div class="command-bar btn-group">
                                         <a href="" class="command-link btn btn-mini"><i class="icon-globe"></i></a>
                                         <a href="" class="command-video btn btn-mini"><i class="icon-facetime-video"></i></a>
@@ -58,15 +58,15 @@
                     </div>
                     <div id="board"  class="tab-pane active">
                         <div class="view-all" style="display:none">
-                             <button class="btn btn-primary btn-large btn-block" type="button">View more entries</button>
+                             <button class="btn btn-primary btn-large btn-block" type="button">View more posts</button>
                         </div>
-                        <div class="entries">
+                        <div class="posts">
                         </div>
                         <div class="loading" style="display:none">
                             <button class="btn btn-large disabled btn-block"><img src="/images/ajax-loader.gif" /></button>
                         </div>
-                        <div class="more-entries" style="display:none">
-                            <button class="btn btn-primary btn-large btn-block" type="button">Load more entries</button>
+                        <div class="more-posts" style="display:none">
+                            <button class="btn btn-primary btn-large btn-block" type="button">Load more posts</button>
                         </div>
                     </div>
                     <div id="settings"  class="tab-pane" >
@@ -151,8 +151,8 @@
             </div>
         </div>
         <div id="templates" style="display:none">
-            <div id="template-entry">
-                <div class="entry">
+            <div id="template-post">
+                <div class="post">
                     <div class="content">
                         <div class="command-bar popup btn-group">
                             <a class="command-comment btn btn-mini"><i class="icon-comment"></i> </a>
@@ -182,7 +182,7 @@
                         <div class="command command-edit">
                             <form>
                                 <fieldset>
-                                    <label><strong>Edit your entry</strong></label>
+                                    <label><strong>Edit your post</strong></label>
                                     <div class="command-bar btn-group">
                                         <a href="" class="command-link btn btn-mini"><i class="icon-globe"></i></a>
                                         <a href="" class="command-video btn btn-mini"><i class="icon-facetime-video"></i></a>
@@ -220,7 +220,7 @@
                     <div class="comments"></div>
                 </div>
             </div>
-            <div id="template-entry-comment">
+            <div id="template-post-comment">
                 <div class="comment">
                     <div class="command-bar popup">
                         <a class="command-delete btn btn-mini"><i class="icon-trash"></i> </a>

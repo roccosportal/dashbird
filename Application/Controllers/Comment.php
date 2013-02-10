@@ -3,29 +3,29 @@
 namespace Dashbird\Controllers;
 
 class Comment extends Base {
-    public function AjaxAddCommentAction(){
+    public function ApiPostCommentAddAction(){
         if(!$this->IsLoggedIn()){
             return $this->ResponseNotLoggedIn();
         }
-        $EntryId = $this->Request->GetGET('entryId');
+        $PostId = $this->Request->GetGET('postId');
         $Text = $this->Request->GetGET('text');
         
-        if($EntryId == null || empty($Text)){
+        if($PostId == null || empty($Text)){
             return $this->ResponseWrongData();
         }
         
-        $Entry = \Pvik\Database\Generic\ModelTable::Get('Entries')->LoadByPrimaryKey($EntryId);
-        /* @var $Entry \Dashbird\Model\Entities\Entry */
-        if($Entry == null){
+        $Post = \Pvik\Database\Generic\ModelTable::Get('Posts')->LoadByPrimaryKey($PostId);
+        /* @var $Post \Dashbird\Model\Entities\Post */
+        if($Post == null){
             return $this->ResponseWrongData();
         }
         
-        if(!$Entry->CurrentUserHasPermissionToChange()){
-            // user is not owner, lets look if the entry is shared with him
+        if(!$Post->CurrentUserHasPermissionToChange()){
+            // user is not owner, lets look if the post is shared with him
             $IsShared = false;
-            foreach($Entry->EntryShares as $EntryShare){
-                 /* @var $EntryShare \Dashbird\Model\Entities\EntryShare */
-                 if($EntryShare->UserId == $this->GetUserId()){
+            foreach($Post->PostShares as $PostShare){
+                 /* @var $PostShare \Dashbird\Model\Entities\PostShare */
+                 if($PostShare->UserId == $this->GetUserId()){
                      $IsShared = true;
                      break;
                  }
@@ -36,14 +36,18 @@ class Comment extends Base {
         }
         
         $Comment = new \Dashbird\Model\Entities\Comment();
-        $Comment->EntryId = $Entry->EntryId;
+        $Comment->PostId = $Post->PostId;
         $Comment->Text = $Text;
         $Comment->UserId = $this->GetUserId();
         $Comment->Insert();
-        $this->ResponseSuccess($Comment->ToArray());
+        
+        $Post->Update();
+        
+        
+        $this->ResponseSuccess(array ('post' => array ('updated' => $Post->Updated), 'comment' => $Comment->ToArray()));
     }
     
-    public function AjaxDeleteCommentAction(){
+    public function ApiPostCommentDeleteAction(){
         if(!$this->IsLoggedIn()){
             return $this->ResponseNotLoggedIn();
         }
@@ -58,9 +62,11 @@ class Comment extends Base {
         if($Comment == null || $Comment->UserId !== $this->GetUserId()){
             return $this->ResponseWrongData();
         }
+        $Post = $Comment->Post;
         
         $Comment->Delete();
-        return $this->ResponseSuccess();
+        $Post->Update();
+        return $this->ResponseSuccess(array ('post' => array ('updated' => $Post->Updated)));
         
         
         

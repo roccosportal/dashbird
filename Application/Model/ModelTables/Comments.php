@@ -21,9 +21,9 @@ class Comments extends \Pvik\Database\Generic\ModelTable {
        
         $this->FieldDefinition['User'] = array('Type' => 'ForeignObject', 'ForeignKey' => 'UserId');
         
-        $this->FieldDefinition['EntryId'] = array('Type' => 'ForeignKey', 'ModelTable' => 'Entries');
+        $this->FieldDefinition['PostId'] = array('Type' => 'ForeignKey', 'ModelTable' => 'Posts');
        
-        $this->FieldDefinition['Entry'] = array('Type' => 'ForeignObject', 'ForeignKey' => 'EntryId');
+        $this->FieldDefinition['Post'] = array('Type' => 'ForeignObject', 'ForeignKey' => 'PostId');
         
         
         

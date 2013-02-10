@@ -8,8 +8,8 @@ namespace Dashbird\Model\Entities;
  * @property string $DateTime
  * @property int $UserId
  * @property User $User
- * @property int $EntryId
- * @property Entry $Entry
+ * @property int $PostId
+ * @property Post $Post
  */
 class Comment extends \Pvik\Database\Generic\Entity {
 

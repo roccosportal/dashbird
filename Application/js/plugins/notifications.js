@@ -11,7 +11,7 @@ Dashbird.Plugins.Notifications = function (){
     _private.data = null;
     _private.$count = null;
     _private.$ = null;
-    _private.changedEntryIds = [];
+    _private.changedPostIds = [];
         
     me.init = function(){
         _private.$count = $('#navbar .show-notifications span');
@@ -27,11 +27,11 @@ Dashbird.Plugins.Notifications = function (){
               
               
               
-        Dashbird.Dashboard.attach('showSingleEntry', _private.visitedEntry);
-        Dashbird.NewEntry.attach('newEntry', _private.visitedEntry);
-        Dashbird.Dashboard.attach('entry#save', _private.visitedEntry);
-        Dashbird.Dashboard.attach('entry#addComment', _private.visitedEntryByChangingComment);
-        Dashbird.Dashboard.attach('entry#deleteComment',_private.visitedEntryByChangingComment);
+        Dashbird.Board.attach('showSinglePost', _private.visitedPost);
+        Dashbird.NewPost.attach('newPost', _private.visitedPost);
+        Dashbird.Board.attach('post#save', _private.visitedPost);
+        Dashbird.Board.attach('post#addComment', _private.visitedPostByChangingComment);
+        Dashbird.Board.attach('post#deleteComment',_private.visitedPostByChangingComment);
     }
     
     _private.onShow = function(){
@@ -53,10 +53,10 @@ Dashbird.Plugins.Notifications = function (){
         
     me.onFirstTime = function(callback){
         if($.isEmptyObject(_private.data)){
-            Dashbird.Dashboard.getHashes(function(data){
+            Dashbird.Board.apiPostsUpdatedGet(function(data){
                 _private.data = {
                     options : {},
-                    hashes : data.hashes
+                    lastViews : data.dates
                 }
                 me.saveData();
                 callback();
@@ -69,22 +69,21 @@ Dashbird.Plugins.Notifications = function (){
         
             
     me.refresh = function(){
-        _private.checkHashes(function(){
+        _private.check(function(){
             _private.updateCountDisplay();
             _private.showNotifications();
         });
         
     }
     
-    _private.checkHashes = function(callback){
-        _private.changedEntryIds = [];
-        Dashbird.Dashboard.getHashes(function(data){
-            var oldHash = null;
-            $.each(data.hashes, function(){
-                oldHash = _private.getHashFromData(this.entryId)
-                if(this.hash != oldHash){
-                    _private.changedEntryIds.push(this.entryId);
-                  
+    _private.check = function(callback){
+        _private.changedPostIds = [];
+        Dashbird.Board.apiPostsUpdatedGet(function(data){
+            var lastView = null;
+            $.each(data.dates, function(){
+                lastView = _private.getLastViewFromData(this.postId)
+                if(this.updated != lastView){
+                    _private.changedPostIds.push(this.postId);
                 }
             });
             if(callback != null){
@@ -94,7 +93,7 @@ Dashbird.Plugins.Notifications = function (){
     };
     
     _private.updateCountDisplay = function(){
-        _private.$count.html(_private.changedEntryIds.length);
+        _private.$count.html(_private.changedPostIds.length);
     }
     
     _private.showLoading = function(){
@@ -111,13 +110,13 @@ Dashbird.Plugins.Notifications = function (){
         _private.$.find('.content').html('');
         _private.hideLoading();
         
-        if(_private.changedEntryIds.length > 0){
+        if(_private.changedPostIds.length > 0){
             _private.showLoading();
     
-            Dashbird.Dashboard.getEntries(_private.changedEntryIds, function(data){
+            Dashbird.Board.getPosts(_private.changedPostIds, function(data){
                 if(data[AJAX.STATUS] === AJAX.STATUS_SUCCESS){
-                    var entries = data[AJAX.DATA];
-                    $.each(entries, function(key, element){
+                    var posts = data[AJAX.DATA];
+                    $.each(posts, function(key, element){
                         var $notification = $('#templates #template-notification .notification').clone();
                         var text = element.text;
                         if(text.length > 120){
@@ -126,7 +125,7 @@ Dashbird.Plugins.Notifications = function (){
                         text += '...';
                         $notification.find('.text').html(text);
                         $notification.find('.meta .info .username').html(element.user.name);
-                        $notification.find('.meta .info .date').html(Dashbird.Dashboard.convertDate(element.datetime));
+                        $notification.find('.meta .info .date').html(Dashbird.Board.convertDate(element.updated));
                     
                         $notification.find('.meta .comments span').html(element.comments.length);
                     
@@ -138,15 +137,15 @@ Dashbird.Plugins.Notifications = function (){
                         });
                         $notification.find('.command-bar.popup .command-mark-as-read').click(function(e){
                             e.preventDefault();
-                            _private.visitedEntry(element);
+                            _private.visitedPost(element);
                         });
                         $notification.find('.text').click(function(e){
                             e.preventDefault();
-                            Dashbird.Dashboard.showSingleEntry(element.entryId);
+                            Dashbird.Board.showSinglePost(element.postId);
                         });
                         $notification.find('.read').click(function(e){
                             e.preventDefault();
-                            Dashbird.Dashboard.showSingleEntry(element.entryId);
+                            Dashbird.Board.showSinglePost(element.postId);
                         });
                     
                         _private.$.find('.content').append($notification)
@@ -161,47 +160,45 @@ Dashbird.Plugins.Notifications = function (){
         
     }
     
-    _private.getHashFromData = function(entryId){
-        var hash = null;
-        $.each(_private.data.hashes, function(){
-            if(this.entryId == entryId){
-                hash = this.hash;
+    _private.getLastViewFromData = function(postId){
+        var lastView = null;
+        $.each(_private.data.lastViews, function(){
+            if(this.postId == postId){
+                lastView = this.updated;
                 return false;
             }
             return true;
         });
-        return hash;
+        return lastView;
     };
     
-    _private.updateHash = function(entryId, hash){
+    _private.updateLastView = function(postId, lastView){
         var inArray = false;
-        $.each(_private.data.hashes, function(){
-            if(this.entryId == entryId){
-                this.hash = hash;
+        $.each(_private.data.lastViews, function(){
+            if(this.postId == postId){
+                this.updated = lastView;
                 inArray = true;
                 return false;
             }
             return true;
         });
         if(!inArray){
-            _private.data.hashes.push({
-                entryId : entryId, 
-                hash : hash
+            _private.data.lastViews.push({
+                postId : postId, 
+                updated : lastView
             });
         }
         me.saveData();
     };
     
-    _private.visitedEntry = function(data){
-        _private.updateHash(data.entryId, data.hash);
+    _private.visitedPost = function(data){
+        _private.updateLastView(data.postId, data.updated);
         me.refresh();
     }
     
-    _private.visitedEntryByChangingComment = function(data){
-        Dashbird.Dashboard.getHash(data.entryId, function(data){
-            _private.updateHash(data.entryId, data.hash);
-            me.refresh();
-        })
+    _private.visitedPostByChangingComment = function(data){
+        _private.updateLastView(data.post.postData.postId, data.post.postData.updated);
+        me.refresh();
     }
         
     return me;

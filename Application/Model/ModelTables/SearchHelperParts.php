@@ -13,7 +13,7 @@ class SearchHelperParts extends \Pvik\Database\Generic\ModelTable {
        
         $this->FieldDefinition['SearchHelperPartId'] = array ('Type' => 'PrimaryKey');
 
-        $this->FieldDefinition['EntryId'] =  array ('Type' => 'Normal');
+        $this->FieldDefinition['PostId'] =  array ('Type' => 'Normal');
 
         $this->FieldDefinition['Keyword'] =  array ('Type' => 'Normal');
         
