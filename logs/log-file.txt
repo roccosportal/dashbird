@@ -7,25 +7,43 @@
 [Include] /var/www/dashbird/Library/Pvik/Web/Controller.php
 [Include] /var/www/dashbird/Application/Controllers/Base.php
 [Include] /var/www/dashbird/Application/Controllers/Posts.php
-Executing action: ApiPostsUpdatedGetAction
+Executing action: ApiPostsGetAction
 [Include] /var/www/dashbird/Application/Library/Services/UserService.php
 [Include] /var/www/dashbird/Application/Library/Constants/SESSION.php
-[Include] /var/www/dashbird/Library/Pvik/Database/Generic/Query.php
 [Include] /var/www/dashbird/Library/Pvik/Database/Generic/ModelTable.php
 [Include] /var/www/dashbird/Application/Model/ModelTables/Posts.php
+[Include] /var/www/dashbird/Library/Pvik/Database/Generic/EntityArray.php
+[Include] /var/www/dashbird/Library/Pvik/Database/Cache/ModelTable.php
 [Include] /var/www/dashbird/Library/Pvik/Database/SQL/Builder.php
 [Include] /var/www/dashbird/Library/Pvik/Database/MYSQL/Builder.php
+[Include] /var/www/dashbird/Library/Pvik/Database/Generic/Query.php
 [Include] /var/www/dashbird/Library/Pvik/Database/Generic/FieldDefinitionHelper.php
 [Include] /var/www/dashbird/Application/Model/ModelTables/PostsTags.php
-[Include] /var/www/dashbird/Application/Model/ModelTables/SearchHelperParts.php
 [Include] /var/www/dashbird/Application/Model/ModelTables/PostShares.php
 [Include] /var/www/dashbird/Application/Model/ModelTables/Comments.php
 [Include] /var/www/dashbird/Library/Pvik/Database/SQL/Manager.php
 [Include] /var/www/dashbird/Library/Pvik/Database/MYSQL/Manager.php
 Use MySQL as database system
-Executing querystring: SELECT Posts.PostId, Posts.Text, Posts.Created, Posts.Updated, Posts.SearchHelper, Posts.UserId, GROUP_CONCAT(DISTINCT t.PostsTagsId) as PostsTags, GROUP_CONCAT(DISTINCT tt.SearchHelperPartId) as SearchHelperParts, GROUP_CONCAT(DISTINCT ttt.PostShareId) as PostShares, GROUP_CONCAT(DISTINCT tttt.CommentId) as Comments FROM Posts LEFT JOIN PostsTags as t ON t.PostId = Posts.PostId LEFT JOIN SearchhelperParts as tt ON tt.PostId = Posts.PostId LEFT JOIN PostShares as ttt ON ttt.PostId = Posts.PostId LEFT JOIN Comments as tttt ON tttt.PostId = Posts.PostId LEFT JOIN PostShares as PostShares ON PostShares.PostId = Posts.PostId WHERE (Posts.UserId = "3" OR PostShares.UserId = "3") GROUP BY Posts.PostId, Posts.PostId, Posts.PostId, Posts.PostId ORDER BY Posts.Updated DESC LIMIT 0,50
-[Include] /var/www/dashbird/Library/Pvik/Database/Generic/EntityArray.php
+Executing querystring: SELECT Posts.PostId, Posts.Text, Posts.Created, Posts.Updated, Posts.SearchHelper, Posts.UserId, GROUP_CONCAT(DISTINCT t.PostsTagsId) as PostsTags, GROUP_CONCAT(DISTINCT tt.PostShareId) as PostShares, GROUP_CONCAT(DISTINCT ttt.CommentId) as Comments FROM Posts LEFT JOIN PostsTags as t ON t.PostId = Posts.PostId LEFT JOIN PostShares as tt ON tt.PostId = Posts.PostId LEFT JOIN Comments as ttt ON ttt.PostId = Posts.PostId WHERE Posts.PostId IN ( "91","90","86","84") GROUP BY Posts.PostId, Posts.PostId, Posts.PostId 
 [Include] /var/www/dashbird/Library/Pvik/Database/Generic/Entity.php
 [Include] /var/www/dashbird/Application/Model/Entities/Post.php
-[Include] /var/www/dashbird/Library/Pvik/Database/Cache/ModelTable.php
+Executing querystring: SELECT PostShares.PostShareId, PostShares.PostId, PostShares.UserId FROM PostShares WHERE PostShares.PostShareId IN ( "107")  
+[Include] /var/www/dashbird/Application/Model/Entities/PostShare.php
+Executing querystring: SELECT Comments.CommentId, Comments.Text, Comments.DateTime, Comments.UserId, Comments.PostId FROM Comments WHERE Comments.CommentId IN ( "63","69")  
+[Include] /var/www/dashbird/Application/Model/Entities/Comment.php
+[Include] /var/www/dashbird/Application/Model/ModelTables/Users.php
+[Include] /var/www/dashbird/Application/Model/ModelTables/UserShares.php
+Executing querystring: SELECT Users.UserId, Users.Name, Users.Password, GROUP_CONCAT(DISTINCT t.UserShareId) as UserShares FROM Users LEFT JOIN UserShares as t ON t.UserId = Users.UserId WHERE Users.UserId = "3" GROUP BY Users.UserId 
+[Include] /var/www/dashbird/Application/Model/Entities/User.php
+Executing querystring: SELECT Users.UserId, Users.Name, Users.Password, GROUP_CONCAT(DISTINCT t.UserShareId) as UserShares FROM Users LEFT JOIN UserShares as t ON t.UserId = Users.UserId WHERE Users.UserId = "4" GROUP BY Users.UserId 
+Executing querystring: SELECT PostShares.PostShareId, PostShares.PostId, PostShares.UserId FROM PostShares WHERE PostShares.PostShareId IN ( "109")  
+Executing querystring: SELECT Comments.CommentId, Comments.Text, Comments.DateTime, Comments.UserId, Comments.PostId FROM Comments WHERE Comments.CommentId IN ( "50","64","65","66","67","68")  
+Executing querystring: SELECT PostShares.PostShareId, PostShares.PostId, PostShares.UserId FROM PostShares WHERE PostShares.PostShareId IN ( "112")  
+Executing querystring: SELECT PostsTags.PostsTagsId, PostsTags.PostId, PostsTags.TagId FROM PostsTags WHERE PostsTags.PostsTagsId IN ( "326","327")  
+[Include] /var/www/dashbird/Application/Model/Entities/PostsTags.php
+[Include] /var/www/dashbird/Application/Model/ModelTables/Tags.php
+Executing querystring: SELECT Tags.TagId, Tags.Title FROM Tags WHERE Tags.TagId = "63"  
+[Include] /var/www/dashbird/Application/Model/Entities/Tag.php
+Executing querystring: SELECT Tags.TagId, Tags.Title FROM Tags WHERE Tags.TagId = "64"  
+Executing querystring: SELECT PostShares.PostShareId, PostShares.PostId, PostShares.UserId FROM PostShares WHERE PostShares.PostShareId IN ( "113")  
 [Include] /var/www/dashbird/Application/Library/Constants/AJAX.php
