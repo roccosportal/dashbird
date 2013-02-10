@@ -139,8 +139,6 @@ class Posts extends Base {
         $Post->UserId = $this->GetUserId();
         
         $Post->Insert();
-        $Post->SetSearchHelperPart('text',  $Post->Text);
-        $Post->SetSearchHelperPart('user-name',  $this->GetUser()->Name);
         $Tags = $this->Request->GetGET('tags');
         if (is_array($Tags)) {
             $Post->SetTags($Tags);
@@ -197,14 +195,12 @@ class Posts extends Base {
             return $this->ResponseWrongData();
         }
         $Post->Text = $Text;
-        $Post->Update();
-    
+
         if (is_array($Tags)) {
             $Post->SetTags($Tags);
         } else {
             $Post->SetTags(array());
         }
-        $Post->SetSearchHelperPart('text', $Post->Text);
 
         $Post->Update();
         return $this->ResponseSuccess($Post->ToArray());
@@ -248,22 +244,5 @@ class Posts extends Base {
         
         return $this->ResponseSuccess($Array);
     }
-    
-    
-    
-//     public function AjaxGetHashAction() {
-//        if (!$this->IsLoggedIn()) {
-//            return $this->ResponseNotLoggedIn();
-//        }
-//        
-//        $PostId = $this->Request->GetGET('postId');
-//        $Post = ModelTable::Get('Posts')->LoadByPrimaryKey($PostId);
-//         /* @var $Post \Dashbird\Model\Entities\Post */
-//        if($Post==null||!$Post->CurrentUserIsAllowedToSee()){
-//            return $this->ResponseWrongData();
-//        }
-//        return $this->ResponseSuccess(array ('postId' => $Post->PostId,'hash' => $Post->GetHash()));
-//    }
-    
-    
+
 }

@@ -11,7 +11,6 @@ namespace Dashbird\Model\Entities;
  * @property int $UserId
  * @property User $User
  * @property \Pvik\Database\Generic\EntityArray $PostsTags
- * @property \Pvik\Database\Generic\EntityArray $SearchHelperParts
  * @property \Pvik\Database\Generic\EntityArray $PostShares
  * @property \Pvik\Database\Generic\EntityArray $Comments
  */
@@ -26,7 +25,7 @@ class Post extends \Pvik\Database\Generic\Entity {
             $this->Created = date('Y-m-d H:i:s');
             $this->Updated = $this->Created;
         }
-
+        $this->SearchHelper = $this->User->Name . $this->Text;
         parent::Insert();
     }
     
@@ -82,89 +81,9 @@ class Post extends \Pvik\Database\Generic\Entity {
         );
     }
     
-    /**
-     * Find a search helper part by the keyword
-     * @param string $Keyword
-     * @return SearchHelperPartModel 
-     */
-    public function FindSearchHelperPartByKeyWord($Keyword) {
-        $SearchHelperParts = $this->SearchHelperParts;
-        foreach ($SearchHelperParts as $SearchHelperPart) {
-            /* @var $SearchHelperPart SearchHelperPartModel */
-            if ($SearchHelperPart->Keyword == $Keyword) {
-                return $SearchHelperPart;
-            }
-        }
-        return null;
-    }
 
-    public function SetSearchHelperPart($Keyword, $Value) {
-        $SearchHelperParts = $this->SearchHelperParts->Sort('StartAt');
-        $CurrentSearchHelperPart = $this->FindSearchHelperPartByKeyWord($Keyword);
-        if ($CurrentSearchHelperPart !== null) {
-            // if this keyword already exists check if we need to change something
-            $OldValue = substr($this->SearchHelper, $CurrentSearchHelperPart->StartAt, ($CurrentSearchHelperPart->EndAt - $CurrentSearchHelperPart->StartAt) + 1);
-            if ($OldValue == $Value) {
-                // don't change anything
-                return;
-            }
-        }
-
-
-        $AlreadyExists = false;
-        $DifferntLength = 0;
-        foreach ($SearchHelperParts as $SearchHelperPart) {
-            /* @var $SearchHelperPart SearchHelperPartModel */
-            if (!$AlreadyExists) {
-                if ($SearchHelperPart->Keyword == $Keyword) {
-                    $AlreadyExists = true;
-                    $NewLength = strlen($Value);
-                    $DifferntLength = $NewLength - (($SearchHelperPart->EndAt - $SearchHelperPart->StartAt) + 1);
-
-
-
-                    $SearchHelperTextFront = substr($this->SearchHelper, 0, $SearchHelperPart->StartAt);
-                    $SearchHelperTextBack = '';
-
-
-                    if (strlen($this->SearchHelper) != $SearchHelperPart->EndAt + 1) {
-                        // not last item
-                        $SearchHelperTextBack = substr($this->SearchHelper, $SearchHelperPart->EndAt + 1);
-                    }
-
-                    $this->SearchHelper = $SearchHelperTextFront . $Value . $SearchHelperTextBack;
-
-
-                    $SearchHelperPart->EndAt = $SearchHelperPart->StartAt + $NewLength - 1;
-                    $SearchHelperPart->Update();
-                }
-            } else {
-                $SearchHelperPart->StartAt = $SearchHelperPart->StartAt + $DifferntLength;
-                $SearchHelperPart->EndAt = $SearchHelperPart->EndAt + $DifferntLength;
-                $SearchHelperPart->Update();
-            }
-        }
-
-        if (!$AlreadyExists) {
-            // we need to create a new search helper part at the end
-            $SearchHelperPart = new \Dashbird\Model\Entities\SearchHelperPart();
-            $SearchHelperPart->PostId = $this->PostId;
-            $SearchHelperPart->Keyword = $Keyword;
-            $SearchHelperPart->StartAt = strlen($this->SearchHelper);
-            $SearchHelperPart->EndAt = $SearchHelperPart->StartAt + (strlen($Value) - 1);
-
-            $this->SearchHelper = $this->SearchHelper . $Value;
-            $SearchHelperPart->Insert();
-        }
-    }
 
     public function Delete() {
-        // delete references first
-        foreach ($this->SearchHelperParts as $SearchHelperPart) {
-            /* @var $SearchHelperPart SearchHelperPart */
-            $SearchHelperPart->Delete();
-        }
-
         foreach ($this->Comments as $Comment) {
             /* @var $Comment Comment */
             $Comment->Delete();
@@ -314,7 +233,7 @@ class Post extends \Pvik\Database\Generic\Entity {
         foreach ($this->PostsTags as $PostsTags) {
             $TagTitles .= $PostsTags->Tag->Title;
         }
-        $this->SetSearchHelperPart('tags', $TagTitles);
+        $this->SearchHelper = $this->User->Name . $this->Text . $TagTitles;
         parent::Update();
     }
 

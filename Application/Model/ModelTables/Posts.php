@@ -27,8 +27,6 @@ class Posts extends \Pvik\Database\Generic\ModelTable {
 
                 $this->FieldDefinition['PostsTags'] = array('Type' => 'ManyForeignObjects', 'ModelTable' => 'PostsTags', 'ForeignKey' => 'PostId');
                 
-                $this->FieldDefinition['SearchHelperParts'] = array('Type' => 'ManyForeignObjects', 'ModelTable' => 'SearchHelperParts', 'ForeignKey' => 'PostId');
-                
                 $this->FieldDefinition['PostShares'] = array('Type' => 'ManyForeignObjects', 'ModelTable' => 'PostShares', 'ForeignKey' => 'PostId');
                 
                 $this->FieldDefinition['Comments'] = array('Type' => 'ManyForeignObjects', 'ModelTable' => 'Comments', 'ForeignKey' => 'PostId');
