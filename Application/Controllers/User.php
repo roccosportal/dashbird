@@ -5,6 +5,15 @@ namespace Dashbird\Controllers;
 use Pvik\Database\Generic\ModelTable;
 
 class User extends Base {
+    
+    public function SettingsAction(){
+        if(!$this->IsLoggedIn()){
+            return $this->RedirectToPath('/login');
+        }
+        $this->ViewData->Set('UserData', json_encode($this->GetUser()->ToArray()));
+        
+        $this->ExecuteView();
+    }
 
     public function ApiUserSharesAddAction() {
         if (!$this->IsLoggedIn()) {

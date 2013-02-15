@@ -55,25 +55,25 @@
 #content #notifications .notification .meta li {
   padding-left: 0px;
 }
-#content #board {
+#content #stack {
   width: 500px;
 }
-#content #board .view-all {
+#content #stack .view-all {
   margin-bottom: 20px;
 }
-#content #board .posts .post {
+#content #stack .posts .post {
   margin-bottom: 30px;
 }
-#content #board .posts .post .content,
-#content #board .posts .post .comment {
+#content #stack .posts .post .content,
+#content #stack .posts .post .comment {
   word-wrap: break-word;
   position: relative;
   border-left: 5px solid #EEEEEE;
   margin-bottom: 5px;
   padding: 0 0 0 15px;
 }
-#content #board .posts .post .content .command-bar.popup,
-#content #board .posts .post .comment .command-bar.popup {
+#content #stack .posts .post .content .command-bar.popup,
+#content #stack .posts .post .comment .command-bar.popup {
   border-radius: 4px;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
@@ -83,8 +83,8 @@
   padding: 5px;
   display: none;
 }
-#content #board .posts .post .content .command,
-#content #board .posts .post .comment .command {
+#content #stack .posts .post .content .command,
+#content #stack .posts .post .comment .command {
   border-radius: 4px;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
@@ -92,46 +92,46 @@
   background-color: #F5F5F5;
   display: none;
 }
-#content #board .posts .post .content .command form,
-#content #board .posts .post .comment .command form {
+#content #stack .posts .post .content .command form,
+#content #stack .posts .post .comment .command form {
   margin-bottom: 0px;
 }
-#content #board .posts .post .content .command form .form-actions,
-#content #board .posts .post .comment .command form .form-actions {
+#content #stack .posts .post .content .command form .form-actions,
+#content #stack .posts .post .comment .command form .form-actions {
   margin-top: 0px;
   margin-bottom: 0px;
 }
-#content #board .posts .post .content .command.command-edit .add-tag-input,
-#content #board .posts .post .comment .command.command-edit .add-tag-input {
+#content #stack .posts .post .content .command.command-edit .add-tag-input,
+#content #stack .posts .post .comment .command.command-edit .add-tag-input {
   margin-right: 50px;
 }
-#content #board .posts .post .content p,
-#content #board .posts .post .comment p {
+#content #stack .posts .post .content p,
+#content #stack .posts .post .comment p {
   font-size: 16px;
   font-weight: 300;
   line-height: 25px;
   margin-bottom: 0;
 }
-#content #board .posts .post .content p iframe,
-#content #board .posts .post .comment p iframe {
+#content #stack .posts .post .content p iframe,
+#content #stack .posts .post .comment p iframe {
   margin-top: 25px;
 }
-#content #board .posts .post .content .meta,
-#content #board .posts .post .comment .meta {
+#content #stack .posts .post .content .meta,
+#content #stack .posts .post .comment .meta {
   color: #999999;
   display: block;
   line-height: 20px;
   font-size: 85%;
 }
-#content #board .posts .post .content .meta li,
-#content #board .posts .post .comment .meta li {
+#content #stack .posts .post .content .meta li,
+#content #stack .posts .post .comment .meta li {
   padding-left: 0px;
 }
-#content #board .posts .post .content .meta li.tags,
-#content #board .posts .post .comment .meta li.tags {
+#content #stack .posts .post .content .meta li.tags,
+#content #stack .posts .post .comment .meta li.tags {
   padding-right: 0px;
 }
-#content #board .posts .post .comments {
+#content #stack .posts .post .comments {
   margin-left: 40px;
 }
 #login-box {

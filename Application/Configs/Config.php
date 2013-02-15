@@ -32,7 +32,11 @@ self::$Config['Routes'] = array (
     array ('Url' => '/api/post/comment/delete/', 'Controller' => 'Comment', 'Action' => 'ApiPostCommentDelete'),
     array ('Url' => '/api/post/shares/set/', 'Controller' => 'Posts', 'Action' => 'ApiPostSharesSet'),
     array ('Url' => '/api/plugin/data/get/', 'Controller' => 'PluginData', 'Action' => 'ApiPluginDataGet'),
-    array ('Url' => '/api/plugin/data/save/', 'Controller' => 'PluginData', 'Action' => 'ApiPluginDataSave')
+    array ('Url' => '/api/plugin/data/save/', 'Controller' => 'PluginData', 'Action' => 'ApiPluginDataSave'),
+    array ('Url' => '/login/', 'Controller' => 'Auth', 'Action' => 'Login'),
+    array ('Url' => '/logout/', 'Controller' => 'Auth', 'Action' => 'Logout'),
+    array ('Url' => '/settings/', 'Controller' => 'User', 'Action' => 'Settings')
+    
    
 );
 

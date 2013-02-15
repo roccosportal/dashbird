@@ -5,9 +5,14 @@ namespace Dashbird\Controllers;
 use Pvik\Database\Generic\ModelTable;
 
 class Posts extends Base {
-
+    static $OrderByTypes = array ('CREATED' => 'Created', 'UPDATED' => 'Updated');
+    
     public function IndexAction() {
-        // output of the basic html
+        if(!$this->IsLoggedIn()){
+            return $this->RedirectToPath('/login');
+        }
+        $this->ViewData->Set('UserData', json_encode($this->GetUser()->ToArray()));
+        
         $this->ExecuteView();
     }
 
@@ -18,10 +23,12 @@ class Posts extends Base {
 
 
         $Search = $this->Request->GetGET('search');
-        $StartPosition = $this->Request->GetGET('start-position');
-        if($StartPosition==null) $StartPosition = 0;
+        $StartDate = $this->Request->GetGET('start-date');
+        if($StartDate==null) $StartDate = 0;
         $PostCount = $this->Request->GetGET('post-count');
         if($PostCount==null) $PostCount = 9999999999;
+        $OrderBy = $this->Request->GetGET('order-by');
+        if($OrderBy==null|| !isset(self::$OrderByTypes[$OrderBy])) $OrderBy = self::$OrderByTypes['CREATED'];
 
         $Query = new \Pvik\Database\Generic\Query('Posts');
         $ConditionString = 'LEFT JOIN PostShares as PostShares ON PostShares.PostId = Posts.PostId';
@@ -29,6 +36,10 @@ class Posts extends Base {
         $Query->AddParameter($this->GetUserId());
         $ConditionString .= ' OR PostShares.UserId = "%s")';
         $Query->AddParameter($this->GetUserId());
+        if($StartDate!=null){
+            $ConditionString .= ' AND Posts.' . $OrderBy .' < "%s"';
+            $Query->AddParameter($StartDate);
+        }
         if (!empty($Search)) {
             $SearchWords = preg_split("/[\s]+/", $Search);
             foreach ($SearchWords as $SearchWord) {
@@ -38,8 +49,8 @@ class Posts extends Base {
         }
         $Query->SetConditions($ConditionString);
         //$HasMorePostsQuery = clone $Query;
-        $Query->SetOrderBy('ORDER BY Posts.Updated DESC LIMIT %s,%s');
-        $Query->AddParameter($StartPosition);
+        $Query->SetOrderBy('ORDER BY Posts.' . $OrderBy .' DESC LIMIT 0,%s');
+        //$Query->AddParameter($StartPosition);
         $Query->AddParameter($PostCount);
         $Posts = $Query->Select();
         

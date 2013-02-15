@@ -12,21 +12,20 @@
             <div id="navbar" class="navbar navbar-fixed-top navbar-inverse">
                 <div class="navbar-inner">
                     <a class="brand" href="/">Dashbird</a>
-                    <ul class="nav" style="display:none">
+                    <ul class="nav">
                         <li><a class="show-new-post" href="#new-post" data-toggle="tab"><i class="icon-plus"></i> New</a></a></li>
                         <li class="active"><a class="show-board" href="#board" data-toggle="tab"><i class="icon-home"></i> Board</a></li>
-                        <li><a class="show-settings" href="#settings" data-toggle="tab"><i class="icon-wrench"></i> Settings</a></a></li>
-                        <li><a class="show-notifications" href="#notifications" data-toggle="tab"><i class="icon-envelope"></i> (<span>0</span>)</a></a></li>
+                        <li><a href="/settings" ><i class="icon-wrench"></i> Settings</a></a></li>
                     </ul>
-                    <form class="navbar-search pull-left" style="display:none">
+                    <form class="navbar-search pull-left">
                         <input type="text" id="search-box" class="search-query" placeholder="Search">
                     </form>
-                    <ul class="nav" style="display:none">
-                        <li><a href="#logout" id="logout" data-toggle="tab"><i class="icon-off"></i> Logout</a></a></li>
+                    <ul class="nav">
+                        <li><a href="/logout"><i class="icon-off"></i> Logout</a></a></li>
                     </ul>
                 </div>
             </div>
-            <div id="content" class="tabbable" style="display:none">
+            <div id="content" class="tabbable">
                 <div class="tab-content">
                     <div id="new-post"  class="tab-pane">
                             <form>
@@ -56,10 +55,7 @@
                             </form>
    
                     </div>
-                    <div id="board"  class="tab-pane active">
-                        <div class="view-all" style="display:none">
-                             <button class="btn btn-primary btn-large btn-block" type="button">View more posts</button>
-                        </div>
+                    <div id="stack" class="tab-pane active">
                         <div class="posts">
                         </div>
                         <div class="loading" style="display:none">
@@ -69,73 +65,8 @@
                             <button class="btn btn-primary btn-large btn-block" type="button">Load more posts</button>
                         </div>
                     </div>
-                    <div id="settings"  class="tab-pane" >
-                        <div class="tabbable">
-                            <ul class="nav nav-list pull-left">
-                                <li class="active"><a href="#settings-persons" data-toggle="tab"><i class="icon-chevron-right"></i> Persons</a></li>
-                                <li><a href="#settings-password" data-toggle="tab"><i class="icon-chevron-right"></i> Password</a></li>
-                            </ul>
-                            <div class="content tab-content">
-                                <div id="settings-persons"  class="tab-pane active">
-                                        <div class="add-person-input input-append">
-                                            <input class="" type="text" placeholder="Add a person">
-                                            <button class="btn" type="button">Add</button>
-                                        </div>
-                                        <ul class="unstyled">
-                                        </ul>
-                                </div>
-                                <div id="settings-password"  class="tab-pane">
-                                     <form>
-                                <fieldset>
-                                    <label><strong>Change password</strong></label>
-                                    <label>Old password</label>
-                                    <input type="password" class="old-password input-block-level" placeholder="Password" />
-                                    <label>New password</label>
-                                    <input type="password" class="new-password input-block-level" placeholder="Password" />
-                                    <div class="alerts"></div>
-                                    <div class="form-actions" >
-                                        <button type="submit" class="submit-button btn btn-primary">Change password</button>
-                                        <button type="button" class="cancel-button btn">Cancel</button>
-                                    </div>
-                                    </fieldset>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <div id="notifications"  class="tab-pane" >
-                        <div class="loading" style="display:none">
-                            <button class="btn btn-large disabled btn-block"><img src="/images/ajax-loader.gif" /></button>
-                        </div>
-                        <div class="content">
-                            
-                        </div>
-                        
-                    </div>
                 </div>
             </div>
-        </div>
-        <div id="login-box" style="display:none">
-            <form class="form-horizontal">
-                <div class="control-group">
-                    <label class="control-label" for="login-box-name">Username</label>
-                    <div class="controls">
-                        <input type="text" id="login-box-name" placeholder="Username">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="login-box-password">Password</label>
-                    <div class="controls">
-                        <input type="password" id="login-box-password" placeholder="Password">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <div class="controls">
-                        <button type="submit" class="btn">Sign in</button>
-                    </div>
-                </div>
-            </form>
         </div>
         <div id="modal" class="modal hide fade">
             <div class="modal-header">
@@ -294,24 +225,12 @@
                     <input class="video input-block-level" type="text" placeholder="Place video link in here..." />
                  </div>
             </div>
-            <div id="template-settings-password-alert-success">
-                <div class="alert alert-block alert-success">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <h4>Password changed</h4>
-                    We changed your password. Do not forget it!
-                </div>
-            </div>
-            <div id="template-settings-password-alert-error">
-                <div class="alert alert-block alert-error">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <h4>Password not changed</h4>
-                    We could not change your password.
-                </div>
-            </div>
         </div>
         <script type="text/javascript">
             var Dashbird = {};
-            Dashbird.baseUrl = '<?php echo $this->RelativePath('~/'); ?>';
+            Dashbird.InitialData = {};
+            Dashbird.InitialData.User = <?php echo $this->ViewData->Get('UserData'); ?>;
+            Dashbird.InitialData.LoadedAt = '<?php echo date('Y-m-d H:i:s'); ?>';
         </script>
 	<?php $this->Helper->JavaScriptLink('~/js/jquery-1.8.3.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/bootstrap.min.js'); ?>

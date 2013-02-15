@@ -1,40 +1,29 @@
-if(SimpleJSLib===undefined){
-        var SimpleJSLib = {};
-}
-SimpleJSLib.EventHandler = function(){
-        var me = {},
-        _private = {};
-    
-        _private.listeners = [];
+SimpleJSLib.EventHandler = SimpleJSLib.BaseObject.inherit(function(me, _protected){
+    _protected.listeners = [];
+    me.fireEvent = function (name, data){
+        for (var i = 0; i < _protected.listeners.length; i++) {
+            if(_protected.listeners[i].name==name){
+                _protected.listeners[i].callback(data);
+            }
+        }
+    };
+    me.attachEvent = function (name, callback){
+        _protected.listeners.push({
+            name : name, 
+            callback : callback
+        });
+    };
+    me.detachEvent = function (name, callback){
+        var indexes = [];
+        for (var i = 0; i < _protected.listeners.length; i++) {
+            if(_protected.listeners[i].name==name && _protected.listeners[i].callback==callback){
+                indexes.push(i);
+            }
+        }
 
-        me.fire = function (name, data){
-                for (var i = 0; i < _private.listeners.length; i++) {
-                        if(_private.listeners[i].name==name){
-                                _private.listeners[i].callback(data);
-                        }
-                }
-        };
-        me.attach = function (name, callback){
-                _private.listeners.push({
-                        name : name, 
-                        callback : callback
-                });
-        };
-        me.detach = function (name, callback){
-                var indexes = [];
-                for (var i = 0; i < _private.listeners.length; i++) {
-                        if(_private.listeners[i].name==name && _private.listeners[i].callback==callback){
-                                indexes.push(i);
-                        }
-                }
-
-                for (var j = 0; j < indexes.length; j++) {
-                        _private.listeners.splice(indexes[j] - j, 1); // the index is decreasing when we remove multiple items
-                }
-        };
-        
-           // for inheritance
-        me._private = _private;
-        
-        return me;	
-};
+        for (var j = 0; j < indexes.length; j++) {
+            _protected.listeners.splice(indexes[j] - j, 1); // the index is decreasing when we remove multiple items
+        }
+    };
+    return me;
+});

@@ -1,14 +1,16 @@
 if(typeof Dashbird == "undefined"){var Dashbird = {};}
 if(typeof Dashbird.Commands == "undefined"){Dashbird.Commands  = {};}
-Dashbird.Commands.Remove = function(post){
-     var me = Dashbird.Commands.Base(post),
-     _private = {};
+Dashbird.Commands.Remove = Dashbird.Commands.Base.inherit(function(me, _protected){
+    var _parent = {
+        construct :  _protected.construct
+    };
      
-     me.init = function(){
-        post.commands.$bar.find('.command-remove').click(_private.removePostClick);
+    _protected.construct = function(parameters){
+        _parent.construct(parameters);
+        _protected.postHtmlLayer.getCommandBar().find('.command-remove').click(me.show);
     };
     
-    _private.removePostClick = function(e){
+    me.show = function(e){
         e.preventDefault();
         Dashbird.Modal.show({
             headline: 'Deleting post', 
@@ -16,10 +18,10 @@ Dashbird.Commands.Remove = function(post){
             'cancel-button-text' : 'No, no, I am sorry', 
             'submit-button-text' : 'Remove the rubish!', 
             callback : function(){
-                post.deletePost();
+                _protected.postHtmlLayer.getPost().deletePost();
             }
         });
     }
     
     return me;
-};
+});

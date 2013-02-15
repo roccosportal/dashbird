@@ -1,49 +1,39 @@
-if(SimpleJSLib===undefined){
-        var SimpleJSLib = {};
-}
-SimpleJSLib.SingleRequestQueue = function(){
-        var me = {},
-        _private = {};
-                
-        _private.latestRequestId = 0;
-        _private. timeout = null;
+SimpleJSLib.SingleRequestQueue = SimpleJSLib.BaseObject.inherit(function(me, _protected){
+        _protected.latestRequestId = 0;
+        _protected. timeout = null;
 
         me.setTimeout = function (timeout){
-                _private. timeout = timeout;
+                _protected. timeout = timeout;
         };
         
         me.getLatestRequestId = function(){
-                return _private.latestRequestId;
+                return _protected.latestRequestId;
         }
         
         me.addToQueue = function(data, callback){
-                if(_private. timeout===null){
+                if(_protected. timeout===null){
                         throw "Timeout was not set. Use the setTimeout function of this object."
                 }
-                _private.latestRequestId++;
-                var currentRequestId = _private.latestRequestId;
+                _protected.latestRequestId++;
+                var currentRequestId = _protected.latestRequestId;
                 setTimeout(function (){
-                        if(_private.latestRequestId===currentRequestId){
+                        if(_protected.latestRequestId===currentRequestId){
                                 callback(data);
                         }
-                }, _private. timeout);
+                }, _protected. timeout);
         };
         
         me.runAsynchronRequest = function(){
 
-                _private.latestRequestId++;
-                var currentRequestId = _private.latestRequestId;
+                _protected.latestRequestId++;
+                var currentRequestId = _protected.latestRequestId;
                 var requestObject = {
                         currentRequestId : currentRequestId,
                         isLatestRequest : function(){
-                                return _private.latestRequestId===currentRequestId;
+                                return _protected.latestRequestId===currentRequestId;
                         }
                 };
                 return requestObject;
         };
-        
-        // for inheritance
-        me._private = _private;
-        
         return me;	
-};
+});
