@@ -35,5 +35,7 @@ $(document).ready(function (){
     Dashbird.NewPost.init();
     Dashbird.Modal.init();
     Dashbird.Search.init();
+    Dashbird.Posts.init();
+    
     
 });

@@ -13,12 +13,12 @@
   line-height: 9px;
 }
 #navigation .btn {
-  width: 50px;
+  width: 40px;
   padding: 4px 7px;
 }
 #content {
   margin-top: 50px;
-  margin-left: 80px;
+  margin-left: 90px;
 }
 #content #new-post {
   width: 500px;

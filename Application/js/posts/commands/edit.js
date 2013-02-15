@@ -1,136 +1,131 @@
-if(typeof Dashbird == "undefined"){
-    var Dashbird = {};
-
-}
-if(typeof Dashbird.Commands == "undefined"){
-    Dashbird.Commands  = {};
-    
-}
-Dashbird.Commands.Edit = function(post){
-    var me = Dashbird.Commands.Base(post),
-    _private = {};
-        
-    _private.tags = null;
-    _private.bbcode = {};
-     
-    _private.isOnDemandInited = false;
-     
-    me.init = function(){
-        post.commands.$bar.find('.command-edit').click(me.show);
-        me.set$('command-edit');
+Dashbird.Commands.Edit = Dashbird.Commands.Base.inherit(function(me, _protected){
+    var _parent = {
+        construct :  _protected.construct
     };
-    
-    _private.onDemandInit = function(){
-        if(!_private.isOnDemandInited){
-            me.$.find('.submit-button').click(function(e){
+     
+    _protected.construct = function(parameters){
+        _parent.construct(parameters);
+       
+        _protected.postHtmlLayer.getCommandBar().find('.command-edit').click(me.show);
+        _protected.set$('command-edit');
+    };
+        
+    _protected.tags = null;
+    _protected.bbcode = {};
+     
+    _protected.isOnDemandInited = false;
+
+    _protected.onDemandInit = function(){
+        if(!_protected.isOnDemandInited){
+            _protected.$.find('.submit-button').click(function(e){
                 e.preventDefault();
-                me.addTag();
-                post.update(me.$.find('textarea').val(), _private.tags);
-                me.$.fadeOut();
+                _protected.addTag();
+                _protected.postHtmlLayer.getPost().update(_protected.$.find('textarea').val(), _protected.tags);
+                _protected.$.fadeOut();
             });
             
-            me.$.find('.cancel-button').click(function(e){
+            _protected.$.find('.cancel-button').click(function(e){
                 e.preventDefault();
-                me.$.fadeOut();
+                _protected.$.fadeOut();
             });
 
-            me.$.find('.add-tag-input button').click(me.addTag);
-            me.$.find('.add-tag-input input').keydown(function(e){
+            _protected.$.find('.add-tag-input button').click(_protected.addTag);
+            _protected.$.find('.add-tag-input input').keydown(function(e){
                 if(e.keyCode == 32 || e.keyCode == 13 || e.keyCode == 186 || e.keyCode == 188){ // space, enter, ";", ","
-                    _private.addTag(e);
+                    _protected.addTag(e);
                 }
             });
         
-            _private.bbcode.link = Dashbird.BBCode.Link()
-            _private.bbcode.link.init(me.$.find('.command-bar .command-link'), me.$.find('textarea'));
+            _protected.bbcode.link = Dashbird.BBCode.Link()
+            _protected.bbcode.link.init(_protected.$.find('.command-bar .command-link'), _protected.$.find('textarea'));
 
-            _private.bbcode.video = Dashbird.BBCode.Video()
-            _private.bbcode.video.init(me.$.find('.command-bar .command-video'), me.$.find('textarea'));
+            _protected.bbcode.video = Dashbird.BBCode.Video()
+            _protected.bbcode.video.init(_protected.$.find('.command-bar .command-video'), _protected.$.find('textarea'));
 
-            _private.bbcode.image = Dashbird.BBCode.Image()
-            _private.bbcode.image.init(me.$.find('.command-bar .command-image'), me.$.find('textarea'));
+            _protected.bbcode.image = Dashbird.BBCode.Image()
+            _protected.bbcode.image.init(_protected.$.find('.command-bar .command-image'), _protected.$.find('textarea'));
 
-            _private.bbcode.bold = Dashbird.BBCode.Bold()
-            _private.bbcode.bold.init(me.$.find('.command-bar .command-bold'), me.$.find('textarea'));
+            _protected.bbcode.bold = Dashbird.BBCode.Bold()
+            _protected.bbcode.bold.init(_protected.$.find('.command-bar .command-bold'), _protected.$.find('textarea'));
         
         
-            me.$.find('.tag-alert').alert();
-            _private.isOnDemandInited = true;
+            _protected.$.find('.tag-alert').alert();
+            _protected.isOnDemandInited = true;
         }
     };
     
      
     me.show = function(e){
         e.preventDefault();
-        _private.onDemandInit();
-        _private.tags = post.postData.tags;
+        _protected.onDemandInit();
+        _protected.tags = _protected.postHtmlLayer.getPost().getPostData().tags.get();
         // fade out all opend options
-        me.hideCommands(function(){
-            me.$.find('textarea').html(post.postData.text);
-            me.hideTagAlert();
-            me.drawTags();
+        _protected.hideCommands(function(){
+            _protected.$.find('textarea').html(_protected.postHtmlLayer.getPost().getPostData().text.get());
+            _protected.hideTagAlert();
+            _protected.drawTags();
             // show option
-            me.$.fadeIn(function(){
-                me.$.find('textarea').focus();
+            _protected.$.fadeIn(function(){
+                _protected.$.find('textarea').focus();
             });
         });
 
     };
     
-    me.addTag = function(e){
+    _protected.addTag = function(e){
         if(e!=null){
             e.preventDefault();
         }
             
-        var tag = me.$.find('.add-tag-input input').val();
+        var tag = _protected.$.find('.add-tag-input input').val();
         if(tag != ''){
-            var position = $.inArray(tag, _private.tags);
+            var position = $.inArray(tag, _protected.tags);
             if(position===-1){ // only add if not already in tags
-                me.drawTag(tag);
-                _private.tags.push(tag);
-                me.$.find('.add-tag-input input').val('');
-                me.hideTagAlert();
+                _protected.drawTag(tag);
+                _protected.tags.push(tag);
+                _protected.$.find('.add-tag-input input').val('');
+                _protected.hideTagAlert();
             }
             else {
-                me.showTagAlert();
+                _protected.showTagAlert();
             }
             
         }
     };
     
-    me.showTagAlert = function(){
+    _protected.showTagAlert = function(){
         me.hideTagAlert();
         var $alert = $('#templates #template-tag-alert .alert').clone();
-        me.$.find('.tag-alert').append($alert);
+        _protected.$.find('.tag-alert').append($alert);
     };
 
-    me.hideTagAlert = function(){
-        me.$.find('.tag-alert').html('');
+    _protected.hideTagAlert = function(){
+        _protected.$.find('.tag-alert').html('');
     };
     
       
-    me.drawTags = function(){
-        me.$.find('.tags').html('');
-        $.each(_private.tags, function(key, element){
-            me.drawTag(element);
+    _protected.drawTags = function(){
+        _protected.$.find('.tags').html('');
+        $.each(_protected.tags, function(key, element){
+            _protected.drawTag(element);
         });
     };
     
-    me.drawTag = function(tag){
+    _protected.drawTag = function(tag){
         var $tag = $('#templates #template-tag-editable .tag').clone();
         $tag.find('span').html(tag);
         $tag.find('.delete-button').click(function(){
             $(this).parent().remove();
-            var position = $.inArray(tag, _private.tags);
+            var position = $.inArray(tag, _protected.tags);
             if(position!== -1){ 
-                _private.tags.splice(position, 1);
+                _protected.tags.splice(position, 1);
             }
                
         });
-        me.$.find('.tags').append($tag);
+        _protected.$.find('.tags').append($tag);
     };
     
 
      
     return me;
-};
+});

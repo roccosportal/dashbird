@@ -27,10 +27,10 @@
             <div class="row">
                 <div id="navigation" class="span1">
                     <div class="btn-group btn-group-vertical">
-                        <button class="btn"><i class="icon-plus"></i></button>
-                        <button class="btn"><i class="icon-list"></i><span class="badge">1</span></button>
-                        <button class="btn"><i class="icon-time"></i><span class="badge badge-important">6</span></button>
-                        <button class="btn"><i class="icon-fire"></i><span class="badge">30</span></button>
+                        <a class="btn new-post" href="#new-post" data-toggle="tab"><i class="icon-plus"></i></a>
+                        <a class="btn stack" href="#stack" data-toggle="tab"><i class="icon-list"></i><span id="stack-new-post-counter" class="badge"></span></a>
+                        <a class="btn"><i class="icon-time"></i><span class="badge badge-important">6</span></a>
+                        <a class="btn"><i class="icon-fire"></i><span class="badge">30</span></a>
                     </div>
                 </div>
                 <div id="content" class="tabbable">
@@ -68,7 +68,6 @@
 
                         <div id="stack" class="tab-pane active">
                             <div class="posts">
-                                <div class="hidden-posts"></div>
                             </div>
                             <div class="loading" style="display:none">
                                 <button class="btn btn-large disabled btn-block"><img src="/images/ajax-loader.gif" /></button>

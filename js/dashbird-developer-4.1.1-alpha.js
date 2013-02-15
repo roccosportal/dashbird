@@ -218,7 +218,7 @@ Dashbird.Utils = SimpleJSLib.BaseObject.inherit(function(me, _protected){
     }
     
     // http://stackoverflow.com/questions/487073/check-if-element-is-visible-after-scrolling
-    me.isOnScreen = function(elem)
+    me.bottomIsOnScreen = function(elem)
     {
         var docViewTop = $(window).scrollTop();
         docViewTop += 40; // there is a border
@@ -227,12 +227,26 @@ Dashbird.Utils = SimpleJSLib.BaseObject.inherit(function(me, _protected){
         var elemBottom = elemTop + $(elem).height();
         return (elemBottom >= docViewTop);
     }
+    
+    me.topIsOnScreen = function(elem)
+    {
+        var docViewTop = $(window).scrollTop();
+        docViewTop += 40; // there is a border
+        var docViewBottom = docViewTop + $(window).height();
+        var elemTop = $(elem).offset().top;
+        //var elemBottom = elemTop + $(elem).height();
+        return (elemTop <= docViewBottom);
+    }
     return me;
 }).construct();
 Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.postList = [];
     
     
+    me.init = function(){
+        // try to get new every 15 seconds
+        setInterval(me.loadPostsByUpdated, 15000);
+    }
     
     me.getPosts = function(){
         return _protected.postList;
@@ -248,8 +262,8 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     }
     
     _protected.getListIndex = function(postId){
-        for(var i = 0; i < _protected.postList; i++){
-            if(_protected.postList[i].getPostData().postId === postId){
+        for(var i = 0; i < _protected.postList.length; i++){
+            if(_protected.postList[i].getPostData().postId.toString() === postId.toString()){
                 return i;
             }
         }
@@ -268,11 +282,11 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         post.getPostData().postShares.set(newPostData.postShares);
     };
     
-    _protected.mergePostDatas = function(postDatas){
+    me.mergePostDatas = function(postDatas){
         var newPosts = [];
         var mergedPosts = [];
         for (var i = 0; i <  postDatas.length; i++) {
-            var listIndex = _protected.getListIndex(postDatas[i]);
+            var listIndex = _protected.getListIndex(postDatas[i].postId);
             var post = null;
             if(listIndex == null){
                 post = Dashbird.Post.construct(postDatas[i]);
@@ -307,11 +321,30 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                var result = _protected.mergePostDatas(ajaxResponse.data.posts);
+                var result = me.mergePostDatas(ajaxResponse.data.posts);
                 me.fireEvent('/load/posts/by/created/', result);
                 if(typeof(callback)!== 'undefined'){
                     callback(result);
                 }
+            }
+        });
+       
+    };
+    
+      
+    me.loadPostsByUpdated = function(){
+        $.getJSON('api/posts/load/', {
+            'search' : '',
+            'post-count' : 50,
+            'order-by' : 'UPDATED'
+        }, function(data) {
+            var ajaxResponse = Dashbird.AjaxResponse.construct(data);
+            if(ajaxResponse.isSuccess){
+                var result = me.mergePostDatas(ajaxResponse.data.posts);
+                me.fireEvent('/load/posts/by/updated/', result);
+//                if(typeof(callback)!== 'undefined'){
+//                    callback(result);
+//                }
             }
         });
        
@@ -334,6 +367,10 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }
         return postList.slice(0, postCount);
     };
+    
+    
+    
+  
     return me;
     
 }).construct();
@@ -450,6 +487,34 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
     _protected.$meta = null;
     _protected.$comments = null;
     
+    _protected.allowedToRedraw = false;
+    
+    _protected.changeSet = {};
+    
+    _protected.setChangeSetToDefault = function(){
+        _protected.changeSet = {
+            'text' : false,
+            'postShares' : false,
+            'comments' : false,
+            'tags' : false
+        };
+    }
+    
+    me.isAllowedToRedraw = function(){
+        return  _protected.allowedToRedraw;
+    }
+    
+    me.setAllowedToRedraw = function(value){
+        _protected.allowedToRedraw = (value===true);
+        if(me.isAllowedToRedraw()){
+            me.getLayer().removeClass('deniedForRedraw');
+            _protected.redraw();
+        }
+        else {
+            me.getLayer().addClass('deniedForRedraw');
+        }
+    }
+    
     _protected.commands = {
         $bar : null
     }
@@ -459,7 +524,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
     _protected.construct = function(parameters){
         _protected.post = parameters[0];
         
-         if(_protected.post.isFromCurrentUser){
+        if(_protected.post.isFromCurrentUser){
             _protected.$post = Dashbird.Templates.getTemplate('post');
         }
         else {
@@ -476,11 +541,11 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
         _protected.$meta.find('.info .date').html(Dashbird.Utils.convertDate(_protected.post.getPostData().created));
         
         if(_protected.post.isFromCurrentUser){
-            //_protected.commands.edit = Dashbird.Commands.Edit.construct(me);
+            _protected.commands.edit = Dashbird.Commands.Edit.construct(me);
             
             
-//            _protected.commands.share = Dashbird.Commands.Share(me);
-//            _protected.commands.share.init();
+            //            _protected.commands.share = Dashbird.Commands.Share(me);
+            //            _protected.commands.share.init();
             
             _protected.commands.remove = Dashbird.Commands.Remove.construct(me);
         }
@@ -502,19 +567,37 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
         _protected.$post.data('post', me);
         
         
+        _protected.setChangeSetToDefault();
         // attach listener
         _protected.post.getPostData().text.listen(function(){
-            _protected.drawText();
+           _protected.allowedToRedraw ? _protected.drawText() : _protected.changeSet.text = true;
         });
+        
         _protected.post.getPostData().comments.listen(function(){
-            _protected.drawComments();
+            _protected.allowedToRedraw ?  _protected.drawComments() : _protected.changeSet.comments = true;
         });
         _protected.post.getPostData().tags.listen(function(){
-            _protected.drawTags();
+            _protected.allowedToRedraw ?  _protected.drawTags() : _protected.changeSet.tags = true;
         });
         _protected.post.getPostData().postShares.listen(function(){
-            _protected.drawPostShares();
+             _protected.allowedToRedraw ? _protected.drawPostShares() : _protected.changeSet.postShares = true;
         });
+    }
+    
+    _protected.redraw = function(){
+        if(_protected.changeSet.text == true)
+             _protected.drawText();
+        
+        if(_protected.changeSet.comments == true)
+             _protected.drawComments();
+         
+        if(_protected.changeSet.tags == true)
+             _protected.drawTags();
+         
+        if(_protected.changeSet.postShares == true)
+             _protected.drawPostShares();
+         
+        _protected.setChangeSetToDefault();
     }
     
     me.getLayer = function(){
@@ -710,136 +793,129 @@ Dashbird.Commands.Comment = Dashbird.Commands.Base.inherit(function(me, _protect
     };
     return me;
 });
-if(typeof Dashbird == "undefined"){
-    var Dashbird = {};
-}
-if(typeof Dashbird.Commands == "undefined"){
-    Dashbird.Commands  = {};
-    
-}
-Dashbird.Commands.Edit = function(post){
-    var me = Dashbird.Commands.Base(post),
-    _private = {};
-        
-    _private.tags = null;
-    _private.bbcode = {};
-     
-    _private.isOnDemandInited = false;
-     
-    me.init = function(){
-        post.commands.$bar.find('.command-edit').click(me.show);
-        me.set$('command-edit');
+Dashbird.Commands.Edit = Dashbird.Commands.Base.inherit(function(me, _protected){
+    var _parent = {
+        construct :  _protected.construct
     };
-    
-    _private.onDemandInit = function(){
-        if(!_private.isOnDemandInited){
-            me.$.find('.submit-button').click(function(e){
+     
+    _protected.construct = function(parameters){
+        _parent.construct(parameters);
+       
+        _protected.postHtmlLayer.getCommandBar().find('.command-edit').click(me.show);
+        _protected.set$('command-edit');
+    };
+        
+    _protected.tags = null;
+    _protected.bbcode = {};
+     
+    _protected.isOnDemandInited = false;
+    _protected.onDemandInit = function(){
+        if(!_protected.isOnDemandInited){
+            _protected.$.find('.submit-button').click(function(e){
                 e.preventDefault();
-                me.addTag();
-                post.update(me.$.find('textarea').val(), _private.tags);
-                me.$.fadeOut();
+                _protected.addTag();
+                _protected.postHtmlLayer.getPost().update(_protected.$.find('textarea').val(), _protected.tags);
+                _protected.$.fadeOut();
             });
             
-            me.$.find('.cancel-button').click(function(e){
+            _protected.$.find('.cancel-button').click(function(e){
                 e.preventDefault();
-                me.$.fadeOut();
+                _protected.$.fadeOut();
             });
-            me.$.find('.add-tag-input button').click(me.addTag);
-            me.$.find('.add-tag-input input').keydown(function(e){
+            _protected.$.find('.add-tag-input button').click(_protected.addTag);
+            _protected.$.find('.add-tag-input input').keydown(function(e){
                 if(e.keyCode == 32 || e.keyCode == 13 || e.keyCode == 186 || e.keyCode == 188){ // space, enter, ";", ","
-                    _private.addTag(e);
+                    _protected.addTag(e);
                 }
             });
         
-            _private.bbcode.link = Dashbird.BBCode.Link()
-            _private.bbcode.link.init(me.$.find('.command-bar .command-link'), me.$.find('textarea'));
-            _private.bbcode.video = Dashbird.BBCode.Video()
-            _private.bbcode.video.init(me.$.find('.command-bar .command-video'), me.$.find('textarea'));
-            _private.bbcode.image = Dashbird.BBCode.Image()
-            _private.bbcode.image.init(me.$.find('.command-bar .command-image'), me.$.find('textarea'));
-            _private.bbcode.bold = Dashbird.BBCode.Bold()
-            _private.bbcode.bold.init(me.$.find('.command-bar .command-bold'), me.$.find('textarea'));
+            _protected.bbcode.link = Dashbird.BBCode.Link()
+            _protected.bbcode.link.init(_protected.$.find('.command-bar .command-link'), _protected.$.find('textarea'));
+            _protected.bbcode.video = Dashbird.BBCode.Video()
+            _protected.bbcode.video.init(_protected.$.find('.command-bar .command-video'), _protected.$.find('textarea'));
+            _protected.bbcode.image = Dashbird.BBCode.Image()
+            _protected.bbcode.image.init(_protected.$.find('.command-bar .command-image'), _protected.$.find('textarea'));
+            _protected.bbcode.bold = Dashbird.BBCode.Bold()
+            _protected.bbcode.bold.init(_protected.$.find('.command-bar .command-bold'), _protected.$.find('textarea'));
         
         
-            me.$.find('.tag-alert').alert();
-            _private.isOnDemandInited = true;
+            _protected.$.find('.tag-alert').alert();
+            _protected.isOnDemandInited = true;
         }
     };
     
      
     me.show = function(e){
         e.preventDefault();
-        _private.onDemandInit();
-        _private.tags = post.postData.tags;
+        _protected.onDemandInit();
+        _protected.tags = _protected.postHtmlLayer.getPost().getPostData().tags.get();
         // fade out all opend options
-        me.hideCommands(function(){
-            me.$.find('textarea').html(post.postData.text);
-            me.hideTagAlert();
-            me.drawTags();
+        _protected.hideCommands(function(){
+            _protected.$.find('textarea').html(_protected.postHtmlLayer.getPost().getPostData().text.get());
+            _protected.hideTagAlert();
+            _protected.drawTags();
             // show option
-            me.$.fadeIn(function(){
-                me.$.find('textarea').focus();
+            _protected.$.fadeIn(function(){
+                _protected.$.find('textarea').focus();
             });
         });
     };
     
-    me.addTag = function(e){
+    _protected.addTag = function(e){
         if(e!=null){
             e.preventDefault();
         }
             
-        var tag = me.$.find('.add-tag-input input').val();
+        var tag = _protected.$.find('.add-tag-input input').val();
         if(tag != ''){
-            var position = $.inArray(tag, _private.tags);
+            var position = $.inArray(tag, _protected.tags);
             if(position===-1){ // only add if not already in tags
-                me.drawTag(tag);
-                _private.tags.push(tag);
-                me.$.find('.add-tag-input input').val('');
-                me.hideTagAlert();
+                _protected.drawTag(tag);
+                _protected.tags.push(tag);
+                _protected.$.find('.add-tag-input input').val('');
+                _protected.hideTagAlert();
             }
             else {
-                me.showTagAlert();
+                _protected.showTagAlert();
             }
             
         }
     };
     
-    me.showTagAlert = function(){
+    _protected.showTagAlert = function(){
         me.hideTagAlert();
         var $alert = $('#templates #template-tag-alert .alert').clone();
-        me.$.find('.tag-alert').append($alert);
+        _protected.$.find('.tag-alert').append($alert);
     };
-    me.hideTagAlert = function(){
-        me.$.find('.tag-alert').html('');
+    _protected.hideTagAlert = function(){
+        _protected.$.find('.tag-alert').html('');
     };
     
       
-    me.drawTags = function(){
-        me.$.find('.tags').html('');
-        $.each(_private.tags, function(key, element){
-            me.drawTag(element);
+    _protected.drawTags = function(){
+        _protected.$.find('.tags').html('');
+        $.each(_protected.tags, function(key, element){
+            _protected.drawTag(element);
         });
     };
     
-    me.drawTag = function(tag){
+    _protected.drawTag = function(tag){
         var $tag = $('#templates #template-tag-editable .tag').clone();
         $tag.find('span').html(tag);
         $tag.find('.delete-button').click(function(){
             $(this).parent().remove();
-            var position = $.inArray(tag, _private.tags);
+            var position = $.inArray(tag, _protected.tags);
             if(position!== -1){ 
-                _private.tags.splice(position, 1);
+                _protected.tags.splice(position, 1);
             }
                
         });
-        me.$.find('.tags').append($tag);
+        _protected.$.find('.tags').append($tag);
     };
     
      
     return me;
-};
-if(typeof Dashbird == "undefined"){var Dashbird = {};}
-if(typeof Dashbird.Commands == "undefined"){Dashbird.Commands  = {};}
+});
 Dashbird.Commands.Remove = Dashbird.Commands.Base.inherit(function(me, _protected){
     var _parent = {
         construct :  _protected.construct
@@ -1111,28 +1187,33 @@ Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.$posts = null;
     _protected.posts = [];
     _protected.postHtmlLayers = [];
+    _protected.postHtmlLayersAllowedForRedraw = [];
+    _protected.postHtmlLayersDeniedForRedraw = [];
     _protected.pager = {};
     _protected.pager.$morePosts = null;
     _protected.pager.postCount = 10;
     
     _protected.$loading = null;
+    _protected.topCreatedDate = null;
+    _protected.newPosts = [];
+    _protected.isVisible = function(){
+        return (_protected.$stack.hasClass('active'));
+    };
+    
+    
     
     _protected.getCreateDateOfLastPost = function(){
         return _protected.posts[_protected.posts.length - 1].getPostData().created;
     }
     
-    me.addPosts = function(posts){
-        for (var i = 0; i <  posts.length; i++) {
-            var postHtmlLayer = Dashbird.PostHtmlLayer.construct(posts[i]);
-            _protected.posts.push(posts[i]);
-            _protected.postHtmlLayers.push(postHtmlLayer);
-            _protected.$posts.append(postHtmlLayer.getLayer());
-        }
-    }
+   
+   
 
     me.init = function (){    
+        _protected.$stack = $('#stack');
         _protected.$posts = $('#stack .posts');
         _protected.$loading = $('#stack .loading');
+        _protected.$newPostCounter = $('#stack-new-post-counter');
         _protected.$loading.show();      
         _protected.pager.$morePosts = $('#stack .more-posts')
         _protected.pager.$morePosts.click(function(e){
@@ -1141,17 +1222,103 @@ Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         });
         
         $(window).scroll(function() {
-            _protected.hidePostsWhichAreNotOnScreen();
-            _protected.showHiddenPosts();
+            if(_protected.isVisible()){
+                _protected.changeAllowedToRedraw();
+                if(Dashbird.Utils.topIsOnScreen( _protected.pager.$morePosts )){
+                    me.showMorePosts();
+                }
+            }
         });
 
         Dashbird.Posts.loadPostsByCreated(Dashbird.InitialData.LoadedAt, _protected.pager.postCount, function(result){
             var posts = result.newPosts;
+            _protected.topCreatedDate = posts[0].getPostData().created;
             me.addPosts(posts);
             _protected.$loading.hide();
             _protected.pager.$morePosts.show();
+            Dashbird.Posts.attachEvent('/posts/new/', _protected.onNewPosts);
         });
+        $('#navigation .stack').on('show', _protected.onShow);
+        $('#navigation .stack').on('hidden', _protected.onHidden);  
+        
+        $('#navigation .stack').click(me.show);
     };
+    
+    me.show = function(e){
+        if(typeof(e) !== 'undefined')
+            e.preventDefault();
+        if(_protected.isVisible()){
+             // move to top
+              //var position = _protected.$stack.offset();
+              window.scrollTo(0,0);
+             _protected.onShow();
+        }
+        else {
+            $('#navigation .stack').tab('show');
+        }
+    }
+    
+    _protected.onShow = function(){
+          // view is now on top again;
+        var postHtmlLayerIndex = null;
+        
+        // allow all posts to redraw
+        for(var j = _protected.postHtmlLayersDeniedForRedraw.length - 1; j >= 0; j --){
+            postHtmlLayerIndex = _protected.postHtmlLayersDeniedForRedraw[j];
+            _protected.postHtmlLayers[postHtmlLayerIndex].setAllowedToRedraw(true);
+            _protected.postHtmlLayersAllowedForRedraw.unshift(postHtmlLayerIndex);
+        }
+        
+        _protected.postHtmlLayersDeniedForRedraw = [];
+        
+        if( _protected.newPosts.length > 0){
+            me.addPosts(_protected.newPosts, 'top');
+            _protected.newPosts = [];
+            _protected.drawNewPostCounter();
+        }
+       
+    }
+
+    me.addPosts = function(posts, position){
+        if(typeof(position) === 'undefined'){
+            position = 'bottom';
+        }
+
+        for (var i = 0; i <  posts.length; i++) {
+            var postHtmlLayer = Dashbird.PostHtmlLayer.construct(posts[i]);
+            _protected.posts.push(posts[i]);
+            postHtmlLayer.setAllowedToRedraw(true);
+            var index = _protected.postHtmlLayers.push(postHtmlLayer) - 1;
+            if(position==='bottom'){
+                _protected.postHtmlLayersAllowedForRedraw.push(index);
+                _protected.$posts.append(postHtmlLayer.getLayer());
+            }
+            else if(position==='top'){
+                _protected.postHtmlLayersAllowedForRedraw.unshift(index);
+                _protected.$posts.prepend(postHtmlLayer.getLayer());
+            }
+            
+        }
+    }
+    
+    _protected.drawNewPostCounter = function(){
+        if(_protected.newPosts.length==0){
+            _protected.$newPostCounter.html('');
+        }
+        else {
+            _protected.$newPostCounter.html(_protected.newPosts.length);
+        }
+    }
+    
+    _protected.onNewPosts = function(result){
+        var posts = result.newPosts;
+        for(var i = 0; i < posts.length; i++){
+            if(posts[i].getPostData().created >= _protected.topCreatedDate){
+                _protected.newPosts.push(posts[i]);
+            }
+        }
+        _protected.drawNewPostCounter();
+    }
     
     me.showMorePosts = function(){
         _protected.pager.$morePosts.hide();
@@ -1175,46 +1342,55 @@ Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }
     };
     
-    _protected.hidePostsWhichAreNotOnScreen = function(){
-        var elementsToHide = [];
-        var calculatedHeight = $('.posts .hidden-posts').height();
-        if(calculatedHeight === null){
-            calculatedHeight = 0;
-        }    
-        $.each(_protected.$posts.find('.post:visible'), function(index, element){
-           element = $(element)
-           if(!Dashbird.Utils.isOnScreen(element)){
-               calculatedHeight += element.height();
-               elementsToHide.push(element);
-               return true
-           }
-           return false;
-        });
-        if(elementsToHide.length > 0){
-            for(var i = 0; i < elementsToHide.length; i++){
-                elementsToHide[i].hide();
-            }
-            $('.posts .hidden-posts').height(calculatedHeight)
+    _protected.changeAllowedToRedraw = function(){
+        
+        var movePostsToAllow = [];
+        // go reverse
+        var postHtmlLayer = null
+        for(var j = _protected.postHtmlLayersDeniedForRedraw.length - 1; j >= 0; j --){
+            postHtmlLayer = _protected.postHtmlLayers[_protected.postHtmlLayersDeniedForRedraw[j]];
+            if(Dashbird.Utils.bottomIsOnScreen(postHtmlLayer.getLayer()))
+                movePostsToAllow.push(j);
+            else
+                break;
         }
-
-    };
     
-    _protected.showHiddenPosts = function(){
-       
-        if(_protected.$posts.find('.post:hidden').length==0){
-            $('.posts .hidden-posts').height(0);
+        if(movePostsToAllow.length > 0){
+            var index = null;
+            var postHtmlLayerIndex = null;
+            for(var k = 0; k <movePostsToAllow.length; k ++){
+                index = movePostsToAllow[k];
+                postHtmlLayerIndex = _protected.postHtmlLayersDeniedForRedraw[index];
+                // delete from denied array
+                _protected.postHtmlLayersDeniedForRedraw.splice(index, 1);
+                // add to top of allowed array
+                _protected.postHtmlLayersAllowedForRedraw.unshift(postHtmlLayerIndex);
+                _protected.postHtmlLayers[postHtmlLayerIndex].setAllowedToRedraw(true);
+            }
         }
         else {
-            var i = 0;
-            while(Dashbird.Utils.isOnScreen($('.posts .hidden-posts'))){
-                _protected.$posts.find('.post:hidden').last().show();
-                $('.posts .hidden-posts').height( $('.posts .hidden-posts').height() - _protected.$posts.find('.post:hidden').last().height())
-                i++;
-                if(i > 50){
+            var movePostsToDenied = [];
+            for(var i = 0; i < _protected.postHtmlLayersAllowedForRedraw.length; i ++){
+                postHtmlLayer = _protected.postHtmlLayers[_protected.postHtmlLayersAllowedForRedraw[i]];
+                if(!Dashbird.Utils.bottomIsOnScreen(postHtmlLayer.getLayer()))
+                    movePostsToDenied.push(i);
+                else
                     break;
+            }
+            if(movePostsToDenied.length > 0){
+                for(var h = 0; h < movePostsToDenied.length; h ++){
+                    index = movePostsToDenied[h];
+                    postHtmlLayerIndex =_protected.postHtmlLayersAllowedForRedraw[index];
+                    // delete from allowed array
+                    _protected.postHtmlLayersAllowedForRedraw.splice(index, 1);
+                    // add to bottom of denied array
+                    _protected.postHtmlLayersDeniedForRedraw.push(postHtmlLayerIndex);
+                    _protected.postHtmlLayers[postHtmlLayerIndex].setAllowedToRedraw(false);
                 }
             }
         }
+        
+
     };
                 
     //    me.addToTop = function(postData){
@@ -1348,9 +1524,14 @@ Dashbird.NewPost = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.bbcode= {};
     
     me.init = function(){
-        // new post
-        $('#navbar .nav .show-new-post').on('show', _protected.onShow);  
+        $('#navigation .new-post').on('show', _protected.onShow);
+        
     };
+    
+    me.show = function(){
+        $('#navigation .new-post').tab('show');
+        
+    }
     
     _protected.isOnDemandInited = false;
     
@@ -1408,11 +1589,13 @@ Dashbird.NewPost = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             tags :  _protected.tags,
             shares : _protected.postShares
         }, function(data) {
-            var ajaxResponse = Dashird.AjaxResponse.construct().init(data);
+            var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                me.fireEvent('newPost', ajaxResponse.data);
-                Dashbird.Board.refreshPosts();
-                $('#navbar .nav .show-board').tab('show');
+                Dashbird.Posts.mergePostDatas([ajaxResponse.data]);
+                Dashbird.Stack.show();
+                //me.fireEvent('newPost', ajaxResponse.data);
+                //Dashbird.Board.refreshPosts();
+                //$('#navbar .nav .show-board').tab('show');
                   
             }
         });
@@ -1614,5 +1797,7 @@ $(document).ready(function (){
     Dashbird.NewPost.init();
     Dashbird.Modal.init();
     Dashbird.Search.init();
+    Dashbird.Posts.init();
+    
     
 });

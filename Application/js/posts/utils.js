@@ -12,7 +12,7 @@ Dashbird.Utils = SimpleJSLib.BaseObject.inherit(function(me, _protected){
     }
     
     // http://stackoverflow.com/questions/487073/check-if-element-is-visible-after-scrolling
-    me.isOnScreen = function(elem)
+    me.bottomIsOnScreen = function(elem)
     {
         var docViewTop = $(window).scrollTop();
         docViewTop += 40; // there is a border
@@ -22,6 +22,18 @@ Dashbird.Utils = SimpleJSLib.BaseObject.inherit(function(me, _protected){
         var elemBottom = elemTop + $(elem).height();
 
         return (elemBottom >= docViewTop);
+    }
+    
+    me.topIsOnScreen = function(elem)
+    {
+        var docViewTop = $(window).scrollTop();
+        docViewTop += 40; // there is a border
+        var docViewBottom = docViewTop + $(window).height();
+
+        var elemTop = $(elem).offset().top;
+        //var elemBottom = elemTop + $(elem).height();
+
+        return (elemTop <= docViewBottom);
     }
     return me;
 }).construct();

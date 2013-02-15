@@ -3,6 +3,34 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
     _protected.$meta = null;
     _protected.$comments = null;
     
+    _protected.allowedToRedraw = false;
+    
+    _protected.changeSet = {};
+    
+    _protected.setChangeSetToDefault = function(){
+        _protected.changeSet = {
+            'text' : false,
+            'postShares' : false,
+            'comments' : false,
+            'tags' : false
+        };
+    }
+    
+    me.isAllowedToRedraw = function(){
+        return  _protected.allowedToRedraw;
+    }
+    
+    me.setAllowedToRedraw = function(value){
+        _protected.allowedToRedraw = (value===true);
+        if(me.isAllowedToRedraw()){
+            me.getLayer().removeClass('deniedForRedraw');
+            _protected.redraw();
+        }
+        else {
+            me.getLayer().addClass('deniedForRedraw');
+        }
+    }
+    
     _protected.commands = {
         $bar : null
     }
@@ -12,7 +40,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
     _protected.construct = function(parameters){
         _protected.post = parameters[0];
         
-         if(_protected.post.isFromCurrentUser){
+        if(_protected.post.isFromCurrentUser){
             _protected.$post = Dashbird.Templates.getTemplate('post');
         }
         else {
@@ -29,11 +57,11 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
         _protected.$meta.find('.info .date').html(Dashbird.Utils.convertDate(_protected.post.getPostData().created));
         
         if(_protected.post.isFromCurrentUser){
-            //_protected.commands.edit = Dashbird.Commands.Edit.construct(me);
+            _protected.commands.edit = Dashbird.Commands.Edit.construct(me);
             
             
-//            _protected.commands.share = Dashbird.Commands.Share(me);
-//            _protected.commands.share.init();
+            //            _protected.commands.share = Dashbird.Commands.Share(me);
+            //            _protected.commands.share.init();
             
             _protected.commands.remove = Dashbird.Commands.Remove.construct(me);
         }
@@ -57,19 +85,37 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
         _protected.$post.data('post', me);
         
         
+        _protected.setChangeSetToDefault();
         // attach listener
         _protected.post.getPostData().text.listen(function(){
-            _protected.drawText();
+           _protected.allowedToRedraw ? _protected.drawText() : _protected.changeSet.text = true;
         });
+        
         _protected.post.getPostData().comments.listen(function(){
-            _protected.drawComments();
+            _protected.allowedToRedraw ?  _protected.drawComments() : _protected.changeSet.comments = true;
         });
         _protected.post.getPostData().tags.listen(function(){
-            _protected.drawTags();
+            _protected.allowedToRedraw ?  _protected.drawTags() : _protected.changeSet.tags = true;
         });
         _protected.post.getPostData().postShares.listen(function(){
-            _protected.drawPostShares();
+             _protected.allowedToRedraw ? _protected.drawPostShares() : _protected.changeSet.postShares = true;
         });
+    }
+    
+    _protected.redraw = function(){
+        if(_protected.changeSet.text == true)
+             _protected.drawText();
+        
+        if(_protected.changeSet.comments == true)
+             _protected.drawComments();
+         
+        if(_protected.changeSet.tags == true)
+             _protected.drawTags();
+         
+        if(_protected.changeSet.postShares == true)
+             _protected.drawPostShares();
+         
+        _protected.setChangeSetToDefault();
     }
     
     me.getLayer = function(){

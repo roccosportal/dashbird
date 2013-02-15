@@ -4,9 +4,14 @@ Dashbird.NewPost = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.bbcode= {};
     
     me.init = function(){
-        // new post
-        $('#navbar .nav .show-new-post').on('show', _protected.onShow);  
+        $('#navigation .new-post').on('show', _protected.onShow);
+        
     };
+    
+    me.show = function(){
+        $('#navigation .new-post').tab('show');
+        
+    }
     
     _protected.isOnDemandInited = false;
     
@@ -65,11 +70,13 @@ Dashbird.NewPost = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             tags :  _protected.tags,
             shares : _protected.postShares
         }, function(data) {
-            var ajaxResponse = Dashird.AjaxResponse.construct().init(data);
+            var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                me.fireEvent('newPost', ajaxResponse.data);
-                Dashbird.Board.refreshPosts();
-                $('#navbar .nav .show-board').tab('show');
+                Dashbird.Posts.mergePostDatas([ajaxResponse.data]);
+                Dashbird.Stack.show();
+                //me.fireEvent('newPost', ajaxResponse.data);
+                //Dashbird.Board.refreshPosts();
+                //$('#navbar .nav .show-board').tab('show');
                   
             }
         });

@@ -2,6 +2,10 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.postList = [];
     
     
+    me.init = function(){
+        // try to get new every 15 seconds
+        setInterval(me.loadPostsByUpdated, 15000);
+    }
     
     me.getPosts = function(){
         return _protected.postList;
@@ -17,8 +21,8 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     }
     
     _protected.getListIndex = function(postId){
-        for(var i = 0; i < _protected.postList; i++){
-            if(_protected.postList[i].getPostData().postId === postId){
+        for(var i = 0; i < _protected.postList.length; i++){
+            if(_protected.postList[i].getPostData().postId.toString() === postId.toString()){
                 return i;
             }
         }
@@ -37,11 +41,11 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         post.getPostData().postShares.set(newPostData.postShares);
     };
     
-    _protected.mergePostDatas = function(postDatas){
+    me.mergePostDatas = function(postDatas){
         var newPosts = [];
         var mergedPosts = [];
         for (var i = 0; i <  postDatas.length; i++) {
-            var listIndex = _protected.getListIndex(postDatas[i]);
+            var listIndex = _protected.getListIndex(postDatas[i].postId);
             var post = null;
             if(listIndex == null){
                 post = Dashbird.Post.construct(postDatas[i]);
@@ -76,11 +80,30 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                var result = _protected.mergePostDatas(ajaxResponse.data.posts);
+                var result = me.mergePostDatas(ajaxResponse.data.posts);
                 me.fireEvent('/load/posts/by/created/', result);
                 if(typeof(callback)!== 'undefined'){
                     callback(result);
                 }
+            }
+        });
+       
+    };
+    
+      
+    me.loadPostsByUpdated = function(){
+        $.getJSON('api/posts/load/', {
+            'search' : '',
+            'post-count' : 50,
+            'order-by' : 'UPDATED'
+        }, function(data) {
+            var ajaxResponse = Dashbird.AjaxResponse.construct(data);
+            if(ajaxResponse.isSuccess){
+                var result = me.mergePostDatas(ajaxResponse.data.posts);
+                me.fireEvent('/load/posts/by/updated/', result);
+//                if(typeof(callback)!== 'undefined'){
+//                    callback(result);
+//                }
             }
         });
        
@@ -103,6 +126,10 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }
         return postList.slice(0, postCount);
     };
+    
+    
+    
+  
     return me;
     
 }).construct();

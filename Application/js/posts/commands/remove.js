@@ -1,5 +1,3 @@
-if(typeof Dashbird == "undefined"){var Dashbird = {};}
-if(typeof Dashbird.Commands == "undefined"){Dashbird.Commands  = {};}
 Dashbird.Commands.Remove = Dashbird.Commands.Base.inherit(function(me, _protected){
     var _parent = {
         construct :  _protected.construct
