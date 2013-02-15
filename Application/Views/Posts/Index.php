@@ -13,7 +13,6 @@
                 <div class="navbar-inner">
                     <a class="brand" href="/">Dashbird</a>
                     <ul class="nav">
-                        <li><a class="show-new-post" href="#new-post" data-toggle="tab"><i class="icon-plus"></i> New</a></a></li>
                         <li class="active"><a class="show-board" href="#board" data-toggle="tab"><i class="icon-home"></i> Board</a></li>
                         <li><a href="/settings" ><i class="icon-wrench"></i> Settings</a></a></li>
                     </ul>
@@ -25,9 +24,20 @@
                     </ul>
                 </div>
             </div>
-            <div id="content" class="tabbable">
-                <div class="tab-content">
-                    <div id="new-post"  class="tab-pane">
+            <div class="row">
+                <div id="navigation" class="span1">
+                    <div class="btn-group btn-group-vertical">
+                        <button class="btn"><i class="icon-plus"></i></button>
+                        <button class="btn"><i class="icon-list"></i><span class="badge">1</span></button>
+                        <button class="btn"><i class="icon-time"></i><span class="badge badge-important">6</span></button>
+                        <button class="btn"><i class="icon-fire"></i><span class="badge">30</span></button>
+                    </div>
+                </div>
+                <div id="content" class="tabbable">
+                    <div class="tab-content">
+
+
+                        <div id="new-post"  class="tab-pane">
                             <form>
                                 <fieldset>
                                     <label><strong>New post</strong></label>
@@ -53,16 +63,19 @@
                                     </div>
                                 </fieldset>
                             </form>
-   
-                    </div>
-                    <div id="stack" class="tab-pane active">
-                        <div class="posts">
+
                         </div>
-                        <div class="loading" style="display:none">
-                            <button class="btn btn-large disabled btn-block"><img src="/images/ajax-loader.gif" /></button>
-                        </div>
-                        <div class="more-posts" style="display:none">
-                            <button class="btn btn-primary btn-large btn-block" type="button">Load more posts</button>
+
+                        <div id="stack" class="tab-pane active">
+                            <div class="posts">
+                                <div class="hidden-posts"></div>
+                            </div>
+                            <div class="loading" style="display:none">
+                                <button class="btn btn-large disabled btn-block"><img src="/images/ajax-loader.gif" /></button>
+                            </div>
+                            <div class="more-posts" style="display:none">
+                                <button class="btn btn-primary btn-large btn-block" type="button">Load more posts</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -203,14 +216,14 @@
                 </div>
             </div>
             <div id="template-bbcode-link-modal">
-                 <div class="modal-body">
+                <div class="modal-body">
                     <input class="link input-block-level" type="text" placeholder="Place link in here..." />
-                 </div>
+                </div>
             </div>
             <div id="template-bbcode-image-modal">
-                 <div class="modal-body">
+                <div class="modal-body">
                     <input class="image input-block-level" type="text" placeholder="Place image link in here..." />
-                 </div>
+                </div>
             </div>
             <div id="template-bbcode-video-modal-alert">
                 <div class="alert alert-block alert-error fade in">
@@ -220,10 +233,10 @@
                 </div>
             </div>
             <div id="template-bbcode-video-modal">
-                 <div class="modal-body">
-                     <div class="alerts"></div>
+                <div class="modal-body">
+                    <div class="alerts"></div>
                     <input class="video input-block-level" type="text" placeholder="Place video link in here..." />
-                 </div>
+                </div>
             </div>
         </div>
         <script type="text/javascript">
@@ -232,9 +245,9 @@
             Dashbird.InitialData.User = <?php echo $this->ViewData->Get('UserData'); ?>;
             Dashbird.InitialData.LoadedAt = '<?php echo date('Y-m-d H:i:s'); ?>';
         </script>
-	<?php $this->Helper->JavaScriptLink('~/js/jquery-1.8.3.min.js'); ?>
+        <?php $this->Helper->JavaScriptLink('~/js/jquery-1.8.3.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/bootstrap.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/jquery-fieldselection.min.js'); ?>
-        <?php $this->Helper->JavaScriptLink('~/js/dashbird-developer-' .  Pvik\Core\Config::$Config['Version'] .'.js'); ?>
+        <?php $this->Helper->JavaScriptLink('~/js/dashbird-developer-' . Pvik\Core\Config::$Config['Version'] . '.js'); ?>
     </body>
 </html>

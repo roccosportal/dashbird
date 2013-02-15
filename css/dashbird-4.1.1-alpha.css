@@ -1,6 +1,24 @@
+#navigation {
+  margin-top: 50px;
+  position: fixed;
+}
+#navigation .badge {
+  top: -2px;
+  padding-right: 5px;
+  padding-left: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  font-size: 9px;
+  line-height: 9px;
+}
+#navigation .btn {
+  width: 50px;
+  padding: 4px 7px;
+}
 #content {
   margin-top: 50px;
-  margin-left: 50px;
+  margin-left: 80px;
 }
 #content #new-post {
   width: 500px;

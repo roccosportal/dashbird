@@ -1,6 +1,7 @@
 Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.$posts = null;
     _protected.posts = [];
+    _protected.postHtmlLayers = [];
     _protected.pager = {};
     _protected.pager.$morePosts = null;
     _protected.pager.postCount = 10;
@@ -15,6 +16,7 @@ Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         for (var i = 0; i <  posts.length; i++) {
             var postHtmlLayer = Dashbird.PostHtmlLayer.construct(posts[i]);
             _protected.posts.push(posts[i]);
+            _protected.postHtmlLayers.push(postHtmlLayer);
             _protected.$posts.append(postHtmlLayer.getLayer());
         }
     }
@@ -27,6 +29,11 @@ Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         _protected.pager.$morePosts.click(function(e){
             e.preventDefault();
             me.showMorePosts();
+        });
+        
+        $(window).scroll(function() {
+            _protected.hidePostsWhichAreNotOnScreen();
+            _protected.showHiddenPosts();
         });
 
         Dashbird.Posts.loadPostsByCreated(Dashbird.InitialData.LoadedAt, _protected.pager.postCount, function(result){
@@ -57,7 +64,49 @@ Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             _protected.pager.$morePosts.show();
             _protected.$loading.hide();
         }
-    }
+    };
+    
+    _protected.hidePostsWhichAreNotOnScreen = function(){
+        var elementsToHide = [];
+        var calculatedHeight = $('.posts .hidden-posts').height();
+        if(calculatedHeight === null){
+            calculatedHeight = 0;
+        }    
+        $.each(_protected.$posts.find('.post:visible'), function(index, element){
+           element = $(element)
+           if(!Dashbird.Utils.isOnScreen(element)){
+               calculatedHeight += element.height();
+               elementsToHide.push(element);
+               return true
+           }
+           return false;
+        });
+        if(elementsToHide.length > 0){
+            for(var i = 0; i < elementsToHide.length; i++){
+                elementsToHide[i].hide();
+            }
+            $('.posts .hidden-posts').height(calculatedHeight)
+        }
+
+    };
+    
+    _protected.showHiddenPosts = function(){
+       
+        if(_protected.$posts.find('.post:hidden').length==0){
+            $('.posts .hidden-posts').height(0);
+        }
+        else {
+            var i = 0;
+            while(Dashbird.Utils.isOnScreen($('.posts .hidden-posts'))){
+                _protected.$posts.find('.post:hidden').last().show();
+                $('.posts .hidden-posts').height( $('.posts .hidden-posts').height() - _protected.$posts.find('.post:hidden').last().height())
+                i++;
+                if(i > 50){
+                    break;
+                }
+            }
+        }
+    };
                 
     //    me.addToTop = function(postData){
     //        var post = Dashbird.Post();
