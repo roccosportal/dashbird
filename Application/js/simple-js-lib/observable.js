@@ -16,12 +16,14 @@ SimpleJSLib.Observable = SimpleJSLib.BaseObject.inherit(function(me, _protected)
     };
     
     me.trigger = function(){
-        for (var i = 0; i < _protected.listeners.length; i++) {
-            _protected.listeners[i].callback(_protected.data);
+        var listeners = _protected.listeners.slice(); // work with a copy
+        for (var i = 0; i < listeners.length; i++) {
+            listeners[i].callback(_protected.data);
         }
     }
     
     me.listen = function(callback){
+       
         _protected.listeners.push({
             callback : callback
         });
