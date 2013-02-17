@@ -128,25 +128,16 @@ Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             _protected.isLoading = true;
             _protected.pager.$morePosts.hide();
             _protected.$loading.show();
-            var currentCreateDateOfLastPost = _protected.getCreateDateOfLastPost();
-            var posts = Dashbird.Posts.getListByCreated(currentCreateDateOfLastPost, _protected.pager.postCount);
-            me.addPosts(posts);
-            if(posts.length < _protected.pager.postCount){  // we need to load the rest of the data
-                var remainingPostCount = _protected.pager.postCount - posts.length;
-                Dashbird.Posts.loadPostsByCreated(_protected.getCreateDateOfLastPost(), remainingPostCount, function(result){
-                    me.addPosts(result.newPosts);
-                    if(result.newPosts.length == remainingPostCount){
-                        _protected.pager.$morePosts.show();
-                    }
-                    _protected.$loading.hide();
-                    _protected.isLoading = false;
-                });
-            }
-            else {
-                _protected.pager.$morePosts.show();
+          
+            Dashbird.Posts.loadPostsByCreated( _protected.getCreateDateOfLastPost(), _protected.pager.postCount, function(result){
+                me.addPosts(result.posts);
+                if(result.posts.length ==  _protected.pager.postCount){
+                    _protected.pager.$morePosts.show();
+                }
                 _protected.$loading.hide();
                 _protected.isLoading = false;
-            }
+            });
+
         }
     };
     
