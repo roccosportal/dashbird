@@ -19,7 +19,7 @@ class Comment extends \Pvik\Database\Generic\Entity {
 
     public function Insert() {
         if ($this->DateTime == null) {
-            $this->DateTime = date('Y.m.d  H:i:s');
+            $this->DateTime = date('Y-m-d H:i:s');
         }
 
         parent::Insert();

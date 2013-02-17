@@ -1377,8 +1377,8 @@ Dashbird.PostFeedHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
         
         
         
-        _protected.post.getPostData().updated.listen(_protected.drawActivity);
-        _protected.post.getPostData().comments.listen(_protected.drawActivity);
+        _protected.post.getPostData().updated.listen(_protected.redraw);
+        _protected.post.getPostData().comments.listen(_protected.redraw);
         _protected.post.getPostData().lastView.listen(_protected.redraw);
         _protected.post.attachEvent('/post/deleted/', me.destroy);
         _protected.redraw();
