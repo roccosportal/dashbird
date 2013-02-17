@@ -2023,14 +2023,10 @@ Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             var postHtmlLayer = Dashbird.PostHtmlLayer.construct(posts[i]);
             _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer, position);
             _protected.posts.push(posts[i]);
-            //postHtmlLayer.setAllowedToRedraw(true);
-            //var index = _protected.postHtmlLayers.push(postHtmlLayer) - 1;
             if(position==='bottom'){
-                //_protected.postHtmlLayersAllowedForRedraw.push(index);
                 _protected.$posts.append(postHtmlLayer.getLayer());
             }
             else if(position==='top'){
-                //_protected.postHtmlLayersAllowedForRedraw.unshift(index);
                 _protected.$posts.prepend(postHtmlLayer.getLayer());
             }
             
@@ -2074,56 +2070,6 @@ Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }
     };
     
-//    _protected.changeAllowedToRedraw = function(){
-//        
-//        var movePostsToAllow = [];
-//        // go reverse
-//        var postHtmlLayer = null
-//        for(var j = _protected.postHtmlLayersDeniedForRedraw.length - 1; j >= 0; j --){
-//            postHtmlLayer = _protected.postHtmlLayers[_protected.postHtmlLayersDeniedForRedraw[j]];
-//            if(Dashbird.Utils.bottomIsOnScreen(postHtmlLayer.getLayer()))
-//                movePostsToAllow.push(j);
-//            else
-//                break;
-//        }
-//    
-//        if(movePostsToAllow.length > 0){
-//            var index = null;
-//            var postHtmlLayerIndex = null;
-//            for(var k = 0; k <movePostsToAllow.length; k ++){
-//                index = movePostsToAllow[k];
-//                postHtmlLayerIndex = _protected.postHtmlLayersDeniedForRedraw[index];
-//                // delete from denied array
-//                _protected.postHtmlLayersDeniedForRedraw.splice(index, 1);
-//                // add to top of allowed array
-//                _protected.postHtmlLayersAllowedForRedraw.unshift(postHtmlLayerIndex);
-//                _protected.postHtmlLayers[postHtmlLayerIndex].setAllowedToRedraw(true);
-//            }
-//        }
-//        else {
-//            var movePostsToDenied = [];
-//            for(var i = 0; i < _protected.postHtmlLayersAllowedForRedraw.length; i ++){
-//                postHtmlLayer = _protected.postHtmlLayers[_protected.postHtmlLayersAllowedForRedraw[i]];
-//                if(!Dashbird.Utils.bottomIsOnScreen(postHtmlLayer.getLayer()))
-//                    movePostsToDenied.push(i);
-//                else
-//                    break;
-//            }
-//            if(movePostsToDenied.length > 0){
-//                for(var h = 0; h < movePostsToDenied.length; h ++){
-//                    index = movePostsToDenied[h];
-//                    postHtmlLayerIndex =_protected.postHtmlLayersAllowedForRedraw[index];
-//                    // delete from allowed array
-//                    _protected.postHtmlLayersAllowedForRedraw.splice(index, 1);
-//                    // add to bottom of denied array
-//                    _protected.postHtmlLayersDeniedForRedraw.push(postHtmlLayerIndex);
-//                    _protected.postHtmlLayers[postHtmlLayerIndex].setAllowedToRedraw(false);
-//                }
-//            }
-//        }
-//        
-//
-//    };
 
     return me;
 }).construct();
