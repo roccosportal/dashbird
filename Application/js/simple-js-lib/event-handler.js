@@ -1,9 +1,10 @@
 SimpleJSLib.EventHandler = SimpleJSLib.BaseObject.inherit(function(me, _protected){
     _protected.listeners = [];
     me.fireEvent = function (name, data){
-        for (var i = 0; i < _protected.listeners.length; i++) {
-            if(_protected.listeners[i].name==name){
-                _protected.listeners[i].callback(data);
+        var listeners = _protected.listeners.slice(); // work with a copy
+        for (var i = 0; i < listeners.length; i++) {
+            if(listeners[i].name==name){
+                listeners[i].callback(data);
             }
         }
     };

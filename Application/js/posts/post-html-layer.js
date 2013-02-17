@@ -1,4 +1,4 @@
-Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected){
+Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.$post = null;
     _protected.$meta = null;
     _protected.$comments = null;
@@ -12,7 +12,8 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
             'text' : false,
             'postShares' : false,
             'comments' : false,
-            'tags' : false
+            'tags' : false,
+            'lastView' : false
         };
     }
     
@@ -56,12 +57,13 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
         _protected.$meta.find('.info .username').html(_protected.post.getPostData().user.name);
         _protected.$meta.find('.info .date').html(Dashbird.Utils.convertDate(_protected.post.getPostData().created));
         
+        _protected.drawLastView();
+        
         if(_protected.post.isFromCurrentUser){
             _protected.commands.edit = Dashbird.Commands.Edit.construct(me);
             
             
-            //            _protected.commands.share = Dashbird.Commands.Share(me);
-            //            _protected.commands.share.init();
+            _protected.commands.share = Dashbird.Commands.Share.construct(me);
             
             _protected.commands.remove = Dashbird.Commands.Remove.construct(me);
         }
@@ -80,42 +82,88 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
         });
         _protected.$post.mouseleave(function (){
             _protected.commands.$bar.hide();
-        });     
+        }); 
         
         _protected.$post.data('post', me);
+        
+        _protected.$meta.find('.notViewed').click(_protected.post.setLastView);
         
         
         _protected.setChangeSetToDefault();
         // attach listener
-        _protected.post.getPostData().text.listen(function(){
-           _protected.allowedToRedraw ? _protected.drawText() : _protected.changeSet.text = true;
-        });
-        
-        _protected.post.getPostData().comments.listen(function(){
-            _protected.allowedToRedraw ?  _protected.drawComments() : _protected.changeSet.comments = true;
-        });
-        _protected.post.getPostData().tags.listen(function(){
-            _protected.allowedToRedraw ?  _protected.drawTags() : _protected.changeSet.tags = true;
-        });
-        _protected.post.getPostData().postShares.listen(function(){
-             _protected.allowedToRedraw ? _protected.drawPostShares() : _protected.changeSet.postShares = true;
-        });
+        _protected.post.getPostData().text.listen(_protected.onTextChanged);
+        _protected.post.getPostData().comments.listen(_protected.onCommentsChanged);
+        _protected.post.getPostData().tags.listen(_protected.onTagsChanged);
+        _protected.post.getPostData().postShares.listen(_protected.onPostSharesChanged);
+        _protected.post.getPostData().lastView.listen(_protected.onLastViewChanged);
+        _protected.post.attachEvent('/post/deleted/', _protected.onDeleted);
+    }
+    
+    _protected.onTextChanged = function(){
+        _protected.allowedToRedraw ? _protected.drawText() : _protected.changeSet.text = true;
+    }
+    
+    _protected.onCommentsChanged = function(){
+        _protected.allowedToRedraw ?  _protected.drawComments() : _protected.changeSet.comments = true;
+    }
+    
+    _protected.onTagsChanged = function(){
+        _protected.allowedToRedraw ?  _protected.drawTags() : _protected.changeSet.tags = true;
+    }
+    
+    _protected.onPostSharesChanged = function(){
+         _protected.allowedToRedraw ? _protected.drawPostShares() : _protected.changeSet.postShares = true;
+    }
+    
+    _protected.onLastViewChanged = function(){
+         _protected.allowedToRedraw ? _protected.drawLastView() : _protected.changeSet.lastView = true;
+    }
+    
+    _protected.onDeleted = function(){
+         _protected.allowedToRedraw ? me.destroy() : _protected.changeSet.isDeleted = true;
     }
     
     _protected.redraw = function(){
-        if(_protected.changeSet.text == true)
-             _protected.drawText();
-        
-        if(_protected.changeSet.comments == true)
-             _protected.drawComments();
-         
-        if(_protected.changeSet.tags == true)
-             _protected.drawTags();
-         
-        if(_protected.changeSet.postShares == true)
-             _protected.drawPostShares();
-         
+         if(_protected.changeSet.isDeleted == true){
+             me.destroy();
+         }
+         else {
+            if(_protected.changeSet.text == true)
+                 _protected.drawText();
+
+            if(_protected.changeSet.comments == true)
+                 _protected.drawComments();
+
+            if(_protected.changeSet.tags == true)
+                 _protected.drawTags();
+
+            if(_protected.changeSet.postShares == true)
+                 _protected.drawPostShares();
+             
+            if(_protected.changeSet.lastView == true)
+                 _protected.drawLastView();
+        }
         _protected.setChangeSetToDefault();
+    };
+    
+    me.undraw = function(){
+        me.getLayer().fadeOut(function(){
+             me.getLayer().detach();
+        });
+    }
+    
+    me.destroy = function(){
+        me.undraw();
+        _protected.post.getPostData().text.unlisten(_protected.onTextChanged);
+        _protected.post.getPostData().comments.unlisten(_protected.onCommentsChanged);
+        _protected.post.getPostData().tags.unlisten(_protected.onTagsChanged);
+        _protected.post.getPostData().postShares.unlisten(_protected.onPostSharesChanged);
+        _protected.post.getPostData().lastView.unlisten(_protected.onLastViewChanged);
+        _protected.post.detachEvent('/post/deleted/', _protected.onDeleted);
+        me.fireEvent('/destroying/', me);
+        delete _protected.post;
+        delete me;
+        delete _protected;
     }
     
     me.getLayer = function(){
@@ -131,19 +179,20 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
     }
     
     
-  
-    me.undrawPost = function(callback){
-        _protected.$post.fadeOut("slow", function(){       
-            _protected.$post.detach();
-            callback.call();
-        });   
-    };
-    
     
     
     
     _protected.drawText = function(){
         _protected.$post.find('.content .text').html(_protected.bbcode(Dashbird.Utils.convertLineBreaks(_protected.post.getPostData().text.get())));
+    };
+    
+    _protected.drawLastView = function(){
+        if(_protected.post.getPostData().lastView.get() == null || _protected.post.getPostData().updated.get() > _protected.post.getPostData().lastView.get()){
+            _protected.$meta.find('.notViewed').show();
+        }
+        else {
+            _protected.$meta.find('.notViewed').hide();
+        }
     };
     
     _protected.drawTags = function(){
@@ -177,7 +226,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
             
             var names = '';
             var first = true;
-            $.each(_protected.post.getPostData().postShares, function(key, element){
+            $.each(_protected.post.getPostData().postShares.get(), function(key, element){
                 if(first){
                     first = false;
                 }
@@ -210,6 +259,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.BaseObject.inherit(function(me, _protected
                 });
                 // delete comment button
                 $comment.find('.command-bar.popup .command-delete').click(function(){
+                    _protected.postHtmlLayer.getPost().setLastView();
                     Dashbird.Modal.show({
                         headline: 'Deleting comment', 
                         text : 'Do you really want to delete this comment?',

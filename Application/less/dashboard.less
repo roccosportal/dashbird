@@ -71,150 +71,141 @@
           
     }
 
-    #notifications {
-           width: @width;
-           .notification {
-                
+.postHtmlLayer(){
+    margin-bottom: 30px;
 
-                border-left: 5px solid #EEEEEE;
-                margin-bottom: 30px;
-                padding: 0 0 0 15px;
+    .content, .comment {
+        word-wrap: break-word;
+        position: relative;
 
-                 position: relative;
-                 .command-bar {
-                       .rounded(4px);
-                       position: absolute;
-                       right: 20px;
-                       background-color: #EEEEEE;
-                       padding: 5px;
-                       display: none;
-                 }
+        border-left: 5px solid #EEEEEE;
+        margin-bottom: 5px;
+        padding: 0 0 0 15px;
 
-                 p {
-                    cursor: pointer;
-                     font-size: 16px;
-                     font-weight: 300;
-                     line-height: 25px;
-                     margin-bottom: 0;
-                    }
+        .command-bar.popup {
+           .rounded(4px);
+           position: absolute;
+           right: 20px;
+           background-color: #EEEEEE;
+           padding: 5px;
+           display: none;
+        }
 
-                .meta {
-                    color: #999999;
-                    display: block;
-                    line-height: 20px;
-                    font-size: 85%;
-
-                    li{
-                        padding-left: 0px;
-
-                    }
+        .command {
+            //position: absolute;
+            //top: 30px;
+            //right: 20px;
+            .rounded(4px);
+            padding: 5px;
+            background-color: #F5F5F5;
+            display: none;
 
 
+            form {
+                margin-bottom: 0px;
+                .form-actions {
+                    margin-top: 0px;
+                    margin-bottom: 0px;
                 }
-           }
+            }
 
-        
+            &.command-edit {
+
+                .add-tag-input {
+                    margin-right: 50px;
+                }
+            }
+        }
+
+
+        p {
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 25px;
+            margin-bottom: 0;
+
+            iframe {
+                 margin-top: 25px;
+            }
+        }
+
+        .meta {
+            color: #999999;
+            display: block;
+            line-height: 20px;
+            font-size: 85%;
+
+            .info .notViewed {
+                padding-right: 4px;
+                padding-left: 4px;
+                cursor: pointer;
+                &:hover {
+                    background-color: #B94A48;
+                }
+            }
+
+            li{
+                padding-left: 0px;
+                &.tags {
+                    padding-right: 0px;
+                }
+            }
+        }
     }
 
-    #stack {
+
+    .comments {
+        margin-left: 40px;
+    }
+}
+
+  
+    #stack, #latest, #search {
         width: @width;
 
         .view-all {
             margin-bottom: 20px;
         }
         .posts {
-
-
             .post {
-                margin-bottom: 30px;
-
-                .content, .comment {
-                    word-wrap: break-word;
-                    position: relative;
-
-                    border-left: 5px solid #EEEEEE;
-                    margin-bottom: 5px;
-                    padding: 0 0 0 15px;
-
-                    .command-bar.popup {
-                       .rounded(4px);
-                       position: absolute;
-                       right: 20px;
-                       background-color: #EEEEEE;
-                       padding: 5px;
-                       display: none;
-                    }
-
-                    .command {
-                        //position: absolute;
-                        //top: 30px;
-                        //right: 20px;
-                        .rounded(4px);
-                        padding: 5px;
-                        background-color: #F5F5F5;
-                        display: none;
-
-
-                        form {
-                            margin-bottom: 0px;
-                            .form-actions {
-                                margin-top: 0px;
-                                margin-bottom: 0px;
-                            }
-                        }
-
-                        &.command-edit {
-
-                            .add-tag-input {
-                                margin-right: 50px;
-                            }
-                        }
-                    }
-
-
-                    p {
-                        font-size: 16px;
-                        font-weight: 300;
-                        line-height: 25px;
-                        margin-bottom: 0;
-
-                        iframe {
-                             margin-top: 25px;
-                        }
-                    }
-
-                    .meta {
-                        color: #999999;
-                        display: block;
-                        line-height: 20px;
-                        font-size: 85%;
-
-                        li{
-                            padding-left: 0px;
-                            &.tags {
-                                padding-right: 0px;
-                            }
-                        }
-
-
-                    }
-                }
-
-
-                .comments {
-                    margin-left: 40px;
-                }
+                .postHtmlLayer
             }
-
-
+        }
+    }
+    #single-view {
+        width: @width;
+        .content .post {
+            .postHtmlLayer
         }
     }
 
+    #feed {
+        .post {
+            .headline{
+                font-weight: bold;
+                
+                &.viewed {
+                     font-weight: normal;
+                    color: #8C8C8C;
+                    font-size: 85%;
+                }
+
+                .post-link {
+                     font-weight: bold;
+                }
+            }
+
+            .activity {
+                font-weight: bold;
+
+                li.viewed {
+                     font-weight: normal;
+                     color: #8C8C8C;
+                     font-size: 85%;
+                }
+            }
+        }
+    }
    
 
 }
-
- #login-box {
-        margin-top: 50px;
-        margin-left: 50px;
-    }

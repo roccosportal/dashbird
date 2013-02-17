@@ -19,7 +19,7 @@ self::$Config['Routes'] = array (
     array ('Url' => '/api/auth/is/logged/in/', 'Controller' => 'Auth', 'Action' => 'ApiAuthIsLoggedIn'),
     array ('Url' => '/api/posts/load/', 'Controller' => 'Posts', 'Action' => 'ApiPostsLoad'),
     array ('Url' => '/api/posts/get/', 'Controller' => 'Posts', 'Action' => 'ApiPostsGet'),
-    array ('Url' => '/api/posts/updated/get/', 'Controller' => 'Posts', 'Action' => 'ApiPostsUpdatedGet'),
+    array ('Url' => '/api/posts/search/', 'Controller' => 'Posts', 'Action' => 'ApiPostsSearch'),
     array ('Url' => '/api/user/shares/get/', 'Controller' => 'User', 'Action' => 'ApiUserSharesGet'),
     array ('Url' => '/api/user/shares/add/', 'Controller' => 'User', 'Action' => 'ApiUserSharesAdd'),
     array ('Url' => '/api/user/password/change/', 'Controller' => 'User', 'Action' => 'ApiUserChangePassword'),
@@ -27,7 +27,7 @@ self::$Config['Routes'] = array (
     array ('Url' => '/api/post/add/', 'Controller' => 'Posts', 'Action' => 'ApiPostAdd'),
     array ('Url' => '/api/post/delete/', 'Controller' => 'Posts', 'Action' => 'ApiPostDelete'),
     array ('Url' => '/api/post/edit/', 'Controller' => 'Posts', 'Action' => 'ApiPostEdit'),
-    array ('Url' => '/api/post/hash/get/', 'Controller' => 'Posts', 'Action' => 'ApiPostHashGet'),
+    array ('Url' => '/api/post/lastview/set/', 'Controller' => 'Posts', 'Action' => 'ApiPostLastViewSet'),
     array ('Url' => '/api/post/comment/add/', 'Controller' => 'Comment', 'Action' => 'ApiPostCommentAdd'),
     array ('Url' => '/api/post/comment/delete/', 'Controller' => 'Comment', 'Action' => 'ApiPostCommentDelete'),
     array ('Url' => '/api/post/shares/set/', 'Controller' => 'Posts', 'Action' => 'ApiPostSharesSet'),
@@ -40,7 +40,7 @@ self::$Config['Routes'] = array (
    
 );
 
-self::$Config['Version'] = '4.1.1-alpha';
+self::$Config['Version'] = '5.0.0-alpha';
 
 
 

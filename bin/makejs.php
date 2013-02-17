@@ -27,9 +27,15 @@ $Files = array (
     '~/Application/js/shared/ajax-response.js',
     '~/Application/js/shared/user.js',
     '~/Application/js/posts/utils.js',
+    '~/Application/js/posts/latest.js',
+    '~/Application/js/posts/feed.js',
+    '~/Application/js/posts/notification.js',
+    '~/Application/js/posts/post-html-layers-manager.js',
     '~/Application/js/posts/posts.js',
+    '~/Application/js/posts/single-view.js',
     '~/Application/js/posts/post.js',
     '~/Application/js/posts/post-html-layer.js',
+    '~/Application/js/posts/post-feed-html-layer.js',
     '~/Application/js/posts/commands/base.js',
     '~/Application/js/posts/commands/comment.js',
     '~/Application/js/posts/commands/edit.js',
@@ -44,7 +50,6 @@ $Files = array (
     '~/Application/js/posts/new-post.js',
     '~/Application/js/posts/search.js',
     '~/Application/js/posts/templates.js',
-    '~/Application/js/posts/general.js',
     '~/Application/js/posts/init.js',
 );
 

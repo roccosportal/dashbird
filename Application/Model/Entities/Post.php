@@ -55,10 +55,17 @@ class Post extends \Pvik\Database\Generic\Entity {
             $TagTitle[] = $PostsTags->Tag->Title;
         }
         $PostSharesUserIds = array();
+        $LoggedInUserId = \Dashbird\Library\Services\UserService::Instance()->GetUserId();
+        $LastView = null;
         //if ($this->CurrentUserHasPermissionToChange()) {
             foreach ($this->PostShares as $PostShare) {
                 /* @var $PostShare \Dashbird\Model\Entities\PostShare */
-                $PostSharesUserIds[] = $PostShare->UserId;
+                if($PostShare->UserId == $LoggedInUserId){
+                    $LastView = $PostShare->LastView;
+                }
+                else if($PostShare->UserId != $this->UserId){
+                    $PostSharesUserIds[] = $PostShare->UserId;
+                }
             }
         //}
 
@@ -76,6 +83,7 @@ class Post extends \Pvik\Database\Generic\Entity {
             'text' => $this->Text,
             'tags' => $TagTitle,
             'user' => array('userId' => $this->UserId, 'name' => $this->User->Name),
+            'lastView' => $LastView,
             'postShares' => $PostSharesUserIds,
             'comments' => $Comments
         );
@@ -233,7 +241,13 @@ class Post extends \Pvik\Database\Generic\Entity {
         foreach ($this->PostsTags as $PostsTags) {
             $TagTitles .= $PostsTags->Tag->Title;
         }
-        $this->SearchHelper = $this->User->Name . $this->Text . $TagTitles;
+      
+        $CommentText = '';
+        foreach ($this->Comments as $Comment){
+            $CommentText .= $Comment->Text;
+        }
+        
+        $this->SearchHelper = $this->User->Name . $this->Text . $TagTitles . $CommentText;
         parent::Update();
     }
 
@@ -277,6 +291,7 @@ class Post extends \Pvik\Database\Generic\Entity {
             }
         }
         $UserIds = $FilteredUserIds;
+        $UserIds[] = $this->UserId; // add him self to shared
         foreach ($UserIds as $UserId) {
             $PostShare = new \Dashbird\Model\Entities\PostShare();
             $PostShare->PostId = $this->PostId;

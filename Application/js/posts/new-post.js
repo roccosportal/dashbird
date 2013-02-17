@@ -72,12 +72,9 @@ Dashbird.NewPost = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                Dashbird.Posts.mergePostDatas([ajaxResponse.data]);
+                var result = Dashbird.Posts.mergePostDatas([ajaxResponse.data]);
+                result.posts[0].setLastView();
                 Dashbird.Stack.show();
-                //me.fireEvent('newPost', ajaxResponse.data);
-                //Dashbird.Board.refreshPosts();
-                //$('#navbar .nav .show-board').tab('show');
-                  
             }
         });
     }

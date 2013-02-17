@@ -28,14 +28,17 @@ $(document).ready(function (){
     });
 
     
-  
+    Dashbird.Notification.init();
     Dashbird.Templates.init();
     Dashbird.User.init();
+    Dashbird.Feed.init();
+    Dashbird.Latest.init();
     Dashbird.Stack.init();
     Dashbird.NewPost.init();
     Dashbird.Modal.init();
     Dashbird.Search.init();
     Dashbird.Posts.init();
+    Dashbird.SingleView.init();
     
     
 });

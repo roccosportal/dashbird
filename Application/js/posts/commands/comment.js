@@ -22,6 +22,7 @@ Dashbird.Commands.Comment = Dashbird.Commands.Base.inherit(function(me, _protect
                 e.preventDefault();
                 _protected.postHtmlLayer.getPost().addComment(_protected.$.find('textarea').val(), function(){
                     _protected.$.fadeOut(); 
+                    _protected.postHtmlLayer.getPost().setLastView();
                 })
             });
             _protected.isOnDemandInited = true;
@@ -37,6 +38,7 @@ Dashbird.Commands.Comment = Dashbird.Commands.Base.inherit(function(me, _protect
             _protected.$.fadeIn(function(){
                 _protected.$.find('textarea').focus();
             });
+            _protected.postHtmlLayer.getPost().setLastView();
         });
     };
     return me;

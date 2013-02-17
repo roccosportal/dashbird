@@ -1,81 +1,78 @@
-if(typeof Dashbird == "undefined"){
-    var Dashbird = {};
-
-}
-if(typeof Dashbird.Commands == "undefined"){
-    Dashbird.Commands  = {};
+Dashbird.Commands.Share = Dashbird.Commands.Base.inherit(function(me, _protected){
     
-}
-Dashbird.Commands.Share = function(post){
-    var me = Dashbird.Commands.Base(post),
-    _private = {};
+    var _parent = {
+        construct :  _protected.construct
+    };
         
-    _private.isOnDemandInited = false;
-        
-    me.init = function(){
-        post.commands.$bar.find('.command-share').click(me.show);
-        me.set$('command-share');
+    _protected.isOnDemandInited = false;
+   
+    
+     _protected.construct = function(parameters){
+        _parent.construct(parameters);
        
+        _protected.postHtmlLayer.getCommandBar().find('.command-share').click(me.show);
+        _protected.set$('command-share');
     };
     
-    _private.onDemandInit = function(){
-        if(!_private.isOnDemandInited){
-            me.$.find('.submit-button').click(function(e){
+    _protected.onDemandInit = function(){
+        if(!_protected.isOnDemandInited){
+            _protected.$.find('.submit-button').click(function(e){
                 e.preventDefault();
-                post.setPostShares(_private.postShares);
-                me.$.fadeOut();
+                _protected.postHtmlLayer.getPost().setPostShares(_protected.postShares);
+                _protected.$.fadeOut();
             });
 
-            me.$.find('.cancel-button').click(function(e){
+            _protected.$.find('.cancel-button').click(function(e){
                 e.preventDefault();
-                me.$.fadeOut();
+                _protected.$.fadeOut();
             });
-            _private.isOnDemandInited = true;
+            _protected.isOnDemandInited = true;
         }
     };
     
     
     me.show = function(e){
         e.preventDefault();
-        _private.onDemandInit();
-        me.hideCommands(function(){
-            _private.postShares = post.postData.postShares;
-            _private.draw();
+        _protected.onDemandInit();
+        _protected.hideCommands(function(){
+            _protected.postShares = _protected.postHtmlLayer.getPost().getPostData().postShares.get();
+            _protected.draw();
             // show option
-            me.$.fadeIn(function(){
+            _protected.$.fadeIn(function(){
                 
-                });
+            });
+            _protected.postHtmlLayer.getPost().setLastView();
         });
     };
     
-    _private.draw = function(){
+    _protected.draw = function(){
         var $share = null;
-        me.$.find('.shares').html('');
+        _protected.$.find('.shares').html('');
         $.each(Dashbird.User.getUserShares(), function(key, element){
             $share = $('#templates #template-share-editable .checkbox').clone();
             $share.find('span').html(element.name);
-            if($.inArray(this.userId,_private.postShares)!== -1){
+            if($.inArray(this.userId,_protected.postShares)!== -1){
                 $share.find('input').attr('checked', 'checked');
             }
             $share.find('input').change(function(){
-                _private.shareChange($(this), element.userId);
+                _protected.shareChange($(this), element.userId);
             });
-            me.$.find('.shares').append($share);
+            _protected.$.find('.shares').append($share);
         });
     }
     
-    _private.shareChange = function($shareInput, userId){
+    _protected.shareChange = function($shareInput, userId){
         if($shareInput.attr('checked')){
-            _private.postShares.push(userId);
+            _protected.postShares.push(userId);
         }
         else {
-            var position = $.inArray(userId, _private.postShares);
+            var position = $.inArray(userId, _protected.postShares);
             if(position!== -1){ 
-                _private.postShares.splice(position, 1);
+                _protected.postShares.splice(position, 1);
             }
         }
     }
      
     return me;
         
-};
+});

@@ -18,8 +18,7 @@ class PostShares extends \Pvik\Database\Generic\ModelTable {
        
         $this->FieldDefinition['User'] = array('Type' => 'ForeignObject', 'ForeignKey' => 'UserId');
         
-        
-        
+        $this->FieldDefinition['LastView'] = array('Type' => 'Normal');
         
         
     }

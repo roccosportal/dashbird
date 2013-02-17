@@ -1,4 +1,4 @@
-Dashbird.Post = SimpleJSLib.BaseObject.inherit(function(me, _protected){
+Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.postData = null;
     me.isFromCurrentUser = false;
 
@@ -12,7 +12,8 @@ Dashbird.Post = SimpleJSLib.BaseObject.inherit(function(me, _protected){
             tags : SimpleJSLib.Observable.construct(postData.tags),
             comments : SimpleJSLib.Observable.construct(postData.comments),
             postShares : SimpleJSLib.Observable.construct(postData.postShares),
-            text : SimpleJSLib.Observable.construct(postData.text)
+            text : SimpleJSLib.Observable.construct(postData.text),
+            lastView : SimpleJSLib.Observable.construct(postData.lastView)
         }
         me.isFromCurrentUser = Dashbird.User.isCurrentUser(_protected.postData.user.userId);
     };
@@ -35,6 +36,7 @@ Dashbird.Post = SimpleJSLib.BaseObject.inherit(function(me, _protected){
                 _protected.postData.tags.set(ajaxResponse.data.tags);
                 _protected.postData.text.set(ajaxResponse.data.text);
                 _protected.postData.updated.set(ajaxResponse.data.updated);
+                _protected.postData.lastView.set(ajaxResponse.data.lastView);
             }
         });
     };
@@ -48,7 +50,7 @@ Dashbird.Post = SimpleJSLib.BaseObject.inherit(function(me, _protected){
             // do nothing
             }
         });
-        me.undrawPost();                  
+        me.fireEvent('/post/deleted/', me);            
     };
     
     me.setPostShares = function(userIds){
@@ -58,10 +60,23 @@ Dashbird.Post = SimpleJSLib.BaseObject.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                _protected.postData.postShares = userIds;
-                me.drawPostShares();
+                _protected.postData.postShares.set(userIds);
             }
         });
+    }
+    
+    me.setLastView = function(){
+        if(_protected.postData.updated.get() !=_protected.postData.lastView.get()){
+            $.getJSON('/api/post/lastview/set/', {
+               postId : _protected.postData.postId, 
+               lastView : _protected.postData.updated.get()
+           }, function(data) {
+               var ajaxResponse = Dashbird.AjaxResponse.construct(data);
+               if(ajaxResponse.isSuccess){
+                   _protected.postData.lastView.set(ajaxResponse.data.lastView);
+               }
+           });
+        }
     }
     
 
@@ -91,10 +106,7 @@ Dashbird.Post = SimpleJSLib.BaseObject.inherit(function(me, _protected){
             if(ajaxResponse.isSuccess){
                _protected.postData.updated.set(ajaxResponse.data.post.updated);
                 
-//                Dashbird.Board.fire('post#deleteComment', {
-//                    post : me,
-//                    data : data[AJAX.DATA]
-//                })
+
                 // rebuild comments
                 var comments = [];
                 $.each(_protected.postData.comments.get(),function(index, comment){
@@ -106,6 +118,36 @@ Dashbird.Post = SimpleJSLib.BaseObject.inherit(function(me, _protected){
 
             }
         });
+    }
+    
+    me.isKeywordMatch = function(keyword){
+           if(_protected.postData.text.get().indexOf(keyword) !== -1)
+                return true;
+            
+             if(_protected.postData.user.name.indexOf(keyword) !== -1)
+                return true;
+
+            var comments = _protected.postData.comments.get();
+            for(var i = 0; i < comments.length; i++){
+                if(comments[i].text.indexOf(keyword) !== -1)
+                     return true;
+            }
+
+            var tags = _protected.postData.tags.get();
+            for(var k = 0; k < tags.length; k++){
+                if(tags[k].indexOf(keyword) !== -1)
+                     return true;
+            }
+            return false
+    }
+    
+    me.isSearchMatch = function(search){
+        for(var j = 0; j < search.keywords.length; j++){
+            if(me.isKeywordMatch(search.keywords[j])==false){
+                return false;
+            }
+        }
+        return true;
     }
                       
     return me;

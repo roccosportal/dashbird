@@ -26,12 +26,15 @@
             </div>
             <div class="row">
                 <div id="navigation" class="span1">
-                    <div class="btn-group btn-group-vertical">
-                        <a class="btn new-post" href="#new-post" data-toggle="tab"><i class="icon-plus"></i></a>
-                        <a class="btn stack" href="#stack" data-toggle="tab"><i class="icon-list"></i><span id="stack-new-post-counter" class="badge"></span></a>
-                        <a class="btn"><i class="icon-time"></i><span class="badge badge-important">6</span></a>
-                        <a class="btn"><i class="icon-fire"></i><span class="badge">30</span></a>
-                    </div>
+                  
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a class="new-post" href="#new-post" data-toggle="tab"><i class="icon-plus"></i></a></li>
+                        <li class="active"><a class="stack" href="#stack" data-toggle="tab"><i class="icon-list"></i><span id="stack-new-post-counter" class="badge badge-important"></span></a></li>
+                        <li><a class="latest" href="#latest"  data-toggle="tab"><i class="icon-time"></i><span id="latest-changed-posts-counter" class="badge badge-important"></span></a></li>
+                        <li><a class="feed"  href="#feed"  data-toggle="tab"><i class="icon-fire"></i><span class="badge badge-important"></span></a></li>
+                        <li><a class="single-view"  href="#single-view"  data-toggle="tab" style="display:none"><i class="icon-envelope"></i></a></li>
+                        <li><a class="search"  href="#search"  data-toggle="tab" style="display:none"><i class="icon-search"></i></a></li>
+                    </ul>
                 </div>
                 <div id="content" class="tabbable">
                     <div class="tab-content">
@@ -76,6 +79,22 @@
                                 <button class="btn btn-primary btn-large btn-block" type="button">Load more posts</button>
                             </div>
                         </div>
+                        <div id="latest" class="tab-pane">
+                            <div class="posts">
+                            </div>
+                        </div>
+                         <div id="feed" class="tab-pane">
+                            <div class="posts">
+                            </div>
+                        </div>
+                        <div id="single-view" class="tab-pane">
+                            <div class="content">
+                            </div>
+                        </div>
+                        <div id="search" class="tab-pane">
+                            <div class="posts">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -105,7 +124,7 @@
                         </div>
                         <p class="text"></p>
                         <ul class="meta inline">
-                            <li class="info"><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
+                            <li class="info"><span class="badge notViewed"><i class="icon-fire"></i></span><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
                             <li class="tags"><ul class="inline"></ul></li>
                             <li class="private-sharing"><i class="icon-lock"></i> private</li>
                             <li class="sharing"><i class="icon-retweet"></i><a data-placement="bottom" href="#" rel="tooltip" title="" > <span class="count"></span> <span class="persons"></span></a> </li>
@@ -174,6 +193,33 @@
                         <li class="info"><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
                     </ul>
                 </div>
+            </div>
+            <div id="template-post-feed">
+                <div class="post">
+                    <div class="headline">
+                        <i class="icon-plus"></i> <i class="icon-user"></i> <span class="username"></span> created a new <a class="post-link" href=""><i class="icon-envelope"></i> post</a> on <i class="icon-time"></i>  <span class="date"></span>
+                    </div>
+                    <div class="activity">
+                        <ul>
+                            <li></li> 
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="template-post-feed-update">
+                <ul>
+                    <li class="viewed"> <i class="icon-refresh"></i> last update on <i class="icon-time"></i> <span class="date"></span></li> 
+                </ul>
+            </div>
+            <div id="template-post-feed-comment">
+                <ul>
+                    <li class="viewed"><i class="icon-comment"></i> <i class="icon-user"></i> <span class="username"></span> created a comment on <i class="icon-time"></i>  <span class="date"></span></li> 
+                </ul>
+            </div>
+            <div id="template-post-feed-viewed">
+                <ul>
+                    <li class="viewed"><i class="icon-eye-open"></i> <i class="icon-time"></i>  <span class="date"></span></li> 
+                </ul>
             </div>
             <div id="template-tag">
                 <ul>

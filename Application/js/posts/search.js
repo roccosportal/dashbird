@@ -4,32 +4,84 @@ if(Dashbird===undefined){
 Dashbird.Search = SimpleJSLib.BaseObject.inherit(function(me, _protected){
     _protected.searchRequestQueue = null;
     _protected.$searchBox = null;
-        
+    _protected.currentSearchPhrase = null;    
         
     me.init = function(){
+        _protected.$pane = $('#search');
+        _protected.$posts = _protected.$pane.find('.posts');
+        _protected.postHtmlLayersManager = Dashbird.PostHtmlLayersManager.construct();
         _protected.$searchBox = $('#search-box');
         _protected.searchRequestQueue = SimpleJSLib.SingleRequestQueue.construct();
-        _protected.searchRequestQueue.setTimeout(300);
+        _protected.searchRequestQueue.setTimeout(500);
         _protected.$searchBox.keypress(function(e){
             if(e.keyCode == 13){
                 e.preventDefault();
             }
             else {
                 _protected.searchRequestQueue.addToQueue({}, function(data){
-                     Dashbird.Board.refreshPosts();
-                     $('#navbar .nav .show-board').tab('show');
+                    me.search( me.getSearchObject());
                 });
             }
         });
+        $('#navigation .search').click(me.show);
     };
-        
-    me.getSearchPhrase = function(){
-        // when Dashbird.Search is not initialized yet
-        if(!_protected.$searchBox){
-            return '';
+    
+    _protected.isVisible = function(){
+        return (_protected.$pane.hasClass('active'));
+    };
+    
+    me.search = function(search){
+        _protected.postHtmlLayersManager.clear();
+        _protected.currentSearch = search;
+        var posts = Dashbird.Posts.search(search);
+        var postHtmlLayer = null;
+        for(var i = 0; i < posts.length; i++){
+            postHtmlLayer = Dashbird.PostHtmlLayer.construct(posts[i]);
+            _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer, 'bottom');
+            _protected.$posts.append(postHtmlLayer.getLayer());
         }
-        return _protected.$searchBox.val();
+        Dashbird.Posts.attachEvent('/posts/new/', _protected.onNewPosts);
+        me.show();
+        Dashbird.Posts.loadPostBySearch(search);
+    }
+    
+    me.show = function(e){
+        if(typeof(e) !== 'undefined')
+            e.preventDefault();
+
+        if(!_protected.isVisible())
+            $('#navigation .search').tab('show');
+        
+        $('#navigation .search').show();
+    
+        // move to top
+        window.scrollTo(0,0);
+        
+         // view is now on top again;
+        _protected.postHtmlLayersManager.allowAll();
+    }
+        
+    me.getSearchObject = function(){
+        var searchPhrase = _protected.$searchBox.val();
+        
+        var search = {
+            keywords : searchPhrase.split(' ')
+        };
+        return search;
     };
+    
+    _protected.onNewPosts = function(result){
+        
+        var postHtmlLayer = null;
+        for(var i = 0; i < result.newPosts.length; i++){
+            if(result.newPosts[i].isSearchMatch(_protected.currentSearch)){
+                postHtmlLayer = Dashbird.PostHtmlLayer.construct(result.newPosts[i]);
+                _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer);
+                _protected.$posts.append(postHtmlLayer.getLayer());
+            }
+        }
+    }
+    
     
     return me;
 }).construct();

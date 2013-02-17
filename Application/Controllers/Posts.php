@@ -21,8 +21,6 @@ class Posts extends Base {
             return $this->ResponseNotLoggedIn();
         }
 
-
-        $Search = $this->Request->GetGET('search');
         $StartDate = $this->Request->GetGET('start-date');
         if($StartDate==null) $StartDate = 0;
         $PostCount = $this->Request->GetGET('post-count');
@@ -32,25 +30,14 @@ class Posts extends Base {
 
         $Query = new \Pvik\Database\Generic\Query('Posts');
         $ConditionString = 'LEFT JOIN PostShares as PostShares ON PostShares.PostId = Posts.PostId';
-        $ConditionString .= ' WHERE (Posts.UserId = "%s"';
-        $Query->AddParameter($this->GetUserId());
-        $ConditionString .= ' OR PostShares.UserId = "%s")';
+        $ConditionString .= ' WHERE PostShares.UserId = "%s"';
         $Query->AddParameter($this->GetUserId());
         if($StartDate!=null){
             $ConditionString .= ' AND Posts.' . $OrderBy .' < "%s"';
             $Query->AddParameter($StartDate);
         }
-        if (!empty($Search)) {
-            $SearchWords = preg_split("/[\s]+/", $Search);
-            foreach ($SearchWords as $SearchWord) {
-                $Query->AddParameter('%' . $SearchWord . '%');
-                $ConditionString .= ' AND Posts.SearchHelper LIKE "%s"';
-            }
-        }
         $Query->SetConditions($ConditionString);
-        //$HasMorePostsQuery = clone $Query;
         $Query->SetOrderBy('ORDER BY Posts.' . $OrderBy .' DESC LIMIT 0,%s');
-        //$Query->AddParameter($StartPosition);
         $Query->AddParameter($PostCount);
         $Posts = $Query->Select();
         
@@ -58,6 +45,12 @@ class Posts extends Base {
        
         // optimization for tags
         $Posts->LoadList('PostsTags->Tag');
+        
+        // optimization for postshare
+        $Posts->LoadList('PostShares');
+        
+         // optimization for comments
+        $Posts->LoadList('Comments');
       
         $Data = array();
         $Data['posts'] = array();
@@ -68,42 +61,55 @@ class Posts extends Base {
         $this->ResponseSuccess($Data);
     }
     
-    public function ApiPostsUpdatedGetAction() {
+    public function ApiPostsSearchAction() {
         if (!$this->IsLoggedIn()) {
             return $this->ResponseNotLoggedIn();
         }
+
+        $Search = $this->Request->GetGET('search');
+        if(!is_array($Search) || !isset($Search['keywords'])){
+            return $this->ResponseWrongData();
+        }
         
         $PostCount = $this->Request->GetGET('post-count');
-        if($PostCount==null) $PostCount = 50;
-    
-        $Search = $this->Request->GetGET('search');
-        $StartPosition = $this->Request->GetGET('start-position');
-        if($StartPosition==null) $StartPosition = 0;
-        $PostCount = $this->Request->GetGET('post-count');
-        if($PostCount==null) $PostCount = 50;
-
+        if($PostCount==null) $PostCount = 9999999999;
+     
         $Query = new \Pvik\Database\Generic\Query('Posts');
         $ConditionString = 'LEFT JOIN PostShares as PostShares ON PostShares.PostId = Posts.PostId';
-        $ConditionString .= ' WHERE (Posts.UserId = "%s"';
+        $ConditionString .= ' WHERE PostShares.UserId = "%s"';
         $Query->AddParameter($this->GetUserId());
-        $ConditionString .= ' OR PostShares.UserId = "%s")';
-        $Query->AddParameter($this->GetUserId());
+       
+        foreach ($Search['keywords'] as $Keyword) {
+            $Query->AddParameter('%' . $Keyword . '%');
+            $ConditionString .= ' AND Posts.SearchHelper LIKE "%s"';
+        }
         
         $Query->SetConditions($ConditionString);
-        $Query->SetOrderBy('ORDER BY Posts.Updated DESC LIMIT %s,%s');
-        $Query->AddParameter($StartPosition);
+        $Query->SetOrderBy('ORDER BY Posts.Updated DESC LIMIT 0,%s');
         $Query->AddParameter($PostCount);
         $Posts = $Query->Select();
         
+     
+       
+        // optimization for tags
+        $Posts->LoadList('PostsTags->Tag');
         
+        // optimization for postshare
+        $Posts->LoadList('PostShares');
+        
+         // optimization for comments
+        $Posts->LoadList('Comments');
+      
         $Data = array();
-        $Data['dates'] = array();
+        $Data['posts'] = array();
         foreach ($Posts as $Post) {
-            $Data['dates'][] = array ('postId' => $Post->PostId,
-                    'updated' => $Post->Updated);
+            $Data['posts'][] = $Post->ToArray();
         }
+  
         $this->ResponseSuccess($Data);
     }
+    
+  
 
     public function ApiPostSharesSetAction() {
         if (!$this->IsLoggedIn()) {
@@ -160,10 +166,10 @@ class Posts extends Base {
         
         $Shares = $this->Request->GetGET('shares');
        
-        if (is_array($Shares)) {
-            $Post->SetPostShares($Shares);
+        if (!is_array($Shares)) {
+            $Shares = array();
         }
-        
+        $Post->SetPostShares($Shares);
        
        
 
@@ -254,6 +260,36 @@ class Posts extends Base {
         }
         
         return $this->ResponseSuccess($Array);
+    }
+    
+    public function ApiPostLastViewSetAction() {
+        if (!$this->IsLoggedIn()) {
+            return $this->ResponseNotLoggedIn();
+        }
+        
+        
+        $PostId = $this->Request->GetGET('postId');
+        $LastView = $this->Request->GetGET('lastView');
+        if($PostId==null||$LastView==null){
+            return $this->ResponseWrongData();
+        }
+        
+        
+        $Post = ModelTable::Get('Posts')->LoadByPrimaryKey($PostId);
+         /* @var $Post \Dashbird\Model\Entities\Post */
+        if($Post==null||!$Post->CurrentUserIsAllowedToSee()){
+            return $this->ResponseWrongData();
+        }
+        foreach($Post->PostShares as $PostShare){
+            if($PostShare->UserId == $this->GetUserId()){
+                $PostShare->LastView = $LastView;
+                $PostShare->Update();
+                break;
+            }
+        }
+        
+       
+        return $this->ResponseSuccess($Post->ToArray());
     }
 
 }

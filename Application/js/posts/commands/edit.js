@@ -57,6 +57,7 @@ Dashbird.Commands.Edit = Dashbird.Commands.Base.inherit(function(me, _protected)
      
     me.show = function(e){
         e.preventDefault();
+        
         _protected.onDemandInit();
         _protected.tags = _protected.postHtmlLayer.getPost().getPostData().tags.get();
         // fade out all opend options
@@ -68,6 +69,7 @@ Dashbird.Commands.Edit = Dashbird.Commands.Base.inherit(function(me, _protected)
             _protected.$.fadeIn(function(){
                 _protected.$.find('textarea').focus();
             });
+            _protected.postHtmlLayer.getPost().setLastView();
         });
 
     };
