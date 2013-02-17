@@ -292,3 +292,7 @@
   color: #8C8C8C;
   font-size: 85%;
 }
+#login-box {
+  margin-top: 50px;
+  margin-left: 50px;
+}
