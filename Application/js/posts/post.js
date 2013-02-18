@@ -98,7 +98,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         });
     }
 
-    me.deleteComment = function(id){
+    me.deleteComment = function(id, callback){
         $.getJSON('api/post/comment/delete/', {
             commentId : id
         }, function(data) {
@@ -115,6 +115,9 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
                     }
                 });
                 _protected.postData.comments.set(comments);
+                if(typeof(callback) != 'undefined'){
+                    callback(ajaxResponse);
+                }
 
             }
         });

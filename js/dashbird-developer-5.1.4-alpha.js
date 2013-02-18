@@ -1021,7 +1021,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             }
         });
     }
-    me.deleteComment = function(id){
+    me.deleteComment = function(id, callback){
         $.getJSON('api/post/comment/delete/', {
             commentId : id
         }, function(data) {
@@ -1037,6 +1037,9 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
                     }
                 });
                 _protected.postData.comments.set(comments);
+                if(typeof(callback) != 'undefined'){
+                    callback(ajaxResponse);
+                }
             }
         });
     }
@@ -1326,14 +1329,16 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
                 });
                 // delete comment button
                 $comment.find('.command-bar.popup .command-delete').click(function(){
-                    _protected.postHtmlLayer.getPost().setLastView();
+                    me.getPost().setLastView();
                     Dashbird.Modal.show({
                         headline: 'Deleting comment', 
                         text : 'Do you really want to delete this comment?',
                         'cancel-button-text' : 'No, no, I am sorry', 
                         'submit-button-text' : 'Remove the rubish!', 
                         callback : function(){
-                            me.getPost().deleteComment(comment.commentId);
+                            me.getPost().deleteComment(comment.commentId, function(){
+                                 me.getPost().setLastView();
+                            });
                         }
                     })
                 });

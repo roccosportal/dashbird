@@ -259,14 +259,16 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
                 });
                 // delete comment button
                 $comment.find('.command-bar.popup .command-delete').click(function(){
-                    _protected.postHtmlLayer.getPost().setLastView();
+                    me.getPost().setLastView();
                     Dashbird.Modal.show({
                         headline: 'Deleting comment', 
                         text : 'Do you really want to delete this comment?',
                         'cancel-button-text' : 'No, no, I am sorry', 
                         'submit-button-text' : 'Remove the rubish!', 
                         callback : function(){
-                            me.getPost().deleteComment(comment.commentId);
+                            me.getPost().deleteComment(comment.commentId, function(){
+                                 me.getPost().setLastView();
+                            });
                         }
                     })
                 });
