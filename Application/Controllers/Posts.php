@@ -27,7 +27,11 @@ class Posts extends Base {
         if($PostCount==null) $PostCount = 9999999999;
         $OrderBy = $this->Request->GetGET('order-by');
         if($OrderBy==null|| !isset(self::$OrderByTypes[$OrderBy])) $OrderBy = self::$OrderByTypes['CREATED'];
-
+        if($OrderBy == self::$OrderByTypes['CREATED'])
+            $OrderBy2 = self::$OrderByTypes['UPDATED'];
+        else 
+            $OrderBy2 = self::$OrderByTypes['CREATED'];
+        
         $Query = new \Pvik\Database\Generic\Query('Posts');
         $ConditionString = 'LEFT JOIN PostShares as PostShares ON PostShares.PostId = Posts.PostId';
         $ConditionString .= ' WHERE PostShares.UserId = "%s"';
@@ -37,7 +41,7 @@ class Posts extends Base {
             $Query->AddParameter($StartDate);
         }
         $Query->SetConditions($ConditionString);
-        $Query->SetOrderBy('ORDER BY Posts.' . $OrderBy .' DESC LIMIT 0,%s');
+        $Query->SetOrderBy('ORDER BY Posts.' . $OrderBy .' DESC, ' . $OrderBy2 .' DESC LIMIT 0,%s');
         $Query->AddParameter($PostCount);
         $Posts = $Query->Select();
         

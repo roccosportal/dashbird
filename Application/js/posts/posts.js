@@ -4,7 +4,9 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     
     me.init = function(){
         // try to get new data every  15 seconds
-        setInterval(function(){me.loadPostsByUpdated(50)}, 15000);
+        setInterval(function(){
+            me.loadPostsByUpdated(50)
+            }, 15000);
     }
     
     me.getPosts = function(){
@@ -26,12 +28,12 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             callback(me.get(index))
         }
         else {
-             me.loadPost(function(result){ 
-                 var post = null
-                 if(result.posts.length==1)
-                      post = result.posts[0];
-                 callback(post);
-             });
+            me.loadPost(function(result){ 
+                var post = null
+                if(result.posts.length==1)
+                    post = result.posts[0];
+                callback(post);
+            });
         }
     }
     
@@ -88,7 +90,11 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
                 posts.push(post);
             }                     
         }
-        var result =  {newPosts : newPosts, mergedPosts : mergedPosts, posts : posts};
+        var result =  {
+            newPosts : newPosts, 
+            mergedPosts : mergedPosts, 
+            posts : posts
+        };
         
         if(newPosts.length != 0)
             me.fireEvent('/posts/new/',result);
@@ -138,7 +144,7 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
        
     };
     
-     me.loadPost = function(postId, callback){
+    me.loadPost = function(postId, callback){
         $.getJSON('/api/post/get/', {
             'postId' : 'postId'
         }, function(data) {
@@ -159,7 +165,25 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         postList.sort(function (a, b) {
             var contentA = a.getPostData().updated.get();
             var contentB = b.getPostData().updated.get();
-            return (contentA > contentB) ? -1 : (contentA < contentB) ? 1 : 0;
+            if(contentA > contentB) {
+                return -1;
+            } else if (contentA < contentB) {
+                return 1;  
+            }
+            else{
+                contentA = a.getPostData().created;
+                contentB = b.getPostData().created;
+                if(contentA > contentB) {
+                    return -1;
+                } else if (contentA < contentB) {
+                    return 1;  
+                }
+                else {
+                    return 0;
+                }
+            }
+            
+           
         });
         
         if(postList.length > postCount)
@@ -173,13 +197,29 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         var postList = []; 
         for(var i = 0; i < _protected.postList.length; i++){
             if(_protected.postList[i].getPostData().created <  startDate){
-               postList.push(_protected.postList[i]);
+                postList.push(_protected.postList[i]);
             }
         }
         postList.sort(function (a, b) {
             var contentA = a.getPostData().created;
             var contentB = b.getPostData().created;
-            return (contentA > contentB) ? -1 : (contentA < contentB) ? 1 : 0;
+              if(contentA > contentB) {
+                return -1;
+            } else if (contentA < contentB) {
+                return 1;  
+            }
+            else{
+                contentA = a.getPostData().updated.get();
+                contentB = b.getPostData().updated.get();
+                if(contentA > contentB) {
+                    return -1;
+                } else if (contentA < contentB) {
+                    return 1;  
+                }
+                else {
+                    return 0;
+                }
+            }
         });
         if(postCount > postList.length){
             postCount = postList.length;
@@ -187,7 +227,7 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         return postList.slice(0, postCount);
     };
     
-     me.loadPostBySearch = function(search, callback){
+    me.loadPostBySearch = function(search, callback){
         $.getJSON('/api/posts/search/', {
             'search' : search
         }, function(data) {
