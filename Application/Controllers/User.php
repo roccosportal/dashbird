@@ -49,13 +49,8 @@ class User extends Base {
         $Post->UserId = $this->GetUserId();
         $Post->Insert();
 
-        $Post->SetSearchHelperPart('text', $Post->Text);
         $Post->SetPostShares(array($User->UserId));
         $Post->Update();
-        
-      
-        
-        
         
         return $this->ResponseSuccess(array ('user' => $User->ToArraySimple()));
     }
