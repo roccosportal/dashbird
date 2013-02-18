@@ -286,7 +286,7 @@ class Post extends \Pvik\Database\Generic\Entity {
         $UserShares = \Dashbird\Library\Services\UserService::Instance()->GetUser()->UserShares;
         $FilteredUserIds = array();
         foreach ($UserIds as $UserId) {
-            if ($UserShares->HasValue('ConnectedUserId', $UserId)) {
+            if ($UserShares->HasValue('ConnectedUserId', $UserId) && !in_array($UserId, $FilteredUserIds)) {
                 $FilteredUserIds[] = $UserId;
             }
         }
