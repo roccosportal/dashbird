@@ -256,6 +256,14 @@ class Posts extends Base {
             return $this->ResponseWrongData();
         }
         
+        // optimization for tags
+        $Posts->LoadList('PostsTags->Tag');
+        
+        // optimization for postshare
+        $Posts->LoadList('PostShares');
+        
+         // optimization for comments
+        $Posts->LoadList('Comments');
         
         
         /* @var $Post \Dashbird\Model\Entities\Post */

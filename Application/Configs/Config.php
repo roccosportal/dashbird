@@ -40,7 +40,7 @@ self::$Config['Routes'] = array (
    
 );
 
-self::$Config['Version'] = '5.2.4-alpha';
+self::$Config['Version'] = '5.2.5-alpha';
 
 
 
