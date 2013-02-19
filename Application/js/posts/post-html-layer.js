@@ -286,22 +286,24 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
             /\[b\](.*?)\[\/b\]/g,
             /\[url\](http(s?):\/\/[^ \\"\n\r\t<]*?)\[\/url\]/g,
             /\[youtube\]http(s?):\/\/www.youtube.com\/embed\/(.*?)\[\/youtube\]/g,
-            /\[vimeo](.*?)\[\/vimeo]/g
+            /\[vimeo]http(s?):\/\/player.vimeo.com\/video\/(.*?)\[\/vimeo]/g
             );
      
         var replace = new Array(
             "<img src=\"$1\" alt=\"An image\">",
             "<strong>$1</strong>",
             "<a href=\"$1\" target=\"blank\">$1</a>",
-            '<div class="media youtube-preview" data-id="$2"><a class="pull-left" href="#"><img class="media-object" src="https://img.youtube.com/vi/$2/1.jpg"></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">www.youtube.com</p><p class="description">Loading ...</p></div></div>',
-            "<iframe class='vimeo' src='$1' width='480' height='270' frameborder='0' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");
+            '<div class="media youtube-preview" data-id="$2"><a class="pull-left thumbnail" href="#"><img class="media-object" src="https://img.youtube.com/vi/$2/1.jpg"></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">www.youtube.com</p><p class="description">Loading ...</p></div></div>',
+            '<div class="media vimeo-preview" data-id="$2"><a class="pull-left thumbnail" href="#"><img class="media-object" src=""></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">www.vimeo.com</p><p class="description">Loading ...</p></div></div>'
+            //"<iframe class='vimeo' src='$1' width='480' height='270' frameborder='0' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>"
+            );
         for(var i = 0; i < search.length; i++) {
             text = text.replace(search[i],replace[i]);
         }
         var $html =  $('<div>' + text  + '</div>'); // add wrapper so .find is possible
         
         // youtube preview
-        // we don't want a page full with flashobjects
+        // we don't want a page full with video objects
         $html.find('div.youtube-preview').each(function(){
             var $this = $(this);
             var id = $this.data('id');
@@ -317,7 +319,33 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
                 e.preventDefault();
                 $this.replaceWith("<iframe class='youtube'  width='480' height='270'  src='https://www.youtube.com/embed/" + id + "?autoplay=1' frameborder='0' allowfullscreen></iframe>");
             });
-        })
+        });
+        
+        // vimeo preview
+        // we don't want a page full with video objects
+        $html.find('div.vimeo-preview').each(function(){
+            var $this = $(this);
+            var id = $this.data('id');
+            $.ajax({
+                    type: 'GET',
+                    url: 'https://vimeo.com/api/v2/video/' + id +'.json',
+                    dataType: 'jsonp',
+                    success: function (data) {
+                            data = data[0];
+                            $this.find('img').attr('src', data.thumbnail_large);
+                            $this.find('.title').html(data.title);
+                            if(data.description.length > 300){
+                                data.description = data.description.substring(0, 300) + '...';
+                            }
+                            $this.find('.description').html(data.description);
+                    },
+                    jsonp: 'callback'
+            });
+            $this.click(function(e){
+                e.preventDefault();
+                $this.replaceWith("<iframe class='youtube'  width='480' height='270'  src='https://player.vimeo.com/video/" + id + "?autoplay=1' frameborder='0' width='480' height='270' frameborder='0' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");
+            });
+        });
         
       
         // return inside of wrapper
