@@ -124,23 +124,101 @@
   margin-right: 50px;
 }
 #content #stack .posts .post .content p,
+#content #stack .posts .post .content .text,
 #content #stack .posts .post .comment p,
+#content #stack .posts .post .comment .text,
 #content #latest .posts .post .content p,
+#content #latest .posts .post .content .text,
 #content #latest .posts .post .comment p,
+#content #latest .posts .post .comment .text,
 #content #search .posts .post .content p,
-#content #search .posts .post .comment p {
+#content #search .posts .post .content .text,
+#content #search .posts .post .comment p,
+#content #search .posts .post .comment .text {
   font-size: 13px;
   font-weight: 300;
-  line-height: 25px;
+  line-height: 20px;
   margin-bottom: 0;
   text-align: justify;
 }
+#content #stack .posts .post .content p .youtube-preview,
+#content #stack .posts .post .content .text .youtube-preview,
+#content #stack .posts .post .comment p .youtube-preview,
+#content #stack .posts .post .comment .text .youtube-preview,
+#content #latest .posts .post .content p .youtube-preview,
+#content #latest .posts .post .content .text .youtube-preview,
+#content #latest .posts .post .comment p .youtube-preview,
+#content #latest .posts .post .comment .text .youtube-preview,
+#content #search .posts .post .content p .youtube-preview,
+#content #search .posts .post .content .text .youtube-preview,
+#content #search .posts .post .comment p .youtube-preview,
+#content #search .posts .post .comment .text .youtube-preview {
+  cursor: pointer;
+}
+#content #stack .posts .post .content p .youtube-preview .title,
+#content #stack .posts .post .content p .youtube-preview .muted,
+#content #stack .posts .post .content p .youtube-preview .description,
+#content #stack .posts .post .content .text .youtube-preview .title,
+#content #stack .posts .post .content .text .youtube-preview .muted,
+#content #stack .posts .post .content .text .youtube-preview .description,
+#content #stack .posts .post .comment p .youtube-preview .title,
+#content #stack .posts .post .comment p .youtube-preview .muted,
+#content #stack .posts .post .comment p .youtube-preview .description,
+#content #stack .posts .post .comment .text .youtube-preview .title,
+#content #stack .posts .post .comment .text .youtube-preview .muted,
+#content #stack .posts .post .comment .text .youtube-preview .description,
+#content #latest .posts .post .content p .youtube-preview .title,
+#content #latest .posts .post .content p .youtube-preview .muted,
+#content #latest .posts .post .content p .youtube-preview .description,
+#content #latest .posts .post .content .text .youtube-preview .title,
+#content #latest .posts .post .content .text .youtube-preview .muted,
+#content #latest .posts .post .content .text .youtube-preview .description,
+#content #latest .posts .post .comment p .youtube-preview .title,
+#content #latest .posts .post .comment p .youtube-preview .muted,
+#content #latest .posts .post .comment p .youtube-preview .description,
+#content #latest .posts .post .comment .text .youtube-preview .title,
+#content #latest .posts .post .comment .text .youtube-preview .muted,
+#content #latest .posts .post .comment .text .youtube-preview .description,
+#content #search .posts .post .content p .youtube-preview .title,
+#content #search .posts .post .content p .youtube-preview .muted,
+#content #search .posts .post .content p .youtube-preview .description,
+#content #search .posts .post .content .text .youtube-preview .title,
+#content #search .posts .post .content .text .youtube-preview .muted,
+#content #search .posts .post .content .text .youtube-preview .description,
+#content #search .posts .post .comment p .youtube-preview .title,
+#content #search .posts .post .comment p .youtube-preview .muted,
+#content #search .posts .post .comment p .youtube-preview .description,
+#content #search .posts .post .comment .text .youtube-preview .title,
+#content #search .posts .post .comment .text .youtube-preview .muted,
+#content #search .posts .post .comment .text .youtube-preview .description {
+  font-size: 11px;
+}
+#content #stack .posts .post .content p .youtube-preview .title,
+#content #stack .posts .post .content .text .youtube-preview .title,
+#content #stack .posts .post .comment p .youtube-preview .title,
+#content #stack .posts .post .comment .text .youtube-preview .title,
+#content #latest .posts .post .content p .youtube-preview .title,
+#content #latest .posts .post .content .text .youtube-preview .title,
+#content #latest .posts .post .comment p .youtube-preview .title,
+#content #latest .posts .post .comment .text .youtube-preview .title,
+#content #search .posts .post .content p .youtube-preview .title,
+#content #search .posts .post .content .text .youtube-preview .title,
+#content #search .posts .post .comment p .youtube-preview .title,
+#content #search .posts .post .comment .text .youtube-preview .title {
+  margin-bottom: 0px;
+}
 #content #stack .posts .post .content p iframe,
+#content #stack .posts .post .content .text iframe,
 #content #stack .posts .post .comment p iframe,
+#content #stack .posts .post .comment .text iframe,
 #content #latest .posts .post .content p iframe,
+#content #latest .posts .post .content .text iframe,
 #content #latest .posts .post .comment p iframe,
+#content #latest .posts .post .comment .text iframe,
 #content #search .posts .post .content p iframe,
-#content #search .posts .post .comment p iframe {
+#content #search .posts .post .content .text iframe,
+#content #search .posts .post .comment p iframe,
+#content #search .posts .post .comment .text iframe {
   margin-top: 25px;
 }
 #content #stack .posts .post .content .meta,
@@ -149,6 +227,7 @@
 #content #latest .posts .post .comment .meta,
 #content #search .posts .post .content .meta,
 #content #search .posts .post .comment .meta {
+  padding-top: 2px;
   color: #999999;
   display: block;
   line-height: 20px;
@@ -254,19 +333,50 @@
   margin-right: 50px;
 }
 #content #single-view .content .post .content p,
-#content #single-view .content .post .comment p {
+#content #single-view .content .post .content .text,
+#content #single-view .content .post .comment p,
+#content #single-view .content .post .comment .text {
   font-size: 13px;
   font-weight: 300;
-  line-height: 25px;
+  line-height: 20px;
   margin-bottom: 0;
   text-align: justify;
 }
+#content #single-view .content .post .content p .youtube-preview,
+#content #single-view .content .post .content .text .youtube-preview,
+#content #single-view .content .post .comment p .youtube-preview,
+#content #single-view .content .post .comment .text .youtube-preview {
+  cursor: pointer;
+}
+#content #single-view .content .post .content p .youtube-preview .title,
+#content #single-view .content .post .content p .youtube-preview .muted,
+#content #single-view .content .post .content p .youtube-preview .description,
+#content #single-view .content .post .content .text .youtube-preview .title,
+#content #single-view .content .post .content .text .youtube-preview .muted,
+#content #single-view .content .post .content .text .youtube-preview .description,
+#content #single-view .content .post .comment p .youtube-preview .title,
+#content #single-view .content .post .comment p .youtube-preview .muted,
+#content #single-view .content .post .comment p .youtube-preview .description,
+#content #single-view .content .post .comment .text .youtube-preview .title,
+#content #single-view .content .post .comment .text .youtube-preview .muted,
+#content #single-view .content .post .comment .text .youtube-preview .description {
+  font-size: 11px;
+}
+#content #single-view .content .post .content p .youtube-preview .title,
+#content #single-view .content .post .content .text .youtube-preview .title,
+#content #single-view .content .post .comment p .youtube-preview .title,
+#content #single-view .content .post .comment .text .youtube-preview .title {
+  margin-bottom: 0px;
+}
 #content #single-view .content .post .content p iframe,
-#content #single-view .content .post .comment p iframe {
+#content #single-view .content .post .content .text iframe,
+#content #single-view .content .post .comment p iframe,
+#content #single-view .content .post .comment .text iframe {
   margin-top: 25px;
 }
 #content #single-view .content .post .content .meta,
 #content #single-view .content .post .comment .meta {
+  padding-top: 2px;
   color: #999999;
   display: block;
   line-height: 20px;

@@ -123,12 +123,23 @@
         }
 
 
-        p {
+        p, .text {
             font-size: 13px;
             font-weight: 300;
-            line-height: 25px;
+            line-height: 20px;
             margin-bottom: 0;
             text-align: justify;
+
+            .youtube-preview{
+                cursor: pointer;
+
+                .title, .muted, .description {
+                    font-size: 11px;
+                }
+                .title {
+                    margin-bottom: 0px;
+                }
+            }
 
             iframe {
                  margin-top: 25px;
@@ -136,6 +147,7 @@
         }
 
         .meta {
+            padding-top: 2px;
             color: #999999;
             display: block;
             line-height: 20px;

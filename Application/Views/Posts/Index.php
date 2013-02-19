@@ -122,7 +122,7 @@
                             <a class="command-share btn btn-mini"><i class="icon-retweet"></i> </a>
                             <a class="command-remove btn btn-mini"><i class="icon-trash"></i> </a>
                         </div>
-                        <p class="text"></p>
+                        <div class="text"></div>
                         <ul class="meta inline">
                             <li class="info"><span class="badge notViewed"><i class="icon-fire"></i></span><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
                             <li class="tags"><ul class="inline"></ul></li>

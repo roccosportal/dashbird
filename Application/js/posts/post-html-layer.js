@@ -183,7 +183,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
     
     
     _protected.drawText = function(){
-        _protected.$post.find('.content .text').html(_protected.bbcode(Dashbird.Utils.convertLineBreaks(_protected.post.getPostData().text.get())));
+        _protected.$post.find('.content .text').html(_protected.convertTextToHtml());
     };
     
     _protected.drawLastView = function(){
@@ -278,12 +278,14 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         
     }
     
-    _protected.bbcode = function(text){
+    _protected.convertTextToHtml = function(){
+        var text = _protected.post.getPostData().text.get();
+        text = Dashbird.Utils.convertLineBreaks(text)
         var search = new Array(
             /\[img\](.*?)\[\/img\]/g,
             /\[b\](.*?)\[\/b\]/g,
             /\[url\](http(s?):\/\/[^ \\"\n\r\t<]*?)\[\/url\]/g,
-            /\[youtube\](.*?)\[\/youtube\]/g,
+            /\[youtube\]http(s?):\/\/www.youtube.com\/embed\/(.*?)\[\/youtube\]/g,
             /\[vimeo](.*?)\[\/vimeo]/g
             );
      
@@ -291,12 +293,35 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
             "<img src=\"$1\" alt=\"An image\">",
             "<strong>$1</strong>",
             "<a href=\"$1\" target=\"blank\">$1</a>",
-            "<iframe class='youtube'  width='480' height='270'  src='$1' frameborder='0' allowfullscreen></iframe>",
+            '<div class="media youtube-preview" data-id="$2"><a class="pull-left" href="#"><img class="media-object" src="https://img.youtube.com/vi/$2/1.jpg"></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">www.youtube.com</p><p class="description">Loading ...</p></div></div>',
             "<iframe class='vimeo' src='$1' width='480' height='270' frameborder='0' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>");
         for(var i = 0; i < search.length; i++) {
             text = text.replace(search[i],replace[i]);
-        } 
-        return text;
+        }
+        var $html =  $('<div>' + text  + '</div>'); // add wrapper so .find is possible
+        
+        // youtube preview
+        // we don't want a page full with flashobjects
+        $html.find('div.youtube-preview').each(function(){
+            var $this = $(this);
+            var id = $this.data('id');
+            $.getJSON('http://gdata.youtube.com/feeds/api/videos/' + id +'?v=2&alt=jsonc', {}, function(data) {
+               
+               $this.find('.title').html(data.data.title);
+               if(data.data.description.length > 300){
+                   data.data.description = data.data.description.substring(0, 300) + '...';
+               }
+               $this.find('.description').html(data.data.description);
+            });
+            $this.click(function(e){
+                e.preventDefault();
+                $this.replaceWith("<iframe class='youtube'  width='480' height='270'  src='https://www.youtube.com/embed/" + id + "?autoplay=1' frameborder='0' allowfullscreen></iframe>");
+            });
+        })
+        
+      
+        // return inside of wrapper
+        return $html.contents();
     }
                 
                               
