@@ -41,6 +41,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
                _protected.updateData(ajaxResponse.data);
+               me.setLastView();
             }
         });
     };
@@ -51,7 +52,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                _protected.updateData(ajaxResponse.data);
+               
             }
         });
         me.fireEvent('/post/deleted/', me);            
@@ -65,6 +66,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
                _protected.updateData(ajaxResponse.data);
+               me.setLastView();
             }
         });
     }
@@ -78,6 +80,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
                var ajaxResponse = Dashbird.AjaxResponse.construct(data);
                if(ajaxResponse.isSuccess){
                   _protected.updateData(ajaxResponse.data);
+                  me.setLastView();
                }
            });
         }
@@ -93,6 +96,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
                 _protected.updateData(ajaxResponse.data.post);
+                me.setLastView();
             }
             if(callback != null){
                 callback();
@@ -107,7 +111,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
                 _protected.updateData(ajaxResponse.data);
-                
+                me.setLastView();
 
                 // rebuild comments
                 var comments = [];
