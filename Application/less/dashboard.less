@@ -73,12 +73,17 @@
 
 .postHtmlLayer(){
     margin-bottom: 30px;
+     border-left: 5px solid #EEEEEE;
+     
+     &:hover {
+       border-left: 5px solid #0BB340;
+     }
 
     .content, .comment {
         word-wrap: break-word;
         position: relative;
 
-        border-left: 5px solid #EEEEEE;
+       
         margin-bottom: 5px;
         padding: 0 0 0 15px;
 
@@ -119,10 +124,11 @@
 
 
         p {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 300;
             line-height: 25px;
             margin-bottom: 0;
+            text-align: justify;
 
             iframe {
                  margin-top: 25px;
@@ -153,9 +159,15 @@
         }
     }
 
-
+    .comment {
+        border-left: 5px solid #EEEEEE;
+     
+     &:hover {
+       border-left: 5px solid #0BB340;
+     }
+    }
     .comments {
-        margin-left: 40px;
+        margin-left: 20px;
     }
 }
 

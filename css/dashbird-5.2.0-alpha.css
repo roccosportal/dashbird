@@ -52,6 +52,12 @@
 #content #latest .posts .post,
 #content #search .posts .post {
   margin-bottom: 30px;
+  border-left: 5px solid #EEEEEE;
+}
+#content #stack .posts .post:hover,
+#content #latest .posts .post:hover,
+#content #search .posts .post:hover {
+  border-left: 5px solid #0BB340;
 }
 #content #stack .posts .post .content,
 #content #stack .posts .post .comment,
@@ -61,7 +67,6 @@
 #content #search .posts .post .comment {
   word-wrap: break-word;
   position: relative;
-  border-left: 5px solid #EEEEEE;
   margin-bottom: 5px;
   padding: 0 0 0 15px;
 }
@@ -124,10 +129,11 @@
 #content #latest .posts .post .comment p,
 #content #search .posts .post .content p,
 #content #search .posts .post .comment p {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 300;
   line-height: 25px;
   margin-bottom: 0;
+  text-align: justify;
 }
 #content #stack .posts .post .content p iframe,
 #content #stack .posts .post .comment p iframe,
@@ -182,22 +188,35 @@
 #content #search .posts .post .comment .meta li.tags {
   padding-right: 0px;
 }
+#content #stack .posts .post .comment,
+#content #latest .posts .post .comment,
+#content #search .posts .post .comment {
+  border-left: 5px solid #EEEEEE;
+}
+#content #stack .posts .post .comment:hover,
+#content #latest .posts .post .comment:hover,
+#content #search .posts .post .comment:hover {
+  border-left: 5px solid #0BB340;
+}
 #content #stack .posts .post .comments,
 #content #latest .posts .post .comments,
 #content #search .posts .post .comments {
-  margin-left: 40px;
+  margin-left: 20px;
 }
 #content #single-view {
   width: 500px;
 }
 #content #single-view .content .post {
   margin-bottom: 30px;
+  border-left: 5px solid #EEEEEE;
+}
+#content #single-view .content .post:hover {
+  border-left: 5px solid #0BB340;
 }
 #content #single-view .content .post .content,
 #content #single-view .content .post .comment {
   word-wrap: break-word;
   position: relative;
-  border-left: 5px solid #EEEEEE;
   margin-bottom: 5px;
   padding: 0 0 0 15px;
 }
@@ -236,10 +255,11 @@
 }
 #content #single-view .content .post .content p,
 #content #single-view .content .post .comment p {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 300;
   line-height: 25px;
   margin-bottom: 0;
+  text-align: justify;
 }
 #content #single-view .content .post .content p iframe,
 #content #single-view .content .post .comment p iframe {
@@ -270,8 +290,14 @@
 #content #single-view .content .post .comment .meta li.tags {
   padding-right: 0px;
 }
+#content #single-view .content .post .comment {
+  border-left: 5px solid #EEEEEE;
+}
+#content #single-view .content .post .comment:hover {
+  border-left: 5px solid #0BB340;
+}
 #content #single-view .content .post .comments {
-  margin-left: 40px;
+  margin-left: 20px;
 }
 #content #feed .post .headline {
   font-weight: bold;
