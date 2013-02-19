@@ -13,13 +13,16 @@ Dashbird.Search = SimpleJSLib.BaseObject.inherit(function(me, _protected){
         _protected.$searchBox = $('#search-box');
         _protected.searchRequestQueue = SimpleJSLib.SingleRequestQueue.construct();
         _protected.searchRequestQueue.setTimeout(500);
-        _protected.$searchBox.keypress(function(e){
+        _protected.$searchBox.keydown(function(e){
             if(e.keyCode == 13){
                 e.preventDefault();
             }
             else {
                 _protected.searchRequestQueue.addToQueue({}, function(data){
-                    me.search( me.getSearchObject());
+                    var searchObject = me.getSearchObject();
+                    if(searchObject!=null)
+                        me.search(searchObject);
+                   
                 });
             }
         });
@@ -63,10 +66,25 @@ Dashbird.Search = SimpleJSLib.BaseObject.inherit(function(me, _protected){
         
     me.getSearchObject = function(){
         var searchPhrase = _protected.$searchBox.val();
-        
+        if(searchPhrase.length < 3){
+            // too short
+            return null;
+        }
         var search = {
             keywords : searchPhrase.split(' ')
         };
+        var keywords =  search.keywords.slice();
+        for(var i =  keywords.length - 1; i >= 0; i--){
+            if(keywords[i].length < 3){
+                // too short, delete keyword
+                search.keywords.splice(i, 1);
+            }
+        }
+        if(search.keywords.length == 0){
+            // no keywords left
+            return null;
+        }
+        
         return search;
     };
     
