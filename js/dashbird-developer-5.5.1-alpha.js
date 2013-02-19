@@ -111,8 +111,11 @@ SimpleJSLib.Observable = SimpleJSLib.BaseObject.inherit(function(me, _protected)
     };
     
     me.set = function(data){
+        var oldData = _protected.data;
         _protected.data = data;
-        me.trigger();
+        if(oldData !== data){
+            me.trigger();
+        }
     };
     
     me.trigger = function(){
@@ -1216,6 +1219,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         _protected.post.getPostData().tags.listen(_protected.onTagsChanged);
         _protected.post.getPostData().postShares.listen(_protected.onPostSharesChanged);
         _protected.post.getPostData().lastView.listen(_protected.onLastViewChanged);
+        _protected.post.getPostData().updated.listen(_protected.onLastViewChanged); // todo: better solution
         _protected.post.attachEvent('/post/deleted/', _protected.onDeleted);
     }
     
@@ -1276,6 +1280,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         _protected.post.getPostData().tags.unlisten(_protected.onTagsChanged);
         _protected.post.getPostData().postShares.unlisten(_protected.onPostSharesChanged);
         _protected.post.getPostData().lastView.unlisten(_protected.onLastViewChanged);
+        _protected.post.getPostData().updated.unlisten(_protected.onLastViewChanged);
         _protected.post.detachEvent('/post/deleted/', _protected.onDeleted);
         me.fireEvent('/destroying/', me);
         delete _protected.post;

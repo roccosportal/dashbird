@@ -11,8 +11,11 @@ SimpleJSLib.Observable = SimpleJSLib.BaseObject.inherit(function(me, _protected)
     };
     
     me.set = function(data){
+        var oldData = _protected.data;
         _protected.data = data;
-        me.trigger();
+        if(oldData !== data){
+            me.trigger();
+        }
     };
     
     me.trigger = function(){
