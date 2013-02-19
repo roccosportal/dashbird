@@ -13,13 +13,9 @@
                 <div class="navbar-inner">
                     <a class="brand" href="/">Dashbird</a>
                     <ul class="nav">
-                        <li><a href="/#new-post" ><i class="icon-plus"></i> New</a></a></li>
                         <li><a href="/"><i class="icon-home"></i> Board</a></li>
                         <li class="active"><a  href="/settings" ><i class="icon-wrench"></i> Settings</a></a></li>
                     </ul>
-                    <form class="navbar-search pull-left">
-                        <input type="text" id="search-box" class="search-query" placeholder="Search">
-                    </form>
                     <ul class="nav">
                         <li><a href="/logout"><i class="icon-off"></i> Logout</a></a></li>
                     </ul>
