@@ -52,6 +52,11 @@
 #content #latest .posts .post,
 #content #search .posts .post {
   margin-bottom: 30px;
+  border-left: 5px solid #1B8EE0;
+}
+#content #stack .posts .post.viewed,
+#content #latest .posts .post.viewed,
+#content #search .posts .post.viewed {
   border-left: 5px solid #EEEEEE;
 }
 #content #stack .posts .post:hover,
@@ -356,6 +361,11 @@
 #content #stack .posts .post .comment,
 #content #latest .posts .post .comment,
 #content #search .posts .post .comment {
+  border-left: 5px solid #1B8EE0;
+}
+#content #stack .posts .post .comment.viewed,
+#content #latest .posts .post .comment.viewed,
+#content #search .posts .post .comment.viewed {
   border-left: 5px solid #EEEEEE;
 }
 #content #stack .posts .post .comment:hover,
@@ -373,6 +383,9 @@
 }
 #content #single-view .content .post {
   margin-bottom: 30px;
+  border-left: 5px solid #1B8EE0;
+}
+#content #single-view .content .post.viewed {
   border-left: 5px solid #EEEEEE;
 }
 #content #single-view .content .post:hover {
@@ -517,6 +530,9 @@
   padding-right: 0px;
 }
 #content #single-view .content .post .comment {
+  border-left: 5px solid #1B8EE0;
+}
+#content #single-view .content .post .comment.viewed {
   border-left: 5px solid #EEEEEE;
 }
 #content #single-view .content .post .comment:hover {

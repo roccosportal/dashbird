@@ -1,6 +1,23 @@
 
 @width: 500px;
 
+@border-color-grey :#EEEEEE;
+@border-color-green :#0BB340;
+@border-color-blue : #1B8EE0;
+
+.border-grey(){
+     border-left: 5px solid @border-color-grey;
+}
+
+.border-green(){
+     border-left: 5px solid @border-color-green;
+}
+
+.border-blue(){
+     border-left: 5px solid @border-color-blue;
+}
+
+
 
 .opacity(@opacity: 0.5) {
   -moz-opacity: @opacity;
@@ -73,10 +90,14 @@
 
 .postHtmlLayer(){
     margin-bottom: 30px;
-     border-left: 5px solid #EEEEEE;
+    .border-blue;
+
+     &.viewed {
+       .border-grey;
+     }
      
      &:hover {
-       border-left: 5px solid #0BB340;
+       .border-green;
      }
 
     .content, .comment {
@@ -97,9 +118,7 @@
         }
 
         .command {
-            //position: absolute;
-            //top: 30px;
-            //right: 20px;
+          
             .rounded(4px);
             padding: 5px;
             background-color: #F5F5F5;
@@ -174,11 +193,15 @@
     }
 
     .comment {
-        border-left: 5px solid #EEEEEE;
+       .border-blue;
+
+        &.viewed {
+            .border-grey;
+       }
      
-     &:hover {
-       border-left: 5px solid #0BB340;
-     }
+        &:hover {
+         .border-green;
+        }
     }
     .comments {
         margin-left: 20px;

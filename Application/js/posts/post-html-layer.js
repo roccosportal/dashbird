@@ -189,10 +189,15 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
     _protected.drawLastView = function(){
         if(_protected.post.getPostData().lastView.get() == null || _protected.post.getPostData().updated.get() > _protected.post.getPostData().lastView.get()){
             _protected.$meta.find('.notViewed').show();
+            me.getLayer().removeClass('viewed');
         }
         else {
             _protected.$meta.find('.notViewed').hide();
+            me.getLayer().addClass('viewed');
         }
+        // redraw comments
+        // todo: use a better solution
+        _protected.drawComments();
     };
     
     _protected.drawTags = function(){
@@ -246,10 +251,17 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         var $template = Dashbird.Templates.getTemplate('post-comment');
         $.each(_protected.post.getPostData().comments.get(),function(index, comment){
             var $comment = $template.clone();
+            if(comment.datetime <= me.getPost().getPostData().lastView.get()){
+                    $comment.addClass('viewed');
+            }
+              
+            
             $comment.find('.text').html(Dashbird.Utils.convertLineBreaks(comment.text));
             $comment.find('.meta .info .username').html(comment.user.name);
             $comment.find('.meta .info .date').html(Dashbird.Utils.convertDate(comment.datetime));
             if(Dashbird.User.isCurrentUser(comment.user.userId)){
+           
+                
                 // show options
                 $comment.mouseover(function(){
                     $comment.find('.command-bar.popup').show();
