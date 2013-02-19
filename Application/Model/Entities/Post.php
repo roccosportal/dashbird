@@ -55,12 +55,15 @@ class Post extends \Pvik\Database\Generic\Entity {
             $TagTitle[] = $PostsTags->Tag->Title;
         }
         $PostSharesUserIds = array();
-        
+        $LoggedInUserId = \Dashbird\Library\Services\UserService::Instance()->GetUserId();
         $LastView = null;
         foreach ($this->PostShares as $PostShare) {
             /* @var $PostShare \Dashbird\Model\Entities\PostShare */
-            if($PostShare->UserId == $this->UserId){
+            if($PostShare->UserId == $LoggedInUserId){
                 $LastView = $PostShare->LastView;
+                if($LoggedInUserId != $this->UserId){
+                    $PostSharesUserIds[] = $PostShare->UserId;
+                }
             }
             else if($PostShare->UserId != $this->UserId){
                 $PostSharesUserIds[] = $PostShare->UserId;
