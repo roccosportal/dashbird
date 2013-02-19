@@ -21,6 +21,15 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     me.getPostData = function(){
         return _protected.postData;
     };
+    
+    _protected.updateData = function(data){
+        _protected.postData.lastView.set(data.lastView);
+        _protected.postData.updated.set(data.updated);
+        _protected.postData.tags.set(data.tags);
+        _protected.postData.text.set(data.text);
+        _protected.postData.comments.set(data.comments);
+        _protected.postData.postShares.set(data.postShares);
+    }
   
     
     me.update = function(text, tags){
@@ -31,12 +40,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                //Dashbird.Board.fire('post#save', data[AJAX.DATA]);
-                // save status
-                _protected.postData.tags.set(ajaxResponse.data.tags);
-                _protected.postData.text.set(ajaxResponse.data.text);
-                _protected.postData.updated.set(ajaxResponse.data.updated);
-                _protected.postData.lastView.set(ajaxResponse.data.lastView);
+               _protected.updateData(ajaxResponse.data);
             }
         });
     };
@@ -47,7 +51,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-            // do nothing
+                _protected.updateData(ajaxResponse.data);
             }
         });
         me.fireEvent('/post/deleted/', me);            
@@ -60,7 +64,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                _protected.postData.postShares.set(userIds);
+               _protected.updateData(ajaxResponse.data);
             }
         });
     }
@@ -73,7 +77,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
            }, function(data) {
                var ajaxResponse = Dashbird.AjaxResponse.construct(data);
                if(ajaxResponse.isSuccess){
-                   _protected.postData.lastView.set(ajaxResponse.data.lastView);
+                  _protected.updateData(ajaxResponse.data);
                }
            });
         }
@@ -88,9 +92,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                _protected.postData.updated.set(ajaxResponse.data.post.updated);
-                _protected.postData.comments.get().push(ajaxResponse.data.comment);
-                _protected.postData.comments.trigger();
+                _protected.updateData(ajaxResponse.data.post);
             }
             if(callback != null){
                 callback();
@@ -104,7 +106,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-               _protected.postData.updated.set(ajaxResponse.data.post.updated);
+                _protected.updateData(ajaxResponse.data);
                 
 
                 // rebuild comments

@@ -44,7 +44,7 @@ class Comment extends Base {
         $Post->Update();
         
         
-        $this->ResponseSuccess(array ('post' => array ('updated' => $Post->Updated), 'comment' => $Comment->ToArray()));
+        $this->ResponseSuccess(array ('post' => $Post->ToArray(), 'comment' => $Comment->ToArray()));
     }
     
     public function ApiPostCommentDeleteAction(){
@@ -66,7 +66,7 @@ class Comment extends Base {
         
         $Comment->Delete();
         $Post->Update();
-        return $this->ResponseSuccess(array ('post' => array ('updated' => $Post->Updated)));
+        return $this->ResponseSuccess($Post->ToArray());
         
         
         

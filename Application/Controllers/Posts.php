@@ -138,7 +138,7 @@ class Posts extends Base {
 
         $Post->SetPostShares($UserIds);
 
-        return $this->ResponseSuccess();
+        return $this->ResponseSuccess($Post->ToArray());
     }
 
     
@@ -255,6 +255,9 @@ class Posts extends Base {
         if($Posts==null){
             return $this->ResponseWrongData();
         }
+        
+        
+        
         /* @var $Post \Dashbird\Model\Entities\Post */
         $Array = array();
         foreach($Posts as $Post){
