@@ -1425,7 +1425,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         var replace = new Array(
             "<img src=\"$1\" alt=\"An image\">",
             "<strong>$1</strong>",
-            "<a href=\"$1\" target=\"blank\">$1</a>",
+            '<div class="media link-preview" data-url="$1"><a class="pull-left thumbnail" href="#"><img class="media-object" src=""></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">$1</p><p class="description">Loading ...</p></div></div>',
             '<div class="media youtube-preview" data-id="$2"><a class="pull-left thumbnail" href="#"><img class="media-object" src="https://img.youtube.com/vi/$2/1.jpg"></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">www.youtube.com</p><p class="description">Loading ...</p></div></div>',
             '<div class="media vimeo-preview" data-id="$2"><a class="pull-left thumbnail" href="#"><img class="media-object" src=""></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">www.vimeo.com</p><p class="description">Loading ...</p></div></div>'
             //"<iframe class='vimeo' src='$1' width='480' height='270' frameborder='0' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>"
@@ -1435,12 +1435,39 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         }
         var $html =  $('<div>' + text  + '</div>'); // add wrapper so .find is possible
         
+        
+        
+        // link preview
+        $html.find('div.link-preview').each(function(){
+            var $this = $(this);
+            var url = $this.data('url');
+            $.getJSON('http://api.embed.ly/1/oembed', {url : url}, function(data) {
+               $this.find('img').attr('src', data.thumbnail_url);
+               $this.find('.title').html(data.title);
+               
+               if(typeof(data.description) == 'undefined'){
+                   data.description = 'No description';
+               }
+               
+               if(data.description.length > 300){
+                   data.data.description = data.description.substring(0, 300) + '...';
+               }
+               $this.find('.description').html(data.description);
+            });
+            $this.click(function(e){
+                e.preventDefault();
+                window.open(url);
+            });
+        });
+        
+        
+        
         // youtube preview
         // we don't want a page full with video objects
         $html.find('div.youtube-preview').each(function(){
             var $this = $(this);
             var id = $this.data('id');
-            $.getJSON('http://gdata.youtube.com/feeds/api/videos/' + id +'?v=2&alt=jsonc', {}, function(data) {
+            $.getJSON('https://gdata.youtube.com/feeds/api/videos/' + id +'?v=2&alt=jsonc', {}, function(data) {
                
                $this.find('.title').html(data.data.title);
                if(data.data.description.length > 300){
