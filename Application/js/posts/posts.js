@@ -1,35 +1,35 @@
 Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
-    _protected.postList = [];
+    _protected.postList = null;
     
+
     
     me.init = function(){
+        _protected.postList = SimpleJSLib.MappingArray.construct();
+
+        // shortcuts
+        me.add = _protected.postList.add;
+        me.get = _protected.postList.getByIndex;
+        me.getByPostId = _protected.postList.getByKey;
         // try to get new data every  15 seconds
         setInterval(function(){
             me.loadPostsByUpdated(50)
             }, 15000);
     }
     
-    me.getPosts = function(){
-        return _protected.postList;
-    };
+  
+    me.add = null;
     
-    me.add = function(post){
-        _protected.postList.push(post);
-        return post;
-    }
-    
-    me.get = function(index){
-        return _protected.postList[index];
-    }
+    me.get = null;
+
+    me.getByPostId = null;
     
     me.getPost = function(postId, callback){
-        var index = _protected.getListIndex(postId);
-        if(index!=null){
-            callback(me.get(index))
+        var post =  me.getByPostId(postId);
+        if(post!=null){
+            callback(post)
         }
         else {
             me.loadPost(function(result){ 
-                var post = null
                 if(result.posts.length==1)
                     post = result.posts[0];
                 callback(post);
@@ -37,33 +37,12 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }
     }
     
-    _protected.getListIndex = function(postId){
-        for(var i = 0; i < _protected.postList.length; i++){
-            if(_protected.postList[i].getPostData().postId.toString() === postId.toString()){
-                return i;
-            }
-        }
-        return null;
-    };
-    
     _protected.hasChanges = function(post, newPostData){
         return (post.getPostData().updated.get()!==newPostData.updated);
     };
     
-    // _protected.changeData = function(post, newPostData){
-    //     post.getPostData().updated.set(newPostData.updated);
-    //     post.getPostData().text.set(newPostData.text);
-    //     post.getPostData().comments.set(newPostData.comments);
-    //     post.getPostData().tags.set(newPostData.tags);
-    //     post.getPostData().postShares.set(newPostData.postShares);
-    //     post.getPostData().lastView.set(newPostData.lastView);
-    // };
-    
     _protected.onPostDeleted = function(post){
-        var index = _protected.getListIndex(post.getPostData().postId);
-        if(index){
-            _protected.postList.splice(index, 1);
-        }
+        _protected.postList.remove(post.getPostId())
         post.detachEvent('/post/deleted/',_protected.onPostDeleted);
     }
     
@@ -71,18 +50,17 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         var newPosts = [];
         var mergedPosts = [];
         var posts = [];
+        var post = null;
         for (var i = 0; i <  postDatas.length; i++) {
-            var listIndex = _protected.getListIndex(postDatas[i].postId);
-            var post = null;
-            if(listIndex == null){
+            post = me.getByPostId(parseInt(postDatas[i].postId));
+            if(post == null){
                 post = Dashbird.Post.construct(postDatas[i]);
                 post.attachEvent('/post/deleted/',_protected.onPostDeleted);
-                me.add(post);
+                me.add(post.getPostId(),post);
                 newPosts.push(post);
                 posts.push(post);
             }
             else {
-                post = me.get(listIndex);
                  if(_protected.hasChanges(post, postDatas[i])){
                     post.mergeData(postDatas[i]);
                     // _protected.changeData(post, postDatas[i]);
@@ -162,7 +140,7 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     };
     
     me.getListByUpdated = function(postCount){
-        var postList =  _protected.postList.slice();
+        var postList =  _protected.postList.cloneArray();
         postList.sort(function (a, b) {
             var contentA = a.getPostData().updated.get();
             var contentB = b.getPostData().updated.get();
@@ -196,11 +174,11 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     
     me.getListByCreated = function(startDate, postCount){
         var postList = []; 
-        for(var i = 0; i < _protected.postList.length; i++){
-            if(_protected.postList[i].getPostData().created <  startDate){
-                postList.push(_protected.postList[i]);
+        _protected.postList.each(function(index, post){
+            if(post.getPostData().created <  startDate){
+                postList.push(post);
             }
-        }
+        });
         postList.sort(function (a, b) {
             var contentA = a.getPostData().created;
             var contentB = b.getPostData().created;
@@ -247,17 +225,14 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     
     me.search = function(search){
         var matchingPosts = [];
-        for(var i = 0; i < _protected.postList.length; i++){
-            if(_protected.postList[i].isSearchMatch(search)){
-                matchingPosts.push(_protected.postList[i]);
+        _protected.postList.each(function(index, post){
+            if(post.isSearchMatch(search)){
+                matchingPosts.push(post);
             }
-        }
+        });
         return matchingPosts;
     }
     
-    
-    
-  
     return me;
     
 }).construct();

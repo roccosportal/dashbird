@@ -30,14 +30,24 @@ SimpleJSLib.MappingArray = SimpleJSLib.BaseObject.inherit(function(me, _protecte
     }
 
     me.getByIndex = function(index){
-        return _protected.array[index];
+        if(index == null)
+            return null;
+        if(index < me.length)
+            return _protected.array[index];
+        return null;
     }
 
     me.getIndexByKey = function(key){
-        return _protected.mappingArray[key];
+        if(key == null)
+            return null;
+        if(typeof(_protected.mappingArray[key]) !== 'undefined')
+            return _protected.mappingArray[key];
+        return null;
     }
 
     me.getByKey = function(key){
+        if(key == null)
+            return null;
         return me.getByIndex(me.getIndexByKey(key));
     }
 
@@ -58,6 +68,10 @@ SimpleJSLib.MappingArray = SimpleJSLib.BaseObject.inherit(function(me, _protecte
 
     me.getLast = function(index){
         return me.getByIndex(me.length - 1);
+    }
+
+    me.cloneArray = function(){
+        return _protected.array.slice();
     }
 
 
