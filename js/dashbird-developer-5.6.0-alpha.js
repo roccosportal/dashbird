@@ -31,30 +31,41 @@ SimpleJSLib.BaseObject = function(){
     }
 }();
 SimpleJSLib.EventHandler = SimpleJSLib.BaseObject.inherit(function(me, _protected){
-    _protected.listeners = [];
-    me.fireEvent = function (name, data){
-        var listeners = _protected.listeners.slice(); // work with a copy
+    var _private = {};
+    _private.events = [];
+    me.fireEvent = function (eventName, data){
+        if(typeof(_private.events[eventName]) == 'undefined')
+            return;
+        var listeners = _private.events[eventName].slice(); // work with a copy
         for (var i = 0; i < listeners.length; i++) {
-            if(listeners[i].name==name){
-                listeners[i].callback(data);
+            if(listeners[i].eventName==eventName){
+                listeners[i].callback(data, listeners[i].additionalData);
             }
         }
     };
-    me.attachEvent = function (name, callback){
-        _protected.listeners.push({
-            name : name, 
-            callback : callback
+    me.attachEvent = function (eventName, callback, additionalData){
+        if(typeof(additionalData) == 'undefined') additionalData = {};
+        if(typeof(_private.events[eventName]) == 'undefined') _private.events[eventName] = [];
+        
+        _private.events[eventName].push({
+            eventName : eventName,
+            callback : callback,
+            additionalData : additionalData
         });
     };
-    me.detachEvent = function (name, callback){
+    me.detachEvent = function (eventName, callback){
+        if(typeof(_private.events[eventName]) == 'undefined')
+            return;
         var indexes = [];
-        for (var i = 0; i < _protected.listeners.length; i++) {
-            if(_protected.listeners[i].name==name && _protected.listeners[i].callback==callback){
+        var listeners = _private.events[eventName];
+        
+        for (var i = 0; i < listeners.length; i++) {
+            if(listeners[i].name==name &&listeners[i].callback==callback){
                 indexes.push(i);
             }
         }
         for (var j = 0; j < indexes.length; j++) {
-            _protected.listeners.splice(indexes[j] - j, 1); // the index is decreasing when we remove multiple items
+            _private.events[eventName].splice(indexes[j] - j, 1); // the index is decreasing when we remove multiple items
         }
     };
     return me;
@@ -696,14 +707,14 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         return (post.getPostData().updated.get()!==newPostData.updated);
     };
     
-    _protected.changeData = function(post, newPostData){
-        post.getPostData().updated.set(newPostData.updated);
-        post.getPostData().text.set(newPostData.text);
-        post.getPostData().comments.set(newPostData.comments);
-        post.getPostData().tags.set(newPostData.tags);
-        post.getPostData().postShares.set(newPostData.postShares);
-        post.getPostData().lastView.set(newPostData.lastView);
-    };
+    // _protected.changeData = function(post, newPostData){
+    //     post.getPostData().updated.set(newPostData.updated);
+    //     post.getPostData().text.set(newPostData.text);
+    //     post.getPostData().comments.set(newPostData.comments);
+    //     post.getPostData().tags.set(newPostData.tags);
+    //     post.getPostData().postShares.set(newPostData.postShares);
+    //     post.getPostData().lastView.set(newPostData.lastView);
+    // };
     
     _protected.onPostDeleted = function(post){
         var index = _protected.getListIndex(post.getPostData().postId);
@@ -729,10 +740,11 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             }
             else {
                 post = me.get(listIndex);
-                if(_protected.hasChanges(post, postDatas[i])){
-                    _protected.changeData(post, postDatas[i]);
+                 if(_protected.hasChanges(post, postDatas[i])){
+                    post.mergeData(postDatas[i]);
+                    // _protected.changeData(post, postDatas[i]);
                     mergedPosts.push(post);
-                }
+                 }
                 posts.push(post);
             }                     
         }
@@ -904,6 +916,139 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     return me;
     
 }).construct();
+Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
+	_protected.comments = [];
+	// contains a mapping like { <commentId> : <indexOfArray>, ... }
+	_protected.mappingForComments = {};
+	// constructor
+	// @var  parameters (.construct(<[]>))
+	// [0] plain comments array 
+	_protected.construct = function(parameters){
+		me.mergeData(parameters[0]);
+	}
+	// @var comment Dashbird.Comment
+	_protected.fireEventNewComment = function(comment){
+		me.fireEvent('/new/comment/', comment);
+	}
+	// @var comment Dashbird.Comment
+	_protected.onCommentDestroying = function(comment){
+		comment.detachEvent('/destroying/', _protected.onCommentDestroying);
+		if(typeof(_protected.mappingForComments[comment.getCommentId()]) != 'undefined'){
+			_protected.comments.splice(_protected.mappingForComments[comment.getCommentId()], 1);
+			delete _protected.mappingForComments[comment.getCommentId()];
+		}
+	}
+
+	// merges the given data to our data
+	// @var commentsData (plain data object)
+	me.mergeData = function(commentsData){
+		var indexOfArray = null;
+		var comment = null;
+		var processedCommentIds = {};
+		// merge and add comments
+		for (var i = 0; i < commentsData.length; i++) {
+			comment = me.getCommentById(commentsData[i].commentId);
+			// is not in our array
+			if(comment==null){ 
+				// add it
+				comment = Dashbird.Comment.construct(commentsData[i]);
+				indexOfArray = _protected.comments.push(comment) - 1;
+				_protected.mappingForComments[comment.getCommentId()] = indexOfArray;
+				comment.attachEvent('/destroying/', _protected.onCommentDestroying);
+				_protected.fireEventNewComment(comment);
+				
+			}
+			else {
+				// pass merge data to instance
+				comment.mergeData(commentsData[i]);
+			}
+			processedCommentIds[comment.getCommentId()] = true; 
+		};
+		// if these are different there are some old comments
+		if(commentsData.length != _protected.comments.length){
+			// delete old ones
+			// work with copy because comment.destroy() alters _protected.comments
+			var comments = _protected.comments.slice();
+			for (var j = 0; j < comments.length; j++) {
+				if(typeof(processedCommentIds[comments[j].getCommentId()]) == 'undefined'){
+					// was not processed
+					// so delete
+					comments[j].destroy();
+				}
+			};
+		}
+	}
+
+	// @var commentId 
+	// @return Dashbird.Comment
+	me.getCommentById = function(commentId){
+		// search in the mapping object by the comment id
+		if(typeof(_protected.mappingForComments[commentId]) != 'undefined')
+			return _protected.comments[_protected.mappingForComments[commentId]];
+		return null;
+	}
+	me.each = function(callbackIterator){
+		var callbackIteratorReturnValue = null;
+		for (var i = 0; i < _protected.comments.length; i++) {
+			callbackIteratorReturnValue = callbackIterator(i, _protected.comments[i]);
+			if(typeof(callbackIteratorReturnValue) != 'undefined' && callbackIteratorReturnValue === false)
+				return null;
+		};
+		return null;
+	}
+
+	return me;
+});
+Dashbird.Comment = SimpleJSLib.EventHandler.inherit(function(me, _protected){
+	// observable
+	_protected.text = null;
+	_protected.datetime = null;
+	_protected.user = null;
+	_protected.commentId = null;
+	// constructor
+	// @var  parameters (.construct(<{}>))
+	// [0] plain comment data 
+	_protected.construct = function(parameters){
+		var commentData = parameters[0]
+		_protected.commentId = parseInt(commentData.commentId);
+		_protected.datetime = commentData.datetime;
+		_protected.user = commentData.user;
+		_protected.text = SimpleJSLib.Observable.construct(commentData.text);
+	}
+	_protected.fireEventDestroying = function(){
+		me.fireEvent('/destroying/', me);
+	}
+	// getter and setters
+	me.getText = function(){
+		return _protected.text;
+	}
+	me.getDatetime = function(){
+		return _protected.datetime;
+	}
+
+	me.getUser = function(){
+		return _protected.user;
+	}
+
+	me.getCommentId = function(){
+		return _protected.commentId;
+	}
+	// public
+
+	// merges the given data to our data
+	// @var commentsData (plain data object)
+	me.mergeData = function(commentData){
+		// set the data
+		// the observable checks if they are new
+		me.getText().set(commentData.text);
+	}
+	me.destroy = function(){
+		_protected.fireEventDestroying();
+		delete _protected;
+		delete me;
+	}
+	return me;
+});
 Dashbird.SingleView = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.currentPost = null;
     _protected.postHtmlLayer = null;
@@ -978,28 +1123,42 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             user : postData.user,
             updated : SimpleJSLib.Observable.construct(postData.updated),
             tags : SimpleJSLib.Observable.construct(postData.tags),
-            comments : SimpleJSLib.Observable.construct(postData.comments),
+            comments : Dashbird.Comments.construct(postData.comments),
             postShares : SimpleJSLib.Observable.construct(postData.postShares),
             text : SimpleJSLib.Observable.construct(postData.text),
             lastView : SimpleJSLib.Observable.construct(postData.lastView)
         }
         me.isFromCurrentUser = Dashbird.User.isCurrentUser(_protected.postData.user.userId);
     };
+    // --- getters and setters ---
+    me.getPostId = function(){
+        return _protected.postData.postId;
+    }
+    // @return Dashbird.Comments
+    me.getComments = function(){
+        return _protected.postData.comments;
+    }
+    // @return SimpleJSLib.Óbservable
+    me.getLastView = function(){
+        return _protected.postData.lastView;
+    }
+    // --- end ---
     
-    me.getPostData = function(){
-        return _protected.postData;
-    };
+   
     
-    _protected.updateData = function(data){
+    me.mergeData = function(data){
         _protected.postData.lastView.set(data.lastView);
         _protected.postData.updated.set(data.updated);
         _protected.postData.tags.set(data.tags);
         _protected.postData.text.set(data.text);
-        _protected.postData.comments.set(data.comments);
+        _protected.postData.comments.mergeData(data.comments);
         _protected.postData.postShares.set(data.postShares);
     }
+
+    me.getPostData = function(){
+        return _protected.postData;
+    };
   
-    
     me.update = function(text, tags){
         $.getJSON('api/post/edit/', {
             postId : _protected.postData.postId, 
@@ -1008,7 +1167,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-               _protected.updateData(ajaxResponse.data);
+               me.mergeData(ajaxResponse.data);
                me.setLastView();
             }
         });
@@ -1033,7 +1192,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-               _protected.updateData(ajaxResponse.data);
+               me.mergeData(ajaxResponse.data);
                me.setLastView();
             }
         });
@@ -1047,7 +1206,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
            }, function(data) {
                var ajaxResponse = Dashbird.AjaxResponse.construct(data);
                if(ajaxResponse.isSuccess){
-                  _protected.updateData(ajaxResponse.data);
+                  me.mergeData(ajaxResponse.data);
                   me.setLastView();
                }
            });
@@ -1062,7 +1221,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                _protected.updateData(ajaxResponse.data.post);
+                me.mergeData(ajaxResponse.data.post);
                 me.setLastView();
             }
             if(callback != null){
@@ -1076,16 +1235,16 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                _protected.updateData(ajaxResponse.data);
+                me.mergeData(ajaxResponse.data);
                 me.setLastView();
-                // rebuild comments
-                var comments = [];
-                $.each(_protected.postData.comments.get(),function(index, comment){
-                    if(comment.commentId.toString() !== id.toString()){
-                        comments.push(comment);
-                    }
-                });
-                _protected.postData.comments.set(comments);
+                // // rebuild comments
+                // var comments = [];
+                // $.each(_protected.postData.comments.get(),function(index, comment){
+                //     if(comment.commentId.toString() !== id.toString()){
+                //         comments.push(comment);
+                //     }
+                // });
+                // _protected.postData.comments.set(comments);
                 if(typeof(callback) != 'undefined'){
                     callback(ajaxResponse);
                 }
@@ -1123,14 +1282,60 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
                       
     return me;
 });
+Dashbird.DrawingManager =  SimpleJSLib.BaseObject.inherit(function(me, _protected){
+	_protected.TRIGGER_REDRAW_DELAY = 50;
+	_protected.willTriggerRedraw = false
+	_protected.drawingChangeSet = null;
+	_protected.redraw = null;
+	_protected.isAllowedToRedraw = null;
+	_protected.defaultChangeSetPropertyNames = null;
+	// constructor
+	// @var parameters (.construct(<function>, <function>, [])) 
+	// first is the redraw function that gets called when a redraw is triggerd
+	// second is the function that return if the parent is allowed to redraw
+	// third is an array of the default change set property names, like ['text', 'username']
+	_protected.construct = function(parameters){
+		_protected.redraw = parameters[0];
+		_protected.isAllowedToRedraw = parameters[1];
+		_protected.defaultChangeSetPropertyNames = parameters[2];
+		me.setDrawingChangeSetToDefault();
+	}
+	me.setDrawingChangeSetToDefault = function(){
+		_protected.drawingChangeSet = {};
+		// setting to default
+		for (var i = 0; i < _protected.defaultChangeSetPropertyNames.length; i++) {
+			_protected.drawingChangeSet[_protected.defaultChangeSetPropertyNames[i]] = false;
+		};
+	}
+	me.queueRedraw = function(changes){
+		if(_protected.isAllowedToRedraw() && !_protected.willTriggerRedraw){
+			_protected.willTriggerRedraw = true;
+			// trigger with delay
+			// if multiple changes are comming up
+			// we hopefull just send one redrawing event
+			setTimeout(function(){
+				_protected.redraw();
+				_protected.willTriggerRedraw = false;
+				me.setDrawingChangeSetToDefault();
+			}, _protected.TRIGGER_REDRAW_DELAY)
+		}
+		for (var i = 0; i < changes.length; i++) {
+			_protected.drawingChangeSet[changes[i]] = true;
+		};
+	}
+	me.getDrawingChangeSet = function(){
+		return _protected.drawingChangeSet;
+	}
+	return me;
+});
 Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.$post = null;
     _protected.$meta = null;
-    _protected.$comments = null;
     
     _protected.allowedToRedraw = false;
     
     _protected.changeSet = {};
+    _protected.commentsLayer = null;
     
     _protected.setChangeSetToDefault = function(){
         _protected.changeSet = {
@@ -1176,7 +1381,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         // create jquery shortcuts
         _protected.$meta =  _protected.$post.find('.content .meta');
         _protected.commands.$bar = _protected.$post.find('.content .command-bar.popup');
-        _protected.$comments = _protected.$post.find('.comments');
+        _protected.commentsLayer = Dashbird.CommentsLayer.construct(me, _protected.$post.find('.comments'));;
         
         _protected.drawText();
         _protected.$meta.find('.info .username').html(_protected.post.getPostData().user.name);
@@ -1196,7 +1401,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         
         _protected.drawTags();
         _protected.drawPostShares();
-        _protected.drawComments();
+        //_protected.drawComments();
         
       
         // show options
@@ -1211,11 +1416,14 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         
         _protected.$meta.find('.notViewed').click(_protected.post.setLastView);
         
+        // me.getLayer().find('.show-more-comments').click(_protected.onShowMoreComments);
+        // me.getLayer().find('.hide-some-comments').click(_protected.onHideSomeComments)
+        
         
         _protected.setChangeSetToDefault();
         // attach listener
         _protected.post.getPostData().text.listen(_protected.onTextChanged);
-        _protected.post.getPostData().comments.listen(_protected.onCommentsChanged);
+        // _protected.post.getPostData().comments.listen(_protected.onCommentsChanged);
         _protected.post.getPostData().tags.listen(_protected.onTagsChanged);
         _protected.post.getPostData().postShares.listen(_protected.onPostSharesChanged);
         _protected.post.getPostData().lastView.listen(_protected.onLastViewChanged);
@@ -1254,8 +1462,8 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
          else {
             if(_protected.changeSet.text == true)
                  _protected.drawText();
-            if(_protected.changeSet.comments == true)
-                 _protected.drawComments();
+            // if(_protected.changeSet.comments == true)
+            //      _protected.drawComments();
             if(_protected.changeSet.tags == true)
                  _protected.drawTags();
             if(_protected.changeSet.postShares == true)
@@ -1263,6 +1471,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
              
             if(_protected.changeSet.lastView == true)
                  _protected.drawLastView();
+            _protected.commentsLayer.redraw();
         }
         _protected.setChangeSetToDefault();
     };
@@ -1276,7 +1485,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
     me.destroy = function(){
         me.undraw();
         _protected.post.getPostData().text.unlisten(_protected.onTextChanged);
-        _protected.post.getPostData().comments.unlisten(_protected.onCommentsChanged);
+        // _protected.post.getPostData().comments.unlisten(_protected.onCommentsChanged);
         _protected.post.getPostData().tags.unlisten(_protected.onTagsChanged);
         _protected.post.getPostData().postShares.unlisten(_protected.onPostSharesChanged);
         _protected.post.getPostData().lastView.unlisten(_protected.onLastViewChanged);
@@ -1319,7 +1528,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         }
         // redraw comments
         // todo: use a better solution
-        _protected.drawComments();
+        // _protected.drawComments();
     };
     
     _protected.drawTags = function(){
@@ -1367,49 +1576,82 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
             _protected.$meta.find('.sharing').css('display', '');
         }
     }
-    _protected.drawComments = function(){
-        _protected.$comments.empty();
-        var $template = Dashbird.Templates.getTemplate('post-comment');
-        $.each(_protected.post.getPostData().comments.get(),function(index, comment){
-            var $comment = $template.clone();
-            if(comment.datetime <= me.getPost().getPostData().lastView.get()){
-                    $comment.addClass('viewed');
-            }
+    // _protected.drawComments = function(){
+        
+    //     var $template = Dashbird.Templates.getTemplate('post-comment');
+        
+    //     // use this layer to draw on it
+    //     var $layer = $('<div></div>');
+    //     var viewedCommentsCount = 0;
+        
+    //     $.each(_protected.post.getPostData().comments.get(),function(index, comment){
+    //         var $comment = $template.clone();
+    //         if(comment.datetime <= me.getPost().getPostData().lastView.get()){
+    //                 $comment.addClass('viewed');
+    //                 viewedCommentsCount++;
+    //         }
               
             
-            $comment.find('.text').html(Dashbird.Utils.convertLineBreaks(comment.text));
-            $comment.find('.meta .info .username').html(comment.user.name);
-            $comment.find('.meta .info .date').html(Dashbird.Utils.convertDate(comment.datetime));
-            if(Dashbird.User.isCurrentUser(comment.user.userId)){
+    //         $comment.find('.text').html(Dashbird.Utils.convertLineBreaks(comment.text));
+    //         $comment.find('.meta .info .username').html(comment.user.name);
+    //         $comment.find('.meta .info .date').html(Dashbird.Utils.convertDate(comment.datetime));
+    //         if(Dashbird.User.isCurrentUser(comment.user.userId)){
            
                 
-                // show options
-                $comment.mouseover(function(){
-                    $comment.find('.command-bar.popup').show();
-                });
-                $comment.mouseleave(function (){
-                    $comment.find('.command-bar.popup').hide();
-                });
-                // delete comment button
-                $comment.find('.command-bar.popup .command-delete').click(function(){
-                    me.getPost().setLastView();
-                    Dashbird.Modal.show({
-                        headline: 'Deleting comment', 
-                        text : 'Do you really want to delete this comment?',
-                        'cancel-button-text' : 'No, no, I am sorry', 
-                        'submit-button-text' : 'Remove the rubish!', 
-                        callback : function(){
-                            me.getPost().deleteComment(comment.commentId, function(){
-                                 me.getPost().setLastView();
-                            });
-                        }
-                    })
-                });
-            }
-            _protected.$comments.append($comment);
-        });
+    //             // show options
+    //             $comment.mouseover(function(){
+    //                 $comment.find('.command-bar.popup').show();
+    //             });
+    //             $comment.mouseleave(function (){
+    //                 $comment.find('.command-bar.popup').hide();
+    //             });
+    //             // delete comment button
+    //             $comment.find('.command-bar.popup .command-delete').click(function(){
+    //                 me.getPost().setLastView();
+    //                 Dashbird.Modal.show({
+    //                     headline: 'Deleting comment', 
+    //                     text : 'Do you really want to delete this comment?',
+    //                     'cancel-button-text' : 'No, no, I am sorry', 
+    //                     'submit-button-text' : 'Remove the rubish!', 
+    //                     callback : function(){
+    //                         me.getPost().deleteComment(comment.commentId, function(){
+    //                              me.getPost().setLastView();
+    //                         });
+    //                     }
+    //                 })
+    //             });
+    //         }
+    //         $layer.append($comment);
+    //     });
         
-    }
+    //     if(viewedCommentsCount > 0 && _protected.post.getPostData().comments.get().length > 3){
+    //         me.getLayer().find('.hide-some-comments').hide();
+    //         me.getLayer().find('.show-more-comments').find('.count').text(viewedCommentsCount);
+    //         me.getLayer().find('.show-more-comments').show();
+    //         $layer.find('.viewed').hide();
+    //     }
+    //     else {
+    //         me.getLayer().find('.show-more-comments').hide();
+    //         me.getLayer().find('.hide-some-comments').show();
+    //     }
+        
+    //     _protected.$comments.html($layer.contents());
+    // }
+    
+    // _protected.onShowMoreComments = function(){
+    //      me.getLayer().find('.show-more-comments').hide();
+    //      me.getLayer().find('.hide-some-comments').show();
+         
+    //      _protected.$comments.find('.viewed').fadeIn();
+         
+    // }
+    
+    // _protected.onHideSomeComments = function(){
+    //      me.getLayer().find('.hide-some-comments').hide();
+    //      me.getLayer().find('.show-more-comments').show();
+         
+    //      _protected.$comments.find('.viewed').fadeOut();
+    // }
     
     _protected.convertTextToHtml = function(){
         var text = _protected.post.getPostData().text.get();
@@ -1626,6 +1868,183 @@ Dashbird.PostFeedHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
     }
                         
     return me;
+});
+Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protected){
+	_protected.postHtmlLayer = null;
+	_protected.commentLayerList = [];
+	_protected.$layer = null;
+	// constructor
+	// @var parameters (.construct(<Dashbird.PostHtmlLayer>, $jquery))
+	_protected.construct = function(parameters){
+		_protected.postHtmlLayer = parameters[0];
+		_protected.$layer = parameters[1];
+		var commentLayer = null;
+		_protected.postHtmlLayer.getPost().getComments().each(function(key, comment){
+			_protected.addComment(comment);
+		});
+		_protected.postHtmlLayer.getPost().getComments().attachEvent('/new/comment/', _protected.onNewComment);
+	}
+	_protected.addComment = function(comment){
+		var commentLayer = Dashbird.CommentLayer.construct(me, comment);
+		var arrayIndex =_protected.commentLayerList.push(commentLayer) - 1;
+		commentLayer.attachEvent('/destroying/', _protected.onCommentLayerDestroying, { arrayIndex : arrayIndex });
+		_protected.$layer.append(commentLayer.getLayer());
+	}
+	// --- catch events ---
+	_protected.onCommentLayerDestroying = function(commentLayer, additionalData){
+		commentLayer.detachEvent('/destroying/', _protected.onCommentLayerDestroying);
+		_protected.commentLayerList.splice(additionalData.arrayIndex, 1);
+	}
+	_protected.onNewComment = function(comment, additionalData){
+		_protected.addComment(comment);
+	}
+	// --- end --
+	// --- public ---
+	me.getPost = function(){
+		return _protected.postHtmlLayer.getPost();
+	}
+	me.isAllowedToRedraw = function(){
+		return _protected.postHtmlLayer.isAllowedToRedraw();
+	}
+	me.getLayer = function(){
+		return _protected.$layer;
+	}
+	me.redraw = function(){
+		// trigger redraw for all sub items
+		for (var i = 0; i < _protected.commentLayerList.length; i++) {
+			_protected.commentLayerList[i].redraw();
+		};
+	}
+	// --- end --
+	return me;
+});
+Dashbird.CommentLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protected){
+	
+	_protected.commentsLayer = null;
+	_protected.comment = null;
+	_protected.$layer = null;
+	_protected.drawingManager = null;
+	// constructorc
+	// @var parameters (.construct(<Dashbird.CommentsLayer>, <Dashbird.Comment>))
+	_protected.construct = function(parameters){
+		_protected.commentsLayer = parameters[0];
+		_protected.comment = parameters[1];
+		
+		_protected.$layer = Dashbird.Templates.getTemplate('post-comment');
+		
+		
+		// initialize drawings
+		_protected.drawViewed();
+		_protected.drawText();
+		_protected.drawUsername();
+		_protected.drawCreated();
+		if(Dashbird.User.isCurrentUser(_protected.comment.getUser().userId)){
+                // show options
+                _protected.$layer.mouseover(function(){
+                    _protected.$layer.find('.command-bar.popup').show();
+                });
+                _protected.$layer.mouseleave(function (){
+                    _protected.$layer.find('.command-bar.popup').hide();
+                });
+                // delete comment button
+                _protected.$layer.find('.command-bar.popup .command-delete').click(function(){
+                    me.getPost().setLastView();
+                    Dashbird.Modal.show({
+                        headline: 'Deleting comment', 
+                        text : 'Do you really want to delete this comment?',
+                        'cancel-button-text' : 'No, no, I am sorry', 
+                        'submit-button-text' : 'Remove the rubish!', 
+                        callback : function(){
+                            me.getPost().deleteComment(_protected.comment.getCommentId(), function(){
+                                 me.getPost().setLastView();
+                            });
+                        }
+                    })
+                });
+        }
+      	
+      	
+      	// add drawing manager
+      	_protected.drawingManager = Dashbird.DrawingManager.construct(me.redraw, me.isAllowedToRedraw, ['text', 'destroying', 'viewed']);
+      	// catch events
+      	_protected.comment.getText().listen(_protected.onTextChange);
+      	_protected.comment.attachEvent('/destroying/', _protected.onCommentDestroying);
+      	me.getPost().getLastView().listen( _protected.onLastViewChange);
+	}
+	// --- drawing  ---
+	_protected.drawViewed = function(){
+		if(_protected.comment.getDatetime() <= me.getPost().getLastView().get()){
+            _protected.$layer.addClass('viewed');
+       	}
+       	else {
+       		_protected.$layer.removeClass('viewed');
+       	}
+    }
+	_protected.drawText = function(){
+		_protected.$layer.find('.text').html(Dashbird.Utils.convertLineBreaks(_protected.comment.getText().get()));
+	}
+	_protected.drawUsername = function(){
+		_protected.$layer.find('.meta .info .username').html(_protected.comment.getUser().name);
+	}
+	_protected.drawCreated = function(){
+		_protected.$layer.find('.meta .info .date').html(Dashbird.Utils.convertDate(_protected.comment.getDatetime()));
+	}
+	me.redraw = function(){
+		var drawingChangeSet = _protected.drawingManager.getDrawingChangeSet();
+		if(drawingChangeSet.destroying == true){
+			me.destroy();
+		}
+		else {
+			if(drawingChangeSet.text){
+				_protected.drawText();
+			}
+			if(drawingChangeSet.viewed){
+				_protected.drawViewed();
+			}
+			_protected.drawingManager.setDrawingChangeSetToDefault();
+		}
+	}
+	// --- end ---
+	// --- catch events ---
+	_protected.onTextChange = function(){
+		_protected.drawingManager.queueRedraw(['text']);
+	}
+	_protected.onLastViewChange = function(){
+		_protected.drawingManager.queueRedraw(['viewed']);
+	}
+	_protected.onCommentDestroying = function(){
+		_protected.comment.detachEvent('/destroying/', _protected.onCommentDestroying);
+		_protected.drawingManager.queueRedraw(['destroying']);
+	}
+
+	// --- end ---
+	// --- fire events ---
+	_protected.fireEventDestroying = function(){
+		me.fireEvent('/destroying/', me);
+	}
+	// --- end ---
+	// --- public ---
+	me.getPost = function(){
+		return _protected.commentsLayer.getPost();
+	}
+	me.destroy = function(){
+		_protected.fireEventDestroying();
+		_protected.comment.getText().unlisten(_protected.onTextChange);
+      	_protected.comment.detachEvent('/destroying/', _protected.onCommentDestroying);
+      	me.getPost().getLastView().unlisten( _protected.onLastViewChange);
+		_protected.$layer.hide();
+		delete _proteced;
+		delete me;
+	}
+
+	me.isAllowedToRedraw = function(){
+		return _protected.commentsLayer.isAllowedToRedraw();
+	}
+	me.getLayer = function(){
+		return _protected.$layer;
+	}
+	// --- end ---
+	return me;
 });
 if(typeof Dashbird == "undefined"){var Dashbird = {};}
 if(typeof Dashbird.Commands == "undefined"){Dashbird.Commands  = {};}

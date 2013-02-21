@@ -1,11 +1,12 @@
 Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.$post = null;
     _protected.$meta = null;
-    _protected.$comments = null;
     
     _protected.allowedToRedraw = false;
     
     _protected.changeSet = {};
+
+    _protected.commentsLayer = null;
     
     _protected.setChangeSetToDefault = function(){
         _protected.changeSet = {
@@ -51,7 +52,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         // create jquery shortcuts
         _protected.$meta =  _protected.$post.find('.content .meta');
         _protected.commands.$bar = _protected.$post.find('.content .command-bar.popup');
-        _protected.$comments = _protected.$post.find('.comments');
+        _protected.commentsLayer = Dashbird.CommentsLayer.construct(me, _protected.$post.find('.comments'));;
         
         _protected.drawText();
         _protected.$meta.find('.info .username').html(_protected.post.getPostData().user.name);
@@ -72,7 +73,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         
         _protected.drawTags();
         _protected.drawPostShares();
-        _protected.drawComments();
+        //_protected.drawComments();
         
 
       
@@ -88,11 +89,14 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         
         _protected.$meta.find('.notViewed').click(_protected.post.setLastView);
         
+        // me.getLayer().find('.show-more-comments').click(_protected.onShowMoreComments);
+        // me.getLayer().find('.hide-some-comments').click(_protected.onHideSomeComments)
+        
         
         _protected.setChangeSetToDefault();
         // attach listener
         _protected.post.getPostData().text.listen(_protected.onTextChanged);
-        _protected.post.getPostData().comments.listen(_protected.onCommentsChanged);
+        // _protected.post.getPostData().comments.listen(_protected.onCommentsChanged);
         _protected.post.getPostData().tags.listen(_protected.onTagsChanged);
         _protected.post.getPostData().postShares.listen(_protected.onPostSharesChanged);
         _protected.post.getPostData().lastView.listen(_protected.onLastViewChanged);
@@ -132,8 +136,8 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
             if(_protected.changeSet.text == true)
                  _protected.drawText();
 
-            if(_protected.changeSet.comments == true)
-                 _protected.drawComments();
+            // if(_protected.changeSet.comments == true)
+            //      _protected.drawComments();
 
             if(_protected.changeSet.tags == true)
                  _protected.drawTags();
@@ -143,6 +147,8 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
              
             if(_protected.changeSet.lastView == true)
                  _protected.drawLastView();
+
+            _protected.commentsLayer.redraw();
         }
         _protected.setChangeSetToDefault();
     };
@@ -156,7 +162,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
     me.destroy = function(){
         me.undraw();
         _protected.post.getPostData().text.unlisten(_protected.onTextChanged);
-        _protected.post.getPostData().comments.unlisten(_protected.onCommentsChanged);
+        // _protected.post.getPostData().comments.unlisten(_protected.onCommentsChanged);
         _protected.post.getPostData().tags.unlisten(_protected.onTagsChanged);
         _protected.post.getPostData().postShares.unlisten(_protected.onPostSharesChanged);
         _protected.post.getPostData().lastView.unlisten(_protected.onLastViewChanged);
@@ -199,7 +205,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         }
         // redraw comments
         // todo: use a better solution
-        _protected.drawComments();
+        // _protected.drawComments();
     };
     
     _protected.drawTags = function(){
@@ -248,49 +254,82 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         }
     }
 
-    _protected.drawComments = function(){
-        _protected.$comments.empty();
-        var $template = Dashbird.Templates.getTemplate('post-comment');
-        $.each(_protected.post.getPostData().comments.get(),function(index, comment){
-            var $comment = $template.clone();
-            if(comment.datetime <= me.getPost().getPostData().lastView.get()){
-                    $comment.addClass('viewed');
-            }
+    // _protected.drawComments = function(){
+        
+    //     var $template = Dashbird.Templates.getTemplate('post-comment');
+        
+    //     // use this layer to draw on it
+    //     var $layer = $('<div></div>');
+    //     var viewedCommentsCount = 0;
+        
+    //     $.each(_protected.post.getPostData().comments.get(),function(index, comment){
+    //         var $comment = $template.clone();
+    //         if(comment.datetime <= me.getPost().getPostData().lastView.get()){
+    //                 $comment.addClass('viewed');
+    //                 viewedCommentsCount++;
+    //         }
               
             
-            $comment.find('.text').html(Dashbird.Utils.convertLineBreaks(comment.text));
-            $comment.find('.meta .info .username').html(comment.user.name);
-            $comment.find('.meta .info .date').html(Dashbird.Utils.convertDate(comment.datetime));
-            if(Dashbird.User.isCurrentUser(comment.user.userId)){
+    //         $comment.find('.text').html(Dashbird.Utils.convertLineBreaks(comment.text));
+    //         $comment.find('.meta .info .username').html(comment.user.name);
+    //         $comment.find('.meta .info .date').html(Dashbird.Utils.convertDate(comment.datetime));
+    //         if(Dashbird.User.isCurrentUser(comment.user.userId)){
            
                 
-                // show options
-                $comment.mouseover(function(){
-                    $comment.find('.command-bar.popup').show();
-                });
-                $comment.mouseleave(function (){
-                    $comment.find('.command-bar.popup').hide();
-                });
-                // delete comment button
-                $comment.find('.command-bar.popup .command-delete').click(function(){
-                    me.getPost().setLastView();
-                    Dashbird.Modal.show({
-                        headline: 'Deleting comment', 
-                        text : 'Do you really want to delete this comment?',
-                        'cancel-button-text' : 'No, no, I am sorry', 
-                        'submit-button-text' : 'Remove the rubish!', 
-                        callback : function(){
-                            me.getPost().deleteComment(comment.commentId, function(){
-                                 me.getPost().setLastView();
-                            });
-                        }
-                    })
-                });
-            }
-            _protected.$comments.append($comment);
-        });
+    //             // show options
+    //             $comment.mouseover(function(){
+    //                 $comment.find('.command-bar.popup').show();
+    //             });
+    //             $comment.mouseleave(function (){
+    //                 $comment.find('.command-bar.popup').hide();
+    //             });
+    //             // delete comment button
+    //             $comment.find('.command-bar.popup .command-delete').click(function(){
+    //                 me.getPost().setLastView();
+    //                 Dashbird.Modal.show({
+    //                     headline: 'Deleting comment', 
+    //                     text : 'Do you really want to delete this comment?',
+    //                     'cancel-button-text' : 'No, no, I am sorry', 
+    //                     'submit-button-text' : 'Remove the rubish!', 
+    //                     callback : function(){
+    //                         me.getPost().deleteComment(comment.commentId, function(){
+    //                              me.getPost().setLastView();
+    //                         });
+    //                     }
+    //                 })
+    //             });
+    //         }
+    //         $layer.append($comment);
+    //     });
         
-    }
+    //     if(viewedCommentsCount > 0 && _protected.post.getPostData().comments.get().length > 3){
+    //         me.getLayer().find('.hide-some-comments').hide();
+    //         me.getLayer().find('.show-more-comments').find('.count').text(viewedCommentsCount);
+    //         me.getLayer().find('.show-more-comments').show();
+    //         $layer.find('.viewed').hide();
+    //     }
+    //     else {
+    //         me.getLayer().find('.show-more-comments').hide();
+    //         me.getLayer().find('.hide-some-comments').show();
+    //     }
+        
+    //     _protected.$comments.html($layer.contents());
+    // }
+    
+    // _protected.onShowMoreComments = function(){
+    //      me.getLayer().find('.show-more-comments').hide();
+    //      me.getLayer().find('.hide-some-comments').show();
+         
+    //      _protected.$comments.find('.viewed').fadeIn();
+         
+    // }
+    
+    // _protected.onHideSomeComments = function(){
+    //      me.getLayer().find('.hide-some-comments').hide();
+    //      me.getLayer().find('.show-more-comments').show();
+         
+    //      _protected.$comments.find('.viewed').fadeOut();
+    // }
     
     _protected.convertTextToHtml = function(){
         var text = _protected.post.getPostData().text.get();

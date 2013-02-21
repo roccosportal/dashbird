@@ -10,28 +10,46 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             user : postData.user,
             updated : SimpleJSLib.Observable.construct(postData.updated),
             tags : SimpleJSLib.Observable.construct(postData.tags),
-            comments : SimpleJSLib.Observable.construct(postData.comments),
+            comments : Dashbird.Comments.construct(postData.comments),
             postShares : SimpleJSLib.Observable.construct(postData.postShares),
             text : SimpleJSLib.Observable.construct(postData.text),
             lastView : SimpleJSLib.Observable.construct(postData.lastView)
         }
         me.isFromCurrentUser = Dashbird.User.isCurrentUser(_protected.postData.user.userId);
     };
+
+    // --- getters and setters ---
+    me.getPostId = function(){
+        return _protected.postData.postId;
+    }
+
+    // @return Dashbird.Comments
+    me.getComments = function(){
+        return _protected.postData.comments;
+    }
+
+    // @return SimpleJSLib.Óbservable
+    me.getLastView = function(){
+        return _protected.postData.lastView;
+    }
+    // --- end ---
     
-    me.getPostData = function(){
-        return _protected.postData;
-    };
+   
     
-    _protected.updateData = function(data){
+    me.mergeData = function(data){
         _protected.postData.lastView.set(data.lastView);
         _protected.postData.updated.set(data.updated);
         _protected.postData.tags.set(data.tags);
         _protected.postData.text.set(data.text);
-        _protected.postData.comments.set(data.comments);
+        _protected.postData.comments.mergeData(data.comments);
         _protected.postData.postShares.set(data.postShares);
     }
+
+
+    me.getPostData = function(){
+        return _protected.postData;
+    };
   
-    
     me.update = function(text, tags){
         $.getJSON('api/post/edit/', {
             postId : _protected.postData.postId, 
@@ -40,7 +58,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-               _protected.updateData(ajaxResponse.data);
+               me.mergeData(ajaxResponse.data);
                me.setLastView();
             }
         });
@@ -65,7 +83,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-               _protected.updateData(ajaxResponse.data);
+               me.mergeData(ajaxResponse.data);
                me.setLastView();
             }
         });
@@ -79,7 +97,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
            }, function(data) {
                var ajaxResponse = Dashbird.AjaxResponse.construct(data);
                if(ajaxResponse.isSuccess){
-                  _protected.updateData(ajaxResponse.data);
+                  me.mergeData(ajaxResponse.data);
                   me.setLastView();
                }
            });
@@ -95,7 +113,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                _protected.updateData(ajaxResponse.data.post);
+                me.mergeData(ajaxResponse.data.post);
                 me.setLastView();
             }
             if(callback != null){
@@ -110,17 +128,17 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         }, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
-                _protected.updateData(ajaxResponse.data);
+                me.mergeData(ajaxResponse.data);
                 me.setLastView();
 
-                // rebuild comments
-                var comments = [];
-                $.each(_protected.postData.comments.get(),function(index, comment){
-                    if(comment.commentId.toString() !== id.toString()){
-                        comments.push(comment);
-                    }
-                });
-                _protected.postData.comments.set(comments);
+                // // rebuild comments
+                // var comments = [];
+                // $.each(_protected.postData.comments.get(),function(index, comment){
+                //     if(comment.commentId.toString() !== id.toString()){
+                //         comments.push(comment);
+                //     }
+                // });
+                // _protected.postData.comments.set(comments);
                 if(typeof(callback) != 'undefined'){
                     callback(ajaxResponse);
                 }

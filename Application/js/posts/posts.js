@@ -50,14 +50,14 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         return (post.getPostData().updated.get()!==newPostData.updated);
     };
     
-    _protected.changeData = function(post, newPostData){
-        post.getPostData().updated.set(newPostData.updated);
-        post.getPostData().text.set(newPostData.text);
-        post.getPostData().comments.set(newPostData.comments);
-        post.getPostData().tags.set(newPostData.tags);
-        post.getPostData().postShares.set(newPostData.postShares);
-        post.getPostData().lastView.set(newPostData.lastView);
-    };
+    // _protected.changeData = function(post, newPostData){
+    //     post.getPostData().updated.set(newPostData.updated);
+    //     post.getPostData().text.set(newPostData.text);
+    //     post.getPostData().comments.set(newPostData.comments);
+    //     post.getPostData().tags.set(newPostData.tags);
+    //     post.getPostData().postShares.set(newPostData.postShares);
+    //     post.getPostData().lastView.set(newPostData.lastView);
+    // };
     
     _protected.onPostDeleted = function(post){
         var index = _protected.getListIndex(post.getPostData().postId);
@@ -83,10 +83,11 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             }
             else {
                 post = me.get(listIndex);
-                if(_protected.hasChanges(post, postDatas[i])){
-                    _protected.changeData(post, postDatas[i]);
+                 if(_protected.hasChanges(post, postDatas[i])){
+                    post.mergeData(postDatas[i]);
+                    // _protected.changeData(post, postDatas[i]);
                     mergedPosts.push(post);
-                }
+                 }
                 posts.push(post);
             }                     
         }

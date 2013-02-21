@@ -445,6 +445,25 @@
 #content #search .posts .post .comment:hover {
   border-left: 5px solid #0BB340;
 }
+#content #stack .posts .post .hide-some-comments,
+#content #stack .posts .post .show-more-comments,
+#content #latest .posts .post .hide-some-comments,
+#content #latest .posts .post .show-more-comments,
+#content #search .posts .post .hide-some-comments,
+#content #search .posts .post .show-more-comments {
+  border-left: 5px solid #EEEEEE;
+  margin-left: 20px;
+  margin-bottom: 5px;
+  padding: 0 0 0 15px;
+}
+#content #stack .posts .post .hide-some-comments:hover,
+#content #stack .posts .post .show-more-comments:hover,
+#content #latest .posts .post .hide-some-comments:hover,
+#content #latest .posts .post .show-more-comments:hover,
+#content #search .posts .post .hide-some-comments:hover,
+#content #search .posts .post .show-more-comments:hover {
+  border-left: 5px solid #0BB340;
+}
 #content #stack .posts .post .comments,
 #content #latest .posts .post .comments,
 #content #search .posts .post .comments {
@@ -632,6 +651,17 @@
   border-left: 5px solid #EEEEEE;
 }
 #content #single-view .content .post .comment:hover {
+  border-left: 5px solid #0BB340;
+}
+#content #single-view .content .post .hide-some-comments,
+#content #single-view .content .post .show-more-comments {
+  border-left: 5px solid #EEEEEE;
+  margin-left: 20px;
+  margin-bottom: 5px;
+  padding: 0 0 0 15px;
+}
+#content #single-view .content .post .hide-some-comments:hover,
+#content #single-view .content .post .show-more-comments:hover {
   border-left: 5px solid #0BB340;
 }
 #content #single-view .content .post .comments {
