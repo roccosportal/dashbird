@@ -4,19 +4,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
     
     _protected.allowedToRedraw = false;
     
-    _protected.changeSet = {};
-
     _protected.commentsLayer = null;
-    
-    _protected.setChangeSetToDefault = function(){
-        _protected.changeSet = {
-            'text' : false,
-            'postShares' : false,
-            'comments' : false,
-            'tags' : false,
-            'lastView' : false
-        };
-    }
     
     me.isAllowedToRedraw = function(){
         return  _protected.allowedToRedraw;
@@ -41,6 +29,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
     
     _protected.construct = function(parameters){
         _protected.post = parameters[0];
+        _protected.drawingManager = Dashbird.DrawingManager.construct(_protected.redraw, me.isAllowedToRedraw, ['text', 'postShares', 'comments', 'tags', 'lastView']);
         
         if(_protected.post.isFromCurrentUser){
             _protected.$post = Dashbird.Templates.getTemplate('post');
@@ -86,7 +75,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         
         _protected.$meta.find('.notViewed').click(_protected.post.setLastView);
         
-        _protected.setChangeSetToDefault();
+
         // attach listener
         _protected.post.getPostData().text.listen(_protected.onTextChanged);
         // _protected.post.getPostData().comments.listen(_protected.onCommentsChanged);
@@ -98,50 +87,48 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
     }
     
     _protected.onTextChanged = function(){
-        _protected.allowedToRedraw ? _protected.drawText() : _protected.changeSet.text = true;
+        _protected.drawingManager.queueRedraw(['text']);
     }
-    
-    _protected.onCommentsChanged = function(){
-        _protected.allowedToRedraw ?  _protected.drawComments() : _protected.changeSet.comments = true;
-    }
-    
+   
     _protected.onTagsChanged = function(){
-        _protected.allowedToRedraw ?  _protected.drawTags() : _protected.changeSet.tags = true;
+        _protected.drawingManager.queueRedraw(['tags']);
     }
     
     _protected.onPostSharesChanged = function(){
+        _protected.drawingManager.queueRedraw(['postShares']);
          _protected.allowedToRedraw ? _protected.drawPostShares() : _protected.changeSet.postShares = true;
     }
     
     _protected.onLastViewChanged = function(){
-         _protected.allowedToRedraw ? _protected.drawLastView() : _protected.changeSet.lastView = true;
+        _protected.drawingManager.queueRedraw(['lastView']);
     }
     
     _protected.onDeleted = function(){
-         _protected.allowedToRedraw ? me.destroy() : _protected.changeSet.isDeleted = true;
+        _protected.drawingManager.queueRedraw(['isDeleted']);
     }
     
     _protected.redraw = function(){
-         if(_protected.changeSet.isDeleted == true){
+        var drawingChangeSet = _protected.drawingManager.getDrawingChangeSet();
+         if(drawingChangeSet.isDeleted){
              me.destroy();
          }
          else {
-            if(_protected.changeSet.text == true)
+            if(drawingChangeSet.text)
                  _protected.drawText();
 
-            if(_protected.changeSet.tags == true)
+            if(drawingChangeSet.tags)
                  _protected.drawTags();
 
-            if(_protected.changeSet.postShares == true)
+            if(drawingChangeSet.postShares)
                  _protected.drawPostShares();
              
-            if(_protected.changeSet.lastView == true)
+            if(drawingChangeSet.lastView)
                  _protected.drawLastView();
 
             // pass redraw to comments
             _protected.commentsLayer.redraw();
         }
-        _protected.setChangeSetToDefault();
+        _protected.drawingManager.setDrawingChangeSetToDefault();
     };
     
     me.undraw = function(){
