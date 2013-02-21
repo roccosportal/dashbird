@@ -36,11 +36,10 @@ self::$Config['Routes'] = array (
     array ('Url' => '/login/', 'Controller' => 'Auth', 'Action' => 'Login'),
     array ('Url' => '/logout/', 'Controller' => 'Auth', 'Action' => 'Logout'),
     array ('Url' => '/settings/', 'Controller' => 'User', 'Action' => 'Settings')
-    
-   
 );
 
-self::$Config['Version'] = '5.14.1-alpha';
+self::$Config['EmbedlyKey'] = 'put_key_here';
+self::$Config['Version'] = '5.15.0-alpha';
 
 
 

@@ -255,7 +255,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         $html.find('div.link-preview').each(function(){
             var $this = $(this);
             var url = $this.data('url');
-            $.getJSON('http://api.embed.ly/1/oembed', {url : url}, function(data) {
+            $.getJSON('http://api.embed.ly/1/oembed', {url : url, key : Dashbird.InitialData.EmbedlyKey}, function(data) {
                $this.find('img').attr('src', data.thumbnail_url);
                $this.find('.title').html(data.title);
                
@@ -273,7 +273,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
                 window.open(url);
             });
         });
-        
+       
         
 
         

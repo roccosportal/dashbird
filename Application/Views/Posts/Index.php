@@ -311,9 +311,11 @@
             Dashbird.InitialData = {};
             Dashbird.InitialData.User = <?php echo $this->ViewData->Get('UserData'); ?>;
             Dashbird.InitialData.LoadedAt = '<?php echo date('Y-m-d H:i:s'); ?>';
+            Dashbird.InitialData.EmbedlyKey = '<?php echo Pvik\Core\Config::$Config['EmbedlyKey'] ?>';
         </script>
         <?php $this->Helper->JavaScriptLink('~/js/jquery-1.8.3.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/bootstrap.min.js'); ?>
+        <?php $this->Helper->JavaScriptLink('~/js/bootstrap-linkpreview.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/jquery-fieldselection.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/dashbird-developer-' . Pvik\Core\Config::$Config['Version'] . '.js'); ?>
     </body>
