@@ -64,6 +64,16 @@
 #content #search .posts .post:hover {
   border-left: 5px solid #0BB340;
 }
+#content #stack .posts .post textarea,
+#content #stack .posts .post input[type="text"],
+#content #latest .posts .post textarea,
+#content #latest .posts .post input[type="text"],
+#content #search .posts .post textarea,
+#content #search .posts .post input[type="text"] {
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+}
 #content #stack .posts .post .content,
 #content #stack .posts .post .comment,
 #content #latest .posts .post .content,
@@ -469,6 +479,23 @@
 #content #search .posts .post .comments {
   margin-left: 20px;
 }
+#content #stack .posts .post .new-comment,
+#content #latest .posts .post .new-comment,
+#content #search .posts .post .new-comment {
+  border-left: 5px solid #EEEEEE;
+  margin-left: 20px;
+  padding: 0 0 0 15px;
+}
+#content #stack .posts .post .new-comment:hover,
+#content #latest .posts .post .new-comment:hover,
+#content #search .posts .post .new-comment:hover {
+  border-left: 5px solid #0BB340;
+}
+#content #stack .posts .post .new-comment .button input,
+#content #latest .posts .post .new-comment .button input,
+#content #search .posts .post .new-comment .button input {
+  margin-bottom: 0px;
+}
 #content #single-view {
   width: 500px;
 }
@@ -481,6 +508,12 @@
 }
 #content #single-view .content .post:hover {
   border-left: 5px solid #0BB340;
+}
+#content #single-view .content .post textarea,
+#content #single-view .content .post input[type="text"] {
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
 }
 #content #single-view .content .post .content,
 #content #single-view .content .post .comment {
@@ -666,6 +699,17 @@
 }
 #content #single-view .content .post .comments {
   margin-left: 20px;
+}
+#content #single-view .content .post .new-comment {
+  border-left: 5px solid #EEEEEE;
+  margin-left: 20px;
+  padding: 0 0 0 15px;
+}
+#content #single-view .content .post .new-comment:hover {
+  border-left: 5px solid #0BB340;
+}
+#content #single-view .content .post .new-comment .button input {
+  margin-bottom: 0px;
 }
 #content #feed .post .headline {
   font-weight: bold;

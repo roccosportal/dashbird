@@ -100,6 +100,14 @@
        .border-green;
      }
 
+
+    textarea, input[type="text"] {
+      // reset border radius
+      border-radius: 0px;
+      -webkit-border-radius: 0px;
+      -moz-border-radius: 0px;
+    }
+
     .content, .comment {
         word-wrap: break-word;
         position: relative;
@@ -216,6 +224,19 @@
 
     .comments {
         margin-left: 20px;
+    }
+
+    .new-comment {
+       &:hover {
+         .border-green;
+       }
+      .border-grey();
+       margin-left: 20px;
+       padding: 0 0 0 15px;
+
+       .button input{
+           margin-bottom: 0px;
+       }
     }
 }
 

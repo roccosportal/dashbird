@@ -1,9 +1,6 @@
 Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.$posts = null;
     _protected.posts = [];
-//    _protected.postHtmlLayers = [];
-//    _protected.postHtmlLayersAllowedForRedraw = [];
-//    _protected.postHtmlLayersDeniedForRedraw = [];
     _protected.pager = {};
     _protected.pager.$morePosts = null;
     _protected.pager.postCount = 10;
@@ -21,6 +18,8 @@ Dashbird.Stack = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.getCreateDateOfLastPost = function(){
         return _protected.posts[_protected.posts.length - 1].getPostData().created;
     }
+
+    
     me.init = function (){  
          _protected.postHtmlLayersManager = Dashbird.PostHtmlLayersManager.construct();
         _protected.$stack = $('#stack');

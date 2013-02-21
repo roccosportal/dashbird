@@ -117,7 +117,6 @@
                 <div class="post">
                     <div class="content">
                         <div class="command-bar popup btn-group">
-                            <a class="command-comment btn btn-mini"><i class="icon-comment"></i> </a>
                             <a class="command-edit btn btn-mini"><i class="icon-pencil"></i> </a>
                             <a class="command-share btn btn-mini"><i class="icon-retweet"></i> </a>
                             <a class="command-remove btn btn-mini"><i class="icon-trash"></i> </a>
@@ -182,6 +181,27 @@
                     <div class="show-more-comments"><i class="icon-comment"></i> <span class="count">0</span> comments <i class="icon-chevron-down"></i></div>
                     <div class="hide-some-comments"><i class="icon-comment"></i> Hide some comments <i class="icon-chevron-up"></i></div>
                     <div class="comments"></div>
+                    <div class="new-comment">
+                        <div class="button">
+                             <form>
+                                <fieldset>
+                                    <input class="input-block-level" type="text" placeholder="Add a comment">
+                              </fieldset>
+                            </form>
+                        </div>
+                        <div class="form" style="display:none">
+                             <form>
+                                <fieldset>
+                                    <textarea class="input-block-level" placeholder="Type here"></textarea>
+                                    <div class="form-actions">
+                                        <button type="submit" class="submit-button btn btn-small btn-success">Post comment</button>
+                                        <button type="button" class="cancel-button btn btn-small">Cancel</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
             <div id="template-post-comment">
