@@ -10,7 +10,7 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             user : postData.user,
             updated : SimpleJSLib.Observable.construct(postData.updated),
             tags : SimpleJSLib.Observable.construct(postData.tags),
-            comments : Dashbird.Comments.construct(postData.comments),
+            comments : Dashbird.Comments.construct(postData.comments, me),
             postShares : SimpleJSLib.Observable.construct(postData.postShares),
             text : SimpleJSLib.Observable.construct(postData.text),
             lastView : SimpleJSLib.Observable.construct(postData.lastView)

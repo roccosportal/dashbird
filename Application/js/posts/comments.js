@@ -5,17 +5,28 @@ Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	// contains a mapping like { <commentId> : <indexOfArray>, ... }
 	_protected.mappingForComments = {};
 
+	_protected.post = null;
+
 	// constructor
-	// @var  parameters (.construct(<[]>))
-	// [0] plain comments array 
+	// @var  parameters (.construct(<[]>, <Dasbird.Posts>))
+	// [0] plain comments array
+	// [1] the posts the comments belong to
 	_protected.construct = function(parameters){
 		me.mergeData(parameters[0]);
+		_protected.post = parameters[1];
 	}
+
+
+	// --- fire events ---
 
 	// @var comment Dashbird.Comment
 	_protected.fireEventNewComment = function(comment){
 		me.fireEvent('/new/comment/', comment);
 	}
+
+	// --- end ---
+
+	// --- catch events ---
 
 	// @var comment Dashbird.Comment
 	_protected.onCommentDestroying = function(comment){
@@ -25,6 +36,15 @@ Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 			delete _protected.mappingForComments[comment.getCommentId()];
 		}
 	}
+	// --- end ---
+
+	// --- getter and setters ---
+
+	me.getPost = function(){
+		return _protected.post;
+	}
+
+	// --- end ---
 
 
 	// merges the given data to our data
@@ -39,7 +59,7 @@ Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 			// is not in our array
 			if(comment==null){ 
 				// add it
-				comment = Dashbird.Comment.construct(commentsData[i]);
+				comment = Dashbird.Comment.construct(commentsData[i], me);
 				indexOfArray = _protected.comments.push(comment) - 1;
 				_protected.mappingForComments[comment.getCommentId()] = indexOfArray;
 				comment.attachEvent('/destroying/', _protected.onCommentDestroying);

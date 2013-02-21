@@ -63,12 +63,10 @@ Dashbird.CommentLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protecte
 	// --- drawing  ---
 
 	_protected.drawViewed = function(){
-		if(_protected.comment.getDatetime() <= me.getPost().getLastView().get()){
+		if(me.isViewed())
             _protected.$layer.addClass('viewed');
-       	}
-       	else {
+       	else 
        		_protected.$layer.removeClass('viewed');
-       	}
     }
 
 	_protected.drawText = function(){
@@ -128,11 +126,29 @@ Dashbird.CommentLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protecte
 
 	// --- end ---
 
-	// --- public ---
+	// --- getter and setters ---
 
 	me.getPost = function(){
 		return _protected.commentsLayer.getPost();
 	}
+
+
+	me.isViewed = function(){
+		return _protected.comment.isViewed();
+	}
+
+
+	me.isAllowedToRedraw = function(){
+		return _protected.commentsLayer.isAllowedToRedraw();
+	}
+
+	me.getLayer = function(){
+		return _protected.$layer;
+	}
+
+	// --- end ---
+
+	// --- other ---
 
 	me.destroy = function(){
 		_protected.fireEventDestroying();
@@ -143,15 +159,6 @@ Dashbird.CommentLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protecte
 		_protected.$layer.hide();
 		delete _proteced;
 		delete me;
-	}
-
-
-	me.isAllowedToRedraw = function(){
-		return _protected.commentsLayer.isAllowedToRedraw();
-	}
-
-	me.getLayer = function(){
-		return _protected.$layer;
 	}
 
 	// --- end ---

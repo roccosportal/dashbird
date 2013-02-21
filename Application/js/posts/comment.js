@@ -9,22 +9,31 @@ Dashbird.Comment = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 
 	_protected.commentId = null;
 
+	_protected.comments = null;
+
 	// constructor
-	// @var  parameters (.construct(<{}>))
-	// [0] plain comment data 
+	// @var  parameters (.construct(<{}>, <Dashbird.Comments>))
+	// [0] plain comment data
+	// [1] the comments container the comment belongs to
 	_protected.construct = function(parameters){
 		var commentData = parameters[0]
+		_protected.comments = parameters[1]
 		_protected.commentId = parseInt(commentData.commentId);
 		_protected.datetime = commentData.datetime;
 		_protected.user = commentData.user;
 		_protected.text = SimpleJSLib.Observable.construct(commentData.text);
 	}
 
+	// --- fire events ---
+
 	_protected.fireEventDestroying = function(){
 		me.fireEvent('/destroying/', me);
 	}
 
-	// getter and setters
+	// --- end ---
+
+	// --- getter and setters ---
+
 	me.getText = function(){
 		return _protected.text;
 	}
@@ -42,6 +51,16 @@ Dashbird.Comment = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	me.getCommentId = function(){
 		return _protected.commentId;
 	}
+
+	me.getPost = function(){
+		return _protected.comments.getPost();
+	}
+
+	me.isViewed = function(){
+		return (me.getDatetime() <= me.getPost().getLastView().get());
+	}
+
+	// --- end ---
 
 	// public
 

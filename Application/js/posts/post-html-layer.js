@@ -73,10 +73,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         
         _protected.drawTags();
         _protected.drawPostShares();
-        //_protected.drawComments();
-        
 
-      
         // show options
         _protected.$post.mouseover(function(){
             _protected.commands.$bar.show();
@@ -88,10 +85,6 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         _protected.$post.data('post', me);
         
         _protected.$meta.find('.notViewed').click(_protected.post.setLastView);
-        
-        // me.getLayer().find('.show-more-comments').click(_protected.onShowMoreComments);
-        // me.getLayer().find('.hide-some-comments').click(_protected.onHideSomeComments)
-        
         
         _protected.setChangeSetToDefault();
         // attach listener
@@ -136,9 +129,6 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
             if(_protected.changeSet.text == true)
                  _protected.drawText();
 
-            // if(_protected.changeSet.comments == true)
-            //      _protected.drawComments();
-
             if(_protected.changeSet.tags == true)
                  _protected.drawTags();
 
@@ -148,6 +138,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
             if(_protected.changeSet.lastView == true)
                  _protected.drawLastView();
 
+            // pass redraw to comments
             _protected.commentsLayer.redraw();
         }
         _protected.setChangeSetToDefault();
@@ -162,7 +153,6 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
     me.destroy = function(){
         me.undraw();
         _protected.post.getPostData().text.unlisten(_protected.onTextChanged);
-        // _protected.post.getPostData().comments.unlisten(_protected.onCommentsChanged);
         _protected.post.getPostData().tags.unlisten(_protected.onTagsChanged);
         _protected.post.getPostData().postShares.unlisten(_protected.onPostSharesChanged);
         _protected.post.getPostData().lastView.unlisten(_protected.onLastViewChanged);
@@ -186,10 +176,6 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         return _protected.commands.$bar;
     }
     
-    
-    
-    
-    
     _protected.drawText = function(){
         _protected.$post.find('.content .text').html(_protected.convertTextToHtml());
     };
@@ -203,9 +189,6 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
             _protected.$meta.find('.notViewed').hide();
             me.getLayer().addClass('viewed');
         }
-        // redraw comments
-        // todo: use a better solution
-        // _protected.drawComments();
     };
     
     _protected.drawTags = function(){
@@ -254,83 +237,6 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         }
     }
 
-    // _protected.drawComments = function(){
-        
-    //     var $template = Dashbird.Templates.getTemplate('post-comment');
-        
-    //     // use this layer to draw on it
-    //     var $layer = $('<div></div>');
-    //     var viewedCommentsCount = 0;
-        
-    //     $.each(_protected.post.getPostData().comments.get(),function(index, comment){
-    //         var $comment = $template.clone();
-    //         if(comment.datetime <= me.getPost().getPostData().lastView.get()){
-    //                 $comment.addClass('viewed');
-    //                 viewedCommentsCount++;
-    //         }
-              
-            
-    //         $comment.find('.text').html(Dashbird.Utils.convertLineBreaks(comment.text));
-    //         $comment.find('.meta .info .username').html(comment.user.name);
-    //         $comment.find('.meta .info .date').html(Dashbird.Utils.convertDate(comment.datetime));
-    //         if(Dashbird.User.isCurrentUser(comment.user.userId)){
-           
-                
-    //             // show options
-    //             $comment.mouseover(function(){
-    //                 $comment.find('.command-bar.popup').show();
-    //             });
-    //             $comment.mouseleave(function (){
-    //                 $comment.find('.command-bar.popup').hide();
-    //             });
-    //             // delete comment button
-    //             $comment.find('.command-bar.popup .command-delete').click(function(){
-    //                 me.getPost().setLastView();
-    //                 Dashbird.Modal.show({
-    //                     headline: 'Deleting comment', 
-    //                     text : 'Do you really want to delete this comment?',
-    //                     'cancel-button-text' : 'No, no, I am sorry', 
-    //                     'submit-button-text' : 'Remove the rubish!', 
-    //                     callback : function(){
-    //                         me.getPost().deleteComment(comment.commentId, function(){
-    //                              me.getPost().setLastView();
-    //                         });
-    //                     }
-    //                 })
-    //             });
-    //         }
-    //         $layer.append($comment);
-    //     });
-        
-    //     if(viewedCommentsCount > 0 && _protected.post.getPostData().comments.get().length > 3){
-    //         me.getLayer().find('.hide-some-comments').hide();
-    //         me.getLayer().find('.show-more-comments').find('.count').text(viewedCommentsCount);
-    //         me.getLayer().find('.show-more-comments').show();
-    //         $layer.find('.viewed').hide();
-    //     }
-    //     else {
-    //         me.getLayer().find('.show-more-comments').hide();
-    //         me.getLayer().find('.hide-some-comments').show();
-    //     }
-        
-    //     _protected.$comments.html($layer.contents());
-    // }
-    
-    // _protected.onShowMoreComments = function(){
-    //      me.getLayer().find('.show-more-comments').hide();
-    //      me.getLayer().find('.hide-some-comments').show();
-         
-    //      _protected.$comments.find('.viewed').fadeIn();
-         
-    // }
-    
-    // _protected.onHideSomeComments = function(){
-    //      me.getLayer().find('.hide-some-comments').hide();
-    //      me.getLayer().find('.show-more-comments').show();
-         
-    //      _protected.$comments.find('.viewed').fadeOut();
-    // }
-    
     _protected.convertTextToHtml = function(){
         var text = _protected.post.getPostData().text.get();
         text = Dashbird.Utils.convertLineBreaks(text)
