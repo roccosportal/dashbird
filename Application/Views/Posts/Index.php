@@ -315,7 +315,6 @@
         </script>
         <?php $this->Helper->JavaScriptLink('~/js/jquery-1.8.3.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/bootstrap.min.js'); ?>
-        <?php $this->Helper->JavaScriptLink('~/js/bootstrap-linkpreview.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/jquery-fieldselection.min.js'); ?>
         <?php $this->Helper->JavaScriptLink('~/js/dashbird-developer-' . Pvik\Core\Config::$Config['Version'] . '.js'); ?>
     </body>

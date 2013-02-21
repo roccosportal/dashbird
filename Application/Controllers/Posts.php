@@ -23,6 +23,7 @@ class Posts extends Base {
 
         $StartDate = $this->Request->GetGET('start-date');
         if($StartDate==null) $StartDate = 0;
+        $NewerEqualsThanDate = $this->Request->GetGET('newer-equals-than-date');
         $PostCount = $this->Request->GetGET('post-count');
         if($PostCount==null) $PostCount = 9999999999;
         $OrderBy = $this->Request->GetGET('order-by');
@@ -39,6 +40,10 @@ class Posts extends Base {
         if($StartDate!=null){
             $ConditionString .= ' AND Posts.' . $OrderBy .' < "%s"';
             $Query->AddParameter($StartDate);
+        }
+        if($NewerEqualsThanDate!=null){
+            $ConditionString .= ' AND Posts.Updated >= "%s"';
+            $Query->AddParameter($NewerEqualsThanDate);
         }
         $Query->SetConditions($ConditionString);
         $Query->SetOrderBy('ORDER BY Posts.' . $OrderBy .' DESC, ' . $OrderBy2 .' DESC LIMIT 0,%s');

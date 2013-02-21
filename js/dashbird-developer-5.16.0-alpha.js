@@ -335,7 +335,7 @@ Dashbird.Latest = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         _protected.$latest = $('#latest');
         _protected.$posts = _protected.$latest.find('.posts');
         Dashbird.Stack.attachEvent('/stack/initialized/', function(){
-            Dashbird.Posts.loadPostsByUpdated(_protected.postCount, function(result){
+            Dashbird.Posts.loadPostsByUpdated({'post-count': _protected.postCount}, function(result){
                 // only draw the posts if the pane is visible
                 if(!_protected.isVisible())
                     _protected.postList = result.posts; // just set it to get the counter working
@@ -730,10 +730,22 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         me.add = _protected.postList.add;
         me.get = _protected.postList.getByIndex;
         me.getByPostId = _protected.postList.getByKey;
-        // try to get new data every  15 seconds
+        _protected.initRefreshingPosts();
+    }
+    _protected.initRefreshingPosts = function(){
+        var latestUpdateDate = null;;
+        Dashbird.Posts.attachEvent('/load/posts/by/updated/', function(result){
+            if(result.posts.length > 0)
+                latestUpdateDate = result.posts[0].getUpdated().get();
+        });
+        
+        // try to get new data every 15 seconds
         setInterval(function(){
-            me.loadPostsByUpdated(50)
-            }, 15000);
+            var options = {'post-count' : 50 };
+            if(latestUpdateDate != null)
+                options['newer-equals-than-date'] = latestUpdateDate
+            me.loadPostsByUpdated(options);
+        }, 15000);
     }
     
   
@@ -824,11 +836,15 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     };
     
       
-    me.loadPostsByUpdated = function(postCount, callback){
-        $.getJSON('api/posts/load/', {
-            'post-count' : postCount,
+    me.loadPostsByUpdated = function(options, callback){
+        var defaultOptions = {
+            'post-count' : 50,
             'order-by' : 'UPDATED'
-        }, function(data) {
+        }
+        if(typeof(options['order-by']) != 'undefined')
+            throw 'You are not allowed to set "order-by"';
+        options = $.extend(defaultOptions, options);
+        $.getJSON('api/posts/load/', options, function(data) {
             var ajaxResponse = Dashbird.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
                 var result = me.mergePostDatas(ajaxResponse.data.posts);

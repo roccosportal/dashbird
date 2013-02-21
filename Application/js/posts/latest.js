@@ -10,7 +10,7 @@ Dashbird.Latest = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         _protected.$latest = $('#latest');
         _protected.$posts = _protected.$latest.find('.posts');
         Dashbird.Stack.attachEvent('/stack/initialized/', function(){
-            Dashbird.Posts.loadPostsByUpdated(_protected.postCount, function(result){
+            Dashbird.Posts.loadPostsByUpdated({'post-count': _protected.postCount}, function(result){
                 // only draw the posts if the pane is visible
                 if(!_protected.isVisible())
                     _protected.postList = result.posts; // just set it to get the counter working
