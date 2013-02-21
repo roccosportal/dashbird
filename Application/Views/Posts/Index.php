@@ -128,18 +128,6 @@
                             <li class="private-sharing"><i class="icon-lock"></i> private</li>
                             <li class="sharing"><i class="icon-retweet"></i><a data-placement="bottom" href="#" rel="tooltip" title="" > <span class="count"></span> <span class="persons"></span></a> </li>
                         </ul>
-                        <div class="command command-comment">
-                            <form>
-                                <fieldset>
-                                    <label><strong>Add a new comment</strong></label>
-                                    <textarea class="input-block-level" placeholder="Type here"></textarea>
-                                    <div class="form-actions" >
-                                        <button type="submit" class="submit-button btn btn-primary">Add</button>
-                                        <button type="button" class="cancel-button btn">Cancel</button>
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
                         <div class="command command-edit">
                             <form>
                                 <fieldset>

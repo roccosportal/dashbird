@@ -11,9 +11,7 @@ Dashbird.Templates = SimpleJSLib.BaseObject.inherit(function(me, _protected){
         
         _protected.templates.$foreignPost = _protected.templates.$post.clone();
         // remove unneccessary stuff
-        _protected.templates.$foreignPost.find('.content .command-bar.popup .command-edit').remove();
-        _protected.templates.$foreignPost.find('.content .command-bar.popup .command-share').remove();
-        _protected.templates.$foreignPost.find('.content .command-bar.popup .command-remove').remove();
+        _protected.templates.$foreignPost.find('.content .command-bar.popup').remove();
         _protected.templates.$foreignPost.find('.content .command.command-edit').remove();
         _protected.templates.$foreignPost.find('.content .command.command-share').remove();
         
