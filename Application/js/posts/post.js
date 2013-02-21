@@ -133,6 +133,9 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     
     me.setLastView = function(){
         if(_protected.postData.updated.get() !=_protected.postData.lastView.get()){
+            // set it first on local side so there is an instant change
+            _protected.postData.lastView.set(_protected.postData.updated.get())
+
             $.getJSON('/api/post/lastview/set/', {
                postId : _protected.postData.postId, 
                lastView : _protected.postData.updated.get()
@@ -140,7 +143,6 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
                var ajaxResponse = Dashbird.AjaxResponse.construct(data);
                if(ajaxResponse.isSuccess){
                   me.mergeData(ajaxResponse.data);
-                  me.setLastView();
                }
            });
         }
@@ -172,15 +174,6 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             if(ajaxResponse.isSuccess){
                 me.mergeData(ajaxResponse.data);
                 me.setLastView();
-
-                // // rebuild comments
-                // var comments = [];
-                // $.each(_protected.postData.comments.get(),function(index, comment){
-                //     if(comment.commentId.toString() !== id.toString()){
-                //         comments.push(comment);
-                //     }
-                // });
-                // _protected.postData.comments.set(comments);
                 if(typeof(callback) != 'undefined'){
                     callback(ajaxResponse);
                 }

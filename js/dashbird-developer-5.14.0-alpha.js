@@ -1291,6 +1291,8 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     
     me.setLastView = function(){
         if(_protected.postData.updated.get() !=_protected.postData.lastView.get()){
+            // set it first on local side so there is an instant change
+            _protected.postData.lastView.set(_protected.postData.updated.get())
             $.getJSON('/api/post/lastview/set/', {
                postId : _protected.postData.postId, 
                lastView : _protected.postData.updated.get()
@@ -1298,7 +1300,6 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
                var ajaxResponse = Dashbird.AjaxResponse.construct(data);
                if(ajaxResponse.isSuccess){
                   me.mergeData(ajaxResponse.data);
-                  me.setLastView();
                }
            });
         }
@@ -1328,14 +1329,6 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             if(ajaxResponse.isSuccess){
                 me.mergeData(ajaxResponse.data);
                 me.setLastView();
-                // // rebuild comments
-                // var comments = [];
-                // $.each(_protected.postData.comments.get(),function(index, comment){
-                //     if(comment.commentId.toString() !== id.toString()){
-                //         comments.push(comment);
-                //     }
-                // });
-                // _protected.postData.comments.set(comments);
                 if(typeof(callback) != 'undefined'){
                     callback(ajaxResponse);
                 }
@@ -2046,14 +2039,20 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 		_protected.$layer.append(commentLayer.getLayer());
 	}
 	// --- catch events ---
-	_protected.onCommentLayerDestroying = function(commentLayer, additionalData){
+	_protected.onCommentLayerDestroying = function(commentLayer){
 		commentLayer.detachEvent('/destroying/', _protected.onCommentLayerDestroying);
 		_protected.commentLayerList.remove(commentLayer.getCommentId());
 		me.hideUneccessaryComments();
 	}
-	_protected.onNewComment = function(comment, additionalData){
-		_protected.addComment(comment);
-		me.hideUneccessaryComments();
+	_protected.onNewComment = function(comment){
+		// wait a little bit
+		// because the model is sending us it has a new comment which of course is unviewed
+		// when the user added this comment by himself, lastView gets updated
+		// this should prevent flickering from unseen to seen
+		setTimeout(function(){
+			_protected.addComment(comment);
+			me.hideUneccessaryComments();
+		}, 50);
 	}
 	_protected.onShowMoreCommentsClick = function(){
 		_protected.showAllComments = true;

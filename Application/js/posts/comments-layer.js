@@ -38,15 +38,21 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 
 	// --- catch events ---
 
-	_protected.onCommentLayerDestroying = function(commentLayer, additionalData){
+	_protected.onCommentLayerDestroying = function(commentLayer){
 		commentLayer.detachEvent('/destroying/', _protected.onCommentLayerDestroying);
 		_protected.commentLayerList.remove(commentLayer.getCommentId());
 		me.hideUneccessaryComments();
 	}
 
-	_protected.onNewComment = function(comment, additionalData){
-		_protected.addComment(comment);
-		me.hideUneccessaryComments();
+	_protected.onNewComment = function(comment){
+		// wait a little bit
+		// because the model is sending us it has a new comment which of course is unviewed
+		// when the user added this comment by himself, lastView gets updated
+		// this should prevent flickering from unseen to seen
+		setTimeout(function(){
+			_protected.addComment(comment);
+			me.hideUneccessaryComments();
+		}, 50);
 	}
 
 	_protected.onShowMoreCommentsClick = function(){
