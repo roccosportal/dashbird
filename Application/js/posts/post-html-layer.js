@@ -264,7 +264,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
                }
                
                if(data.description.length > 300){
-                   data.data.description = data.description.substring(0, 300) + '...';
+                   data.description = data.description.substring(0, 300) + '...';
                }
                $this.find('.description').html(data.description);
             });
