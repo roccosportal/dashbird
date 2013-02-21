@@ -178,7 +178,7 @@
                             </form>
                         </div>
                     </div>
-                    <div class="show-more-comments"><i class="icon-comment"></i> <span class="count">0</span> comments <i class="icon-chevron-down"></i></div>
+                    <div class="show-more-comments"><i class="icon-comment"></i> <span class="count">0</span> comment<span class="multiple">s</span> <i class="icon-chevron-down"></i></div>
                     <div class="hide-some-comments"><i class="icon-comment"></i> Hide some comments <i class="icon-chevron-up"></i></div>
                     <div class="comments"></div>
                     <div class="new-comment">

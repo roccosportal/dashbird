@@ -102,6 +102,12 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 
 	me.drawShowMoreComments = function(countOfHiddenComments){
 		_protected.$showMoreComments.find('.count').text(countOfHiddenComments);
+		if(countOfHiddenComments == 1){
+			_protected.$showMoreComments.find('.multiple').hide();
+		}
+		else {
+			_protected.$showMoreComments.find('.multiple').show();
+		}
 		_protected.$hideSomeComments.hide();
 		_protected.$showMoreComments.show();
 	}

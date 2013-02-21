@@ -465,6 +465,7 @@
   margin-left: 20px;
   margin-bottom: 5px;
   padding: 0 0 0 15px;
+  cursor: pointer;
 }
 #content #stack .posts .post .hide-some-comments:hover,
 #content #stack .posts .post .show-more-comments:hover,
@@ -692,6 +693,7 @@
   margin-left: 20px;
   margin-bottom: 5px;
   padding: 0 0 0 15px;
+  cursor: pointer;
 }
 #content #single-view .content .post .hide-some-comments:hover,
 #content #single-view .content .post .show-more-comments:hover {
