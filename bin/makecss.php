@@ -20,10 +20,22 @@ chdir('../');
 			);
 
 $less = new lessc;
-$compiled = $less->compileFile(Pvik\Core\Path::RealPath("~/Application/less/dashboard.less"));
+$css = $less->compileFile(Pvik\Core\Path::RealPath("~/Application/less/dashboard.less"));
 
+
+
+// delete previous files
+$regex = '/^dashbird-/';
+if ($fileHandle = opendir(\Pvik\Core\Path::RealPath('~/css/'))) {
+    while (false !== ($file = readdir($fileHandle))) {
+        if(preg_match($regex , $file)){
+            unlink(\Pvik\Core\Path::RealPath('~/css/' . $file));
+        }
+    }
+    closedir($fileHandle);
+}
 
 
 $Version = Pvik\Core\Config::$Config['Version'];
 
-file_put_contents(Pvik\Core\Path::RealPath('~/css/dashbird-' . $Version .'.css'), $compiled);
+file_put_contents(Pvik\Core\Path::RealPath('~/css/dashbird-' . $Version .'.css'), $css);

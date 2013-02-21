@@ -58,14 +58,17 @@ $Files = array (
     '~/Application/js/posts/init.js',
 );
 
-$Javascript = '';
+$PostsJavascript = '';
 foreach($Files as $File){
-    $Javascript .= file_get_contents(\Pvik\Core\Path::RealPath($File)) . "\n";
+    $PostsJavascript .= file_get_contents(\Pvik\Core\Path::RealPath($File)) . "\n";
 }
 
 // delete empty lines
-$Javascript = str_replace("\n\n", "\n", $Javascript);
-file_put_contents(\Pvik\Core\Path::RealPath('~/js/dashbird-developer-' . $Version .'.js'),$Javascript);
+$PostsJavascript = str_replace("\n\n", "\n", $PostsJavascript);
+
+
+
+
 
 
 $Files = array (
@@ -78,12 +81,28 @@ $Files = array (
     '~/Application/js/settings/init.js',
 );
 
-$Javascript = '';
+$SettingsJavascript = '';
 foreach($Files as $File){
-    $Javascript .= file_get_contents(\Pvik\Core\Path::RealPath($File)) . "\n";
+    $SettingsJavascript .= file_get_contents(\Pvik\Core\Path::RealPath($File)) . "\n";
 }
 
 // delete empty lines
-$Javascript = str_replace("\n\n", "\n", $Javascript);
-file_put_contents(\Pvik\Core\Path::RealPath('~/js/dashbird-developer-settings-' . $Version .'.js'),$Javascript);
+$SettingsJavascript = str_replace("\n\n", "\n", $SettingsJavascript);
+
+
+// delete previous files
+$regex = '/^dashbird-developer-/';
+if ($fileHandle = opendir(\Pvik\Core\Path::RealPath('~/js/'))) {
+    while (false !== ($file = readdir($fileHandle))) {
+        if(preg_match($regex , $file)){
+            unlink(\Pvik\Core\Path::RealPath('~/js/' . $file));
+        }
+    }
+    closedir($fileHandle);
+}
+
+// write new files
+file_put_contents(\Pvik\Core\Path::RealPath('~/js/dashbird-developer-' . $Version .'.js'),$PostsJavascript);
+file_put_contents(\Pvik\Core\Path::RealPath('~/js/dashbird-developer-settings-' . $Version .'.js'),$SettingsJavascript);
+
 
