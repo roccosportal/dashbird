@@ -196,11 +196,11 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
              if(_protected.postData.user.name.indexOf(keyword) !== -1)
                 return true;
 
-            var comments = _protected.postData.comments.get();
-            for(var i = 0; i < comments.length; i++){
-                if(comments[i].text.indexOf(keyword) !== -1)
+            var comments = me.getComments().each(function(index, comment){
+                if(comment.isKeywordMatch(keyword))
                      return true;
-            }
+            });
+           
 
             var tags = _protected.postData.tags.get();
             for(var k = 0; k < tags.length; k++){

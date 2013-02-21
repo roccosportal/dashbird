@@ -1,7 +1,7 @@
 Dashbird
 ========
 
-5.12.0-alpha
+5.12.1-alpha
 
 Unstable Version!
 

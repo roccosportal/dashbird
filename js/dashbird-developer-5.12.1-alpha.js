@@ -1064,6 +1064,7 @@ Dashbird.Comment = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	}
 	// --- end ---
 	// --- getter and setters ---
+	// @return SimpleJSLib.Observable
 	me.getText = function(){
 		return _protected.text;
 	}
@@ -1078,6 +1079,7 @@ Dashbird.Comment = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	me.getCommentId = function(){
 		return _protected.commentId;
 	}
+	// @return Dashbird.Post
 	me.getPost = function(){
 		return _protected.comments.getPost();
 	}
@@ -1098,6 +1100,9 @@ Dashbird.Comment = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 		_protected.fireEventDestroying();
 		delete _protected;
 		delete me;
+	}
+	me.isKeywordMatch = function(keyword){
+		return (me.getText().get().indexOf(keyword) !== -1)
 	}
 	return me;
 });
@@ -1344,11 +1349,11 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             
              if(_protected.postData.user.name.indexOf(keyword) !== -1)
                 return true;
-            var comments = _protected.postData.comments.get();
-            for(var i = 0; i < comments.length; i++){
-                if(comments[i].text.indexOf(keyword) !== -1)
+            var comments = me.getComments().each(function(index, comment){
+                if(comment.isKeywordMatch(keyword))
                      return true;
-            }
+            });
+           
             var tags = _protected.postData.tags.get();
             for(var k = 0; k < tags.length; k++){
                 if(tags[k].indexOf(keyword) !== -1)
