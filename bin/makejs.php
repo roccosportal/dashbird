@@ -39,6 +39,8 @@ $Files = array (
     '~/Application/js/posts/drawing-manager.js',
     '~/Application/js/posts/post-html-layer.js',
     '~/Application/js/posts/post-feed-html-layer.js',
+    '~/Application/js/posts/activity-feed-layer.js',
+    '~/Application/js/posts/comment-feed-layer.js',
     '~/Application/js/posts/comments-layer.js',
     '~/Application/js/posts/comment-layer.js',
     '~/Application/js/posts/commands/base.js',

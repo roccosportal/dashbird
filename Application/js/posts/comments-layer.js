@@ -17,7 +17,6 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 		_protected.$showMoreComments =_protected.postHtmlLayer.getLayer().find('.show-more-comments');
 		_protected.$hideSomeComments =_protected.postHtmlLayer.getLayer().find('.hide-some-comments');
 
-		var commentLayer = null;
 		_protected.postHtmlLayer.getPost().getComments().each(function(key, comment){
 			_protected.addComment(comment);
 		});

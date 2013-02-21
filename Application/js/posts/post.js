@@ -13,10 +13,38 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
             comments : Dashbird.Comments.construct(postData.comments, me),
             postShares : SimpleJSLib.Observable.construct(postData.postShares),
             text : SimpleJSLib.Observable.construct(postData.text),
-            lastView : SimpleJSLib.Observable.construct(postData.lastView)
+            lastView : SimpleJSLib.Observable.construct(postData.lastView)//,
+            //isViewed : SimpleJSLib.Observable.construct(!(postData.lastView == null || postData.updated > postData.lastView)),
         }
         me.isFromCurrentUser = Dashbird.User.isCurrentUser(_protected.postData.user.userId);
     };
+
+    // --- catch events ---
+
+
+    // todo : for later
+    // _protected.onLastViewChanged = function(){
+    //     _protected.recalulateIsViewed();
+    // }
+
+    // _protected.onUpdatedChanged = function(){
+    //     _protected.recalulateIsViewed();
+    // }
+
+    // --- end ---
+
+    // todo : for later
+    // _protected.recalulateIsViewedTriggered = false;
+    // _protected.recalulateIsViewed = function(){
+    //     if(!_protected.recalulateIsViewedTriggered){
+    //         _protected.recalulateIsViewedTriggered = true;
+    //         setTimeout(function(){
+    //             me.isViewed().set(!(me.getLastView().get() == null ||  me.getUpdated().get() > me.getLastView().get()));
+    //             _protected.recalulateIsViewedTriggered = false;
+    //         }, 50)
+    //     }
+    // }
+
 
     // --- getters and setters ---
     me.getPostId = function(){
@@ -28,10 +56,24 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         return _protected.postData.comments;
     }
 
-    // @return SimpleJSLib.Óbservable
+     // @return SimpleJSLib.Óbservable<Date>
+    me.getUpdated = function(){
+        return _protected.postData.updated;
+    }
+
+    // @return SimpleJSLib.Óbservable<Date>
     me.getLastView = function(){
         return _protected.postData.lastView;
     }
+
+    // //@return SimpleJSLib.Óbservable<Boolean>
+    // @return Boolean
+    me.isViewed = function(){
+        return !(me.getLastView().get() == null ||  me.getUpdated().get() > me.getLastView().get());
+        //return _protected.postData.isViewed;
+    }
+
+
     // --- end ---
     
    
