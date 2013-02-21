@@ -13,9 +13,9 @@ Dashbird.DrawingManager =  SimpleJSLib.BaseObject.inherit(function(me, _protecte
 
 	// constructor
 	// @var parameters (.construct(<function>, <function>, [])) 
-	// first is the redraw function that gets called when a redraw is triggerd
-	// second is the function that return if the parent is allowed to redraw
-	// third is an array of the default change set property names, like ['text', 'username']
+	// [0] the redraw function that gets called when a redraw is triggerd
+	// [1] the function that return if the parent is allowed to redraw
+	// [2] an array of the default change set property names, like ['text', 'username']
 	_protected.construct = function(parameters){
 		_protected.redraw = parameters[0];
 		_protected.isAllowedToRedraw = parameters[1];
@@ -40,7 +40,6 @@ Dashbird.DrawingManager =  SimpleJSLib.BaseObject.inherit(function(me, _protecte
 			setTimeout(function(){
 				_protected.redraw();
 				_protected.willTriggerRedraw = false;
-				me.setDrawingChangeSetToDefault();
 			}, _protected.TRIGGER_REDRAW_DELAY)
 		}
 

@@ -1,6 +1,6 @@
 Dashbird.ActivityFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	_protected.postFeedHtmlLayer = null;
-	_protected.commentFeedLayerList = [];
+	_protected.commentFeedLayerList = null;
 	_protected.$layer = null;
 	_protected.$updated = null;
 	
@@ -9,6 +9,7 @@ Dashbird.ActivityFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
 	_protected.construct = function(parameters){
 		_protected.postFeedHtmlLayer = parameters[0];
 		_protected.$layer = parameters[1];
+		_protected.commentFeedLayerList = SimpleJSLib.MappingArray.construct();
 
 		_protected.drawingManager = Dashbird.DrawingManager.construct(me.redraw, me.isAllowedToRedraw, ['updated', 'lastview']);
 
@@ -31,16 +32,16 @@ Dashbird.ActivityFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
 
 	_protected.addComment = function(comment){
 		var commentFeedLayer = Dashbird.CommentFeedLayer.construct(me, comment);
-		var arrayIndex =_protected.commentFeedLayerList.push(commentFeedLayer) - 1;
-		commentFeedLayer.attachEvent('/destroying/', _protected.onCommentFeedLayerDestroying, { arrayIndex : arrayIndex });
+		_protected.commentFeedLayerList.add(commentFeedLayer.getCommentId(), commentFeedLayer);
+		commentFeedLayer.attachEvent('/destroying/', _protected.onCommentFeedLayerDestroying);
 		_protected.$layer.append(commentFeedLayer.getLayer());
 	}
 
 	// --- catch events ---
 
-	_protected.onCommentFeedLayerDestroying = function(commentFeedLayer, additionalData){
+	_protected.onCommentFeedLayerDestroying = function(commentFeedLayer){
 		commentFeedLayer.detachEvent('/destroying/', _protected.onCommentFeedLayerDestroying);
-		_protected.commentFeedLayerList.splice(additionalData.arrayIndex, 1);
+		_protected.commentFeedLayerList.remove(commentFeedLayer.getCommentId());
 	}
 
 	_protected.onNewComment = function(comment, additionalData){
@@ -98,14 +99,14 @@ Dashbird.ActivityFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
 			_protected.$layer.append(_protected.$lastview);
 		}
 		else {
-
-			for (var i = 0; i < _protected.commentFeedLayerList.length; i++) {
-				if(!_protected.commentFeedLayerList[i].isViewed()){
-					_protected.commentFeedLayerList[i].getLayer().before(_protected.$lastview);
+			 _protected.commentFeedLayerList.each(function(index, commentFeedLayer){
+			 	if(!commentFeedLayer.isViewed()){
+					commentFeedLayer.getLayer().before(_protected.$lastview);
 					return;
 				}
-			}
-			_protected.commentFeedLayerList[_protected.commentFeedLayerList.length - 1].getLayer().after(_protected.$lastview);
+			 });
+			
+			_protected.commentFeedLayerList.getLast().getLayer().after(_protected.$lastview);
 		}
 	}
 
@@ -116,10 +117,9 @@ Dashbird.ActivityFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
 		}
 
 		// trigger redraw for all sub items
-		var commentFeedLayerList = _protected.commentFeedLayerList.slice();
-		for (var i = 0; i < commentFeedLayerList.length; i++) {
-			commentFeedLayerList[i].redraw();
-		};
+		 _protected.commentFeedLayerList.each(function(index, commentFeedLayer){
+			 	commentFeedLayer.redraw();
+		 }, true);
 
 		if(drawingChangeSet.lastview){
 			_protected.drawLastView();

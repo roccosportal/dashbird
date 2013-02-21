@@ -1,9 +1,9 @@
 Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 
-	_protected.comments = [];
+	_protected.comments = null;
 
-	// contains a mapping like { <commentId> : <indexOfArray>, ... }
-	_protected.mappingForComments = {};
+	// // contains a mapping like { <commentId> : <indexOfArray>, ... }
+	// _protected.mappingForComments = {};
 
 	_protected.post = null;
 
@@ -12,6 +12,13 @@ Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	// [0] plain comments array
 	// [1] the posts the comments belong to
 	_protected.construct = function(parameters){
+		_protected.comments = SimpleJSLib.MappingArray.construct();
+
+		// shorthands
+		me.getCommentById = _protected.comments.getByKey;
+		me.each = _protected.comments.each;
+
+
 		me.mergeData(parameters[0]);
 		_protected.post = parameters[1];
 	}
@@ -31,10 +38,7 @@ Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	// @var comment Dashbird.Comment
 	_protected.onCommentDestroying = function(comment){
 		comment.detachEvent('/destroying/', _protected.onCommentDestroying);
-		if(typeof(_protected.mappingForComments[comment.getCommentId()]) != 'undefined'){
-			_protected.comments.splice(_protected.mappingForComments[comment.getCommentId()], 1);
-			delete _protected.mappingForComments[comment.getCommentId()];
-		}
+		_protected.comments.remove(comment.getCommentId());
 	}
 	// --- end ---
 
@@ -55,13 +59,12 @@ Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 		var processedCommentIds = {};
 		// merge and add comments
 		for (var i = 0; i < commentsData.length; i++) {
-			comment = me.getCommentById(commentsData[i].commentId);
+			comment = me.getCommentById(parseInt(commentsData[i].commentId));
 			// is not in our array
 			if(comment==null){ 
 				// add it
 				comment = Dashbird.Comment.construct(commentsData[i], me);
-				indexOfArray = _protected.comments.push(comment) - 1;
-				_protected.mappingForComments[comment.getCommentId()] = indexOfArray;
+				_protected.comments.add(comment.getCommentId(), comment);
 				comment.attachEvent('/destroying/', _protected.onCommentDestroying);
 				_protected.fireEventNewComment(comment);
 				
@@ -76,39 +79,28 @@ Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 		// if these are different there are some old comments
 		if(commentsData.length != _protected.comments.length){
 			// delete old ones
-
-			// work with copy because comment.destroy() alters _protected.comments
-			var comments = _protected.comments.slice();
-			for (var j = 0; j < comments.length; j++) {
-				if(typeof(processedCommentIds[comments[j].getCommentId()]) == 'undefined'){
+			_protected.comments.each(function(index, comment){
+				if(typeof(processedCommentIds[comment.getCommentId()]) == 'undefined'){
 					// was not processed
 					// so delete
-					comments[j].destroy();
+					comment.destroy();
 				}
-			};
+			}, true);
 		}
 
 	}
 
-
+	// will be overwritten in constructor
 	// @var commentId 
 	// @return Dashbird.Comment
-	me.getCommentById = function(commentId){
-		// search in the mapping object by the comment id
-		if(typeof(_protected.mappingForComments[commentId]) != 'undefined')
-			return _protected.comments[_protected.mappingForComments[commentId]];
-		return null;
-	}
+	me.getCommentById = null;
 
-	me.each = function(callbackIterator){
-		var callbackIteratorReturnValue = null;
-		for (var i = 0; i < _protected.comments.length; i++) {
-			callbackIteratorReturnValue = callbackIterator(i, _protected.comments[i]);
-			if(typeof(callbackIteratorReturnValue) != 'undefined' && callbackIteratorReturnValue === false)
-				return null;
-		};
-		return null;
-	}
+	// will be overwritten in constructor
+	// @var commentId 
+	// @return Dashbird.Comment
+	me.each = null;
+
+	
 
 
 	return me;

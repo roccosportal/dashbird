@@ -53,6 +53,10 @@ Dashbird.CommentFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _prot
 		return _protected.comment.isViewed();
 	}
 
+	me.getCommentId = function(){
+		return _protected.comment.getCommentId();
+	}
+
 	// --- end ---
 
 	// --- drawing --- 
@@ -67,7 +71,7 @@ Dashbird.CommentFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _prot
 	me.redraw = function(){
 		var drawingChangeSet = _protected.drawingManager.getDrawingChangeSet();
 		if(drawingChangeSet.destroying){
-			_protected.undraw();
+			me.undraw();
 		}
 		else {
 			if(drawingChangeSet.viewed){

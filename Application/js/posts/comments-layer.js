@@ -1,6 +1,6 @@
 Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	_protected.postHtmlLayer = null;
-	_protected.commentLayerList = [];
+	_protected.commentLayerList = null;
 	_protected.$layer = null;
 	_protected.$showMoreComments = null;
 	_protected.$hideSomeComments = null;
@@ -14,6 +14,9 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 	_protected.construct = function(parameters){
 		_protected.postHtmlLayer = parameters[0];
 		_protected.$layer = parameters[1];
+
+		_protected.commentLayerList = SimpleJSLib.MappingArray.construct();
+
 		_protected.$showMoreComments =_protected.postHtmlLayer.getLayer().find('.show-more-comments');
 		_protected.$hideSomeComments =_protected.postHtmlLayer.getLayer().find('.hide-some-comments');
 
@@ -28,8 +31,8 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 
 	_protected.addComment = function(comment){
 		var commentLayer = Dashbird.CommentLayer.construct(me, comment);
-		var arrayIndex =_protected.commentLayerList.push(commentLayer) - 1;
-		commentLayer.attachEvent('/destroying/', _protected.onCommentLayerDestroying, { arrayIndex : arrayIndex });
+		_protected.commentLayerList.add(commentLayer.getCommentId(), commentLayer);
+		commentLayer.attachEvent('/destroying/', _protected.onCommentLayerDestroying);
 		_protected.$layer.append(commentLayer.getLayer());
 	}
 
@@ -37,7 +40,7 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 
 	_protected.onCommentLayerDestroying = function(commentLayer, additionalData){
 		commentLayer.detachEvent('/destroying/', _protected.onCommentLayerDestroying);
-		_protected.commentLayerList.splice(additionalData.arrayIndex, 1);
+		_protected.commentLayerList.remove(commentLayer.getCommentId());
 		me.hideUneccessaryComments();
 	}
 
@@ -49,9 +52,9 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 	_protected.onShowMoreCommentsClick = function(){
 		_protected.showAllComments = true;
 
-		for (var i = 0; i < _protected.commentLayerList.length; i++) {
-			_protected.commentLayerList[i].getLayer().show();
-		}
+		_protected.commentLayerList.each(function(index, commentLayer){
+			commentLayer.getLayer().show();
+		});
 		me.drawHideSomeComments();
 	}
 
@@ -86,9 +89,9 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 		me.hideUneccessaryComments();
 
 		// trigger redraw for all sub items
-		for (var i = 0; i < _protected.commentLayerList.length; i++) {
-			_protected.commentLayerList[i].redraw();
-		};
+		_protected.commentLayerList.each(function(index, commentLayer){
+			commentLayer.redraw();
+		});
 	}
 
 	me.drawShowMoreComments = function(countOfHiddenComments){
@@ -107,15 +110,16 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 		if(!_protected.showAllComments){
 			var startShowingIndex = (_protected.commentLayerList.length - _protected.ALWAYS_VISIBLE_COMMENT_COUNT) - 1;
 			var countOfHiddenComments = 0;
-			for (var i = 0; i < _protected.commentLayerList.length; i++) {
-				if(i <= startShowingIndex && _protected.commentLayerList[i].isViewed()){
-					_protected.commentLayerList[i].getLayer().hide();
+			_protected.commentLayerList.each(function(index, commentLayer){
+				if(index <= startShowingIndex && commentLayer.isViewed()){
+					commentLayer.getLayer().hide();
 					countOfHiddenComments++;
 				}
 				else {
-					_protected.commentLayerList[i].getLayer().show();
+					commentLayer.getLayer().show();
 				}
-			}
+			});
+			
 
 			if(countOfHiddenComments > 0){
 				me.drawShowMoreComments(countOfHiddenComments);

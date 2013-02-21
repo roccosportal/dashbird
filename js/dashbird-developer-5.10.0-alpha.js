@@ -157,6 +157,58 @@ SimpleJSLib.Observable = SimpleJSLib.BaseObject.inherit(function(me, _protected)
     
     return me;
 });
+SimpleJSLib.MappingArray = SimpleJSLib.BaseObject.inherit(function(me, _protected){
+    _protected.array = [];
+    _protected.mappingArray = {};
+    me.length = 0;
+
+    me.add = function(key, data){
+        var index = _protected.array.push(data) - 1;
+        _protected.mappingArray[key] = index;
+        me.length = _protected.array.length
+    };
+    me.remove = function(key){
+        if(typeof(_protected.mappingArray[key]) != 'undefined'){
+            var index = _protected.mappingArray[key];
+            delete _protected.mappingArray[key];
+            _protected.array.splice(index, 1);
+            for (var key in _protected.mappingArray) {
+               if(_protected.mappingArray[key] > index){
+                    _protected.mappingArray[key] -= 1;
+               }
+            }
+            me.length = _protected.array.length
+        }
+      
+    }
+    me.getByIndex = function(index){
+        return _protected.array[index];
+    }
+    me.getIndexByKey = function(key){
+        return _protected.mappingArray[key];
+    }
+    me.getByKey = function(key){
+        return me.getByIndex(me.getIndexByKey(key));
+    }
+    me.each = function(callbackIterator, makeRemovingSafe){
+        var array = _protected.array;
+        if(typeof(makeRemovingSafe) != 'undefined' && makeRemovingSafe){
+            array = array.slice();
+        }
+        var callbackIteratorReturnValue = null;
+        for (var i = 0; i < array.length; i++) {
+            callbackIteratorReturnValue = callbackIterator(i, array[i]);
+            if(typeof(callbackIteratorReturnValue) != 'undefined' && callbackIteratorReturnValue === false)
+                return null;
+        };
+        return null;
+    }
+    me.getLast = function(index){
+        return me.getByIndex(me.length - 1);
+    }
+
+    return me;
+});
 Dashbird.AJAX = {
    'STATUS': 'STATUS',
    'STATUS_SUCCESS': 'STATUS_SUCCESS',
@@ -917,15 +969,20 @@ Dashbird.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     
 }).construct();
 Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
-	_protected.comments = [];
-	// contains a mapping like { <commentId> : <indexOfArray>, ... }
-	_protected.mappingForComments = {};
+	_protected.comments = null;
+	// // contains a mapping like { <commentId> : <indexOfArray>, ... }
+	// _protected.mappingForComments = {};
 	_protected.post = null;
 	// constructor
 	// @var  parameters (.construct(<[]>, <Dasbird.Posts>))
 	// [0] plain comments array
 	// [1] the posts the comments belong to
 	_protected.construct = function(parameters){
+		_protected.comments = SimpleJSLib.MappingArray.construct();
+		// shorthands
+		me.getCommentById = _protected.comments.getByKey;
+		me.each = _protected.comments.each;
+
 		me.mergeData(parameters[0]);
 		_protected.post = parameters[1];
 	}
@@ -940,10 +997,7 @@ Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	// @var comment Dashbird.Comment
 	_protected.onCommentDestroying = function(comment){
 		comment.detachEvent('/destroying/', _protected.onCommentDestroying);
-		if(typeof(_protected.mappingForComments[comment.getCommentId()]) != 'undefined'){
-			_protected.comments.splice(_protected.mappingForComments[comment.getCommentId()], 1);
-			delete _protected.mappingForComments[comment.getCommentId()];
-		}
+		_protected.comments.remove(comment.getCommentId());
 	}
 	// --- end ---
 	// --- getter and setters ---
@@ -960,13 +1014,12 @@ Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 		var processedCommentIds = {};
 		// merge and add comments
 		for (var i = 0; i < commentsData.length; i++) {
-			comment = me.getCommentById(commentsData[i].commentId);
+			comment = me.getCommentById(parseInt(commentsData[i].commentId));
 			// is not in our array
 			if(comment==null){ 
 				// add it
 				comment = Dashbird.Comment.construct(commentsData[i], me);
-				indexOfArray = _protected.comments.push(comment) - 1;
-				_protected.mappingForComments[comment.getCommentId()] = indexOfArray;
+				_protected.comments.add(comment.getCommentId(), comment);
 				comment.attachEvent('/destroying/', _protected.onCommentDestroying);
 				_protected.fireEventNewComment(comment);
 				
@@ -980,35 +1033,24 @@ Dashbird.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
 		// if these are different there are some old comments
 		if(commentsData.length != _protected.comments.length){
 			// delete old ones
-			// work with copy because comment.destroy() alters _protected.comments
-			var comments = _protected.comments.slice();
-			for (var j = 0; j < comments.length; j++) {
-				if(typeof(processedCommentIds[comments[j].getCommentId()]) == 'undefined'){
+			_protected.comments.each(function(index, comment){
+				if(typeof(processedCommentIds[comment.getCommentId()]) == 'undefined'){
 					// was not processed
 					// so delete
-					comments[j].destroy();
+					comment.destroy();
 				}
-			};
+			}, true);
 		}
 	}
-
+	// will be overwritten in constructor
 	// @var commentId 
 	// @return Dashbird.Comment
-	me.getCommentById = function(commentId){
-		// search in the mapping object by the comment id
-		if(typeof(_protected.mappingForComments[commentId]) != 'undefined')
-			return _protected.comments[_protected.mappingForComments[commentId]];
-		return null;
-	}
-	me.each = function(callbackIterator){
-		var callbackIteratorReturnValue = null;
-		for (var i = 0; i < _protected.comments.length; i++) {
-			callbackIteratorReturnValue = callbackIterator(i, _protected.comments[i]);
-			if(typeof(callbackIteratorReturnValue) != 'undefined' && callbackIteratorReturnValue === false)
-				return null;
-		};
-		return null;
-	}
+	me.getCommentById = null;
+	// will be overwritten in constructor
+	// @var commentId 
+	// @return Dashbird.Comment
+	me.each = null;
+	
 
 	return me;
 });
@@ -1350,9 +1392,9 @@ Dashbird.DrawingManager =  SimpleJSLib.BaseObject.inherit(function(me, _protecte
 	_protected.defaultChangeSetPropertyNames = null;
 	// constructor
 	// @var parameters (.construct(<function>, <function>, [])) 
-	// first is the redraw function that gets called when a redraw is triggerd
-	// second is the function that return if the parent is allowed to redraw
-	// third is an array of the default change set property names, like ['text', 'username']
+	// [0] the redraw function that gets called when a redraw is triggerd
+	// [1] the function that return if the parent is allowed to redraw
+	// [2] an array of the default change set property names, like ['text', 'username']
 	_protected.construct = function(parameters){
 		_protected.redraw = parameters[0];
 		_protected.isAllowedToRedraw = parameters[1];
@@ -1375,7 +1417,6 @@ Dashbird.DrawingManager =  SimpleJSLib.BaseObject.inherit(function(me, _protecte
 			setTimeout(function(){
 				_protected.redraw();
 				_protected.willTriggerRedraw = false;
-				me.setDrawingChangeSetToDefault();
 			}, _protected.TRIGGER_REDRAW_DELAY)
 		}
 		for (var i = 0; i < changes.length; i++) {
@@ -1813,7 +1854,7 @@ Dashbird.PostFeedHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
 });
 Dashbird.ActivityFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	_protected.postFeedHtmlLayer = null;
-	_protected.commentFeedLayerList = [];
+	_protected.commentFeedLayerList = null;
 	_protected.$layer = null;
 	_protected.$updated = null;
 	
@@ -1822,6 +1863,7 @@ Dashbird.ActivityFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
 	_protected.construct = function(parameters){
 		_protected.postFeedHtmlLayer = parameters[0];
 		_protected.$layer = parameters[1];
+		_protected.commentFeedLayerList = SimpleJSLib.MappingArray.construct();
 		_protected.drawingManager = Dashbird.DrawingManager.construct(me.redraw, me.isAllowedToRedraw, ['updated', 'lastview']);
 		_protected.$updated = $('#templates #template-post-feed-update li').clone();
 		_protected.drawUpdated();
@@ -1837,14 +1879,14 @@ Dashbird.ActivityFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
 	}
 	_protected.addComment = function(comment){
 		var commentFeedLayer = Dashbird.CommentFeedLayer.construct(me, comment);
-		var arrayIndex =_protected.commentFeedLayerList.push(commentFeedLayer) - 1;
-		commentFeedLayer.attachEvent('/destroying/', _protected.onCommentFeedLayerDestroying, { arrayIndex : arrayIndex });
+		_protected.commentFeedLayerList.add(commentFeedLayer.getCommentId(), commentFeedLayer);
+		commentFeedLayer.attachEvent('/destroying/', _protected.onCommentFeedLayerDestroying);
 		_protected.$layer.append(commentFeedLayer.getLayer());
 	}
 	// --- catch events ---
-	_protected.onCommentFeedLayerDestroying = function(commentFeedLayer, additionalData){
+	_protected.onCommentFeedLayerDestroying = function(commentFeedLayer){
 		commentFeedLayer.detachEvent('/destroying/', _protected.onCommentFeedLayerDestroying);
-		_protected.commentFeedLayerList.splice(additionalData.arrayIndex, 1);
+		_protected.commentFeedLayerList.remove(commentFeedLayer.getCommentId());
 	}
 	_protected.onNewComment = function(comment, additionalData){
 		_protected.addComment(comment);
@@ -1888,13 +1930,14 @@ Dashbird.ActivityFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
 			_protected.$layer.append(_protected.$lastview);
 		}
 		else {
-			for (var i = 0; i < _protected.commentFeedLayerList.length; i++) {
-				if(!_protected.commentFeedLayerList[i].isViewed()){
-					_protected.commentFeedLayerList[i].getLayer().before(_protected.$lastview);
+			 _protected.commentFeedLayerList.each(function(index, commentFeedLayer){
+			 	if(!commentFeedLayer.isViewed()){
+					commentFeedLayer.getLayer().before(_protected.$lastview);
 					return;
 				}
-			}
-			_protected.commentFeedLayerList[_protected.commentFeedLayerList.length - 1].getLayer().after(_protected.$lastview);
+			 });
+			
+			_protected.commentFeedLayerList.getLast().getLayer().after(_protected.$lastview);
 		}
 	}
 	me.redraw = function(){
@@ -1903,10 +1946,9 @@ Dashbird.ActivityFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _pro
 			_protected.drawUpdated();
 		}
 		// trigger redraw for all sub items
-		var commentFeedLayerList = _protected.commentFeedLayerList.slice();
-		for (var i = 0; i < commentFeedLayerList.length; i++) {
-			commentFeedLayerList[i].redraw();
-		};
+		 _protected.commentFeedLayerList.each(function(index, commentFeedLayer){
+			 	commentFeedLayer.redraw();
+		 }, true);
 		if(drawingChangeSet.lastview){
 			_protected.drawLastView();
 		}
@@ -1956,6 +1998,9 @@ Dashbird.CommentFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _prot
 	me.isViewed = function(){
 		return _protected.comment.isViewed();
 	}
+	me.getCommentId = function(){
+		return _protected.comment.getCommentId();
+	}
 	// --- end ---
 	// --- drawing --- 
 	_protected.drawViewed = function(){
@@ -1967,7 +2012,7 @@ Dashbird.CommentFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _prot
 	me.redraw = function(){
 		var drawingChangeSet = _protected.drawingManager.getDrawingChangeSet();
 		if(drawingChangeSet.destroying){
-			_protected.undraw();
+			me.undraw();
 		}
 		else {
 			if(drawingChangeSet.viewed){
@@ -1996,7 +2041,7 @@ Dashbird.CommentFeedLayer =  SimpleJSLib.EventHandler.inherit(function(me, _prot
 });
 Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protected){
 	_protected.postHtmlLayer = null;
-	_protected.commentLayerList = [];
+	_protected.commentLayerList = null;
 	_protected.$layer = null;
 	_protected.$showMoreComments = null;
 	_protected.$hideSomeComments = null;
@@ -2007,6 +2052,7 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 	_protected.construct = function(parameters){
 		_protected.postHtmlLayer = parameters[0];
 		_protected.$layer = parameters[1];
+		_protected.commentLayerList = SimpleJSLib.MappingArray.construct();
 		_protected.$showMoreComments =_protected.postHtmlLayer.getLayer().find('.show-more-comments');
 		_protected.$hideSomeComments =_protected.postHtmlLayer.getLayer().find('.hide-some-comments');
 		_protected.postHtmlLayer.getPost().getComments().each(function(key, comment){
@@ -2018,14 +2064,14 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 	}
 	_protected.addComment = function(comment){
 		var commentLayer = Dashbird.CommentLayer.construct(me, comment);
-		var arrayIndex =_protected.commentLayerList.push(commentLayer) - 1;
-		commentLayer.attachEvent('/destroying/', _protected.onCommentLayerDestroying, { arrayIndex : arrayIndex });
+		_protected.commentLayerList.add(commentLayer.getCommentId(), commentLayer);
+		commentLayer.attachEvent('/destroying/', _protected.onCommentLayerDestroying);
 		_protected.$layer.append(commentLayer.getLayer());
 	}
 	// --- catch events ---
 	_protected.onCommentLayerDestroying = function(commentLayer, additionalData){
 		commentLayer.detachEvent('/destroying/', _protected.onCommentLayerDestroying);
-		_protected.commentLayerList.splice(additionalData.arrayIndex, 1);
+		_protected.commentLayerList.remove(commentLayer.getCommentId());
 		me.hideUneccessaryComments();
 	}
 	_protected.onNewComment = function(comment, additionalData){
@@ -2034,9 +2080,9 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 	}
 	_protected.onShowMoreCommentsClick = function(){
 		_protected.showAllComments = true;
-		for (var i = 0; i < _protected.commentLayerList.length; i++) {
-			_protected.commentLayerList[i].getLayer().show();
-		}
+		_protected.commentLayerList.each(function(index, commentLayer){
+			commentLayer.getLayer().show();
+		});
 		me.drawHideSomeComments();
 	}
 	_protected.onHideSomeCommentsClick = function(){
@@ -2060,9 +2106,9 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 	me.redraw = function(){
 		me.hideUneccessaryComments();
 		// trigger redraw for all sub items
-		for (var i = 0; i < _protected.commentLayerList.length; i++) {
-			_protected.commentLayerList[i].redraw();
-		};
+		_protected.commentLayerList.each(function(index, commentLayer){
+			commentLayer.redraw();
+		});
 	}
 	me.drawShowMoreComments = function(countOfHiddenComments){
 		_protected.$showMoreComments.find('.count').text(countOfHiddenComments);
@@ -2078,15 +2124,16 @@ Dashbird.CommentsLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
 		if(!_protected.showAllComments){
 			var startShowingIndex = (_protected.commentLayerList.length - _protected.ALWAYS_VISIBLE_COMMENT_COUNT) - 1;
 			var countOfHiddenComments = 0;
-			for (var i = 0; i < _protected.commentLayerList.length; i++) {
-				if(i <= startShowingIndex && _protected.commentLayerList[i].isViewed()){
-					_protected.commentLayerList[i].getLayer().hide();
+			_protected.commentLayerList.each(function(index, commentLayer){
+				if(index <= startShowingIndex && commentLayer.isViewed()){
+					commentLayer.getLayer().hide();
 					countOfHiddenComments++;
 				}
 				else {
-					_protected.commentLayerList[i].getLayer().show();
+					commentLayer.getLayer().show();
 				}
-			}
+			});
+			
 			if(countOfHiddenComments > 0){
 				me.drawShowMoreComments(countOfHiddenComments);
 			}
@@ -2216,6 +2263,9 @@ Dashbird.CommentLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protecte
 	}
 	me.getLayer = function(){
 		return _protected.$layer;
+	}
+	me.getCommentId = function(){
+		return _protected.comment.getCommentId();
 	}
 	// --- end ---
 	// --- other ---

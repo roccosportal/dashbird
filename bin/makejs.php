@@ -23,6 +23,7 @@ $Files = array (
     '~/Application/js/simple-js-lib/event-handler.js',
     '~/Application/js/simple-js-lib/single-request-queue.js',
     '~/Application/js/simple-js-lib/observable.js',
+    '~/Application/js/simple-js-lib/mapping-array.js',
     '~/Application/js/shared/ajax.js',
     '~/Application/js/shared/ajax-response.js',
     '~/Application/js/shared/user.js',

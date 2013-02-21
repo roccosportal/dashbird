@@ -146,6 +146,10 @@ Dashbird.CommentLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protecte
 		return _protected.$layer;
 	}
 
+	me.getCommentId = function(){
+		return _protected.comment.getCommentId();
+	}
+
 	// --- end ---
 
 	// --- other ---
