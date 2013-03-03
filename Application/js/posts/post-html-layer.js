@@ -74,7 +74,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         
         _protected.$post.data('post', me);
         
-        _protected.$meta.find('.notViewed').click(_protected.post.setLastView);
+        _protected.$meta.find('.viewStatus').click(_protected.post.setLastView);
         
 
         // attach listener
@@ -170,11 +170,9 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
     
     _protected.drawLastView = function(){
         if(_protected.post.getPostData().lastView.get() == null || _protected.post.getPostData().updated.get() > _protected.post.getPostData().lastView.get()){
-            _protected.$meta.find('.notViewed').show();
             me.getLayer().removeClass('viewed');
         }
         else {
-            _protected.$meta.find('.notViewed').hide();
             me.getLayer().addClass('viewed');
         }
     };

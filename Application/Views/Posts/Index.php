@@ -127,7 +127,7 @@
                             </div>
                             <div class="text"></div>
                             <ul class="meta inline">
-                                <li class="info"><span class="badge notViewed"><i class="icon-fire"></i></span><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
+                                <li class="info"><span class="viewStatus"></span><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
                                 <li class="tags"><ul class="inline"></ul></li>
                                 <li class="private-sharing"><i class="icon-lock"></i> private</li>
                                 <li class="sharing"><i class="icon-retweet"></i><a data-placement="bottom" href="#" rel="tooltip" title="" > <span class="count"></span> <span class="persons"></span></a> </li>
@@ -211,7 +211,7 @@
                         <p class="text">
                         </p>
                         <ul class="meta inline">
-                            <li class="info"><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
+                            <li class="info"><span class="viewStatus"></span><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
                         </ul>
                     </div>
                 </div>

@@ -1481,13 +1481,15 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         });
     }
     
-    me.setLastView = function(){
-        if(_protected.postData.updated.get() !=_protected.postData.lastView.get()){
+    me.setLastView = function(newLastView){
+        if(typeof(newLastView) === 'undefined')
+            newLastView = _protected.postData.updated.get();
+        if(newLastView !=_protected.postData.lastView.get()){
             // set it first on local side so there is an instant change
-            _protected.postData.lastView.set(_protected.postData.updated.get())
+            _protected.postData.lastView.set(newLastView)
             $.getJSON('/api/post/lastview/set/', {
                postId : _protected.postData.postId, 
-               lastView : _protected.postData.updated.get()
+               lastView : newLastView
            }, function(data) {
                var ajaxResponse = Dashbird.AjaxResponse.construct(data);
                if(ajaxResponse.isSuccess){
@@ -1676,7 +1678,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         
         _protected.$post.data('post', me);
         
-        _protected.$meta.find('.notViewed').click(_protected.post.setLastView);
+        _protected.$meta.find('.viewStatus').click(_protected.post.setLastView);
         
         // attach listener
         _protected.post.getPostData().text.listen(_protected.onTextChanged);
@@ -1768,11 +1770,9 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
     
     _protected.drawLastView = function(){
         if(_protected.post.getPostData().lastView.get() == null || _protected.post.getPostData().updated.get() > _protected.post.getPostData().lastView.get()){
-            _protected.$meta.find('.notViewed').show();
             me.getLayer().removeClass('viewed');
         }
         else {
-            _protected.$meta.find('.notViewed').hide();
             me.getLayer().addClass('viewed');
         }
     };
@@ -2370,6 +2370,7 @@ Dashbird.CommentLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protecte
       	// catch events
       	_protected.comment.getText().listen(_protected.onTextChange);
       	_protected.comment.attachEvent('/destroying/', _protected.onCommentDestroying);
+      	_protected.$layer.find('.viewStatus').click(function(){_protected.comment.getPost().setLastView(_protected.comment.getDatetime())});
       	me.getPost().getLastView().listen( _protected.onLastViewChange);
 	}
 	// --- drawing  ---

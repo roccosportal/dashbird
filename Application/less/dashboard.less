@@ -1,9 +1,10 @@
 
 @width: 500px;
 
-@border-color-grey :#EEEEEE;
-@border-color-green :#0BB340;
-@border-color-blue : #1B8EE0;
+@color-grey :#EEEEEE;
+@color-green :#0BB340;
+@color-blue : #1B8EE0;
+
 
 
 .opacity(@opacity: 0.5) {
@@ -78,7 +79,7 @@
 .postHtmlLayer(){
     margin-bottom: 30px;
 
-    border: 2px solid @border-color-grey;
+    border: 2px solid @color-grey;
     border-radius: 4px;
     padding: 8px;
 
@@ -155,12 +156,17 @@
             line-height: 20px;
             font-size: 85%;
 
-            .info .notViewed {
-                padding-right: 4px;
-                padding-left: 4px;
+            .info .viewStatus {
+                background-color: @color-blue;
+                display: inline-block;
+                border-radius: 5px;
+                font-size: 1px;
+                padding: 5px;
+                margin-bottom: -1px;
+                margin-right: 5px;
                 cursor: pointer;
                 &:hover {
-                    background-color: #B94A48;
+                    background-color: @color-green;
                 }
             }
 
@@ -189,6 +195,17 @@
        .button input{
            margin-bottom: 0px;
        }
+    }
+
+    &.viewed, .comment.viewed {
+         .meta {
+            .info .viewStatus {
+                background-color: @color-grey;
+                &:hover {
+                    background-color: @color-grey;
+                }
+            }
+        }
     }
 }
 

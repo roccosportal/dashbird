@@ -56,6 +56,7 @@ Dashbird.CommentLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protecte
       	// catch events
       	_protected.comment.getText().listen(_protected.onTextChange);
       	_protected.comment.attachEvent('/destroying/', _protected.onCommentDestroying);
+      	_protected.$layer.find('.viewStatus').click(function(){_protected.comment.getPost().setLastView(_protected.comment.getDatetime())});
       	me.getPost().getLastView().listen( _protected.onLastViewChange);
 
 	}

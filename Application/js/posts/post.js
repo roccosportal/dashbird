@@ -131,14 +131,17 @@ Dashbird.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected){
         });
     }
     
-    me.setLastView = function(){
-        if(_protected.postData.updated.get() !=_protected.postData.lastView.get()){
+    me.setLastView = function(newLastView){
+        if(typeof(newLastView) === 'undefined')
+            newLastView = _protected.postData.updated.get();
+
+        if(newLastView !=_protected.postData.lastView.get()){
             // set it first on local side so there is an instant change
-            _protected.postData.lastView.set(_protected.postData.updated.get())
+            _protected.postData.lastView.set(newLastView)
 
             $.getJSON('/api/post/lastview/set/', {
                postId : _protected.postData.postId, 
-               lastView : _protected.postData.updated.get()
+               lastView : newLastView
            }, function(data) {
                var ajaxResponse = Dashbird.AjaxResponse.construct(data);
                if(ajaxResponse.isSuccess){
