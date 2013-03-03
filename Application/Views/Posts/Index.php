@@ -114,94 +114,106 @@
         </div>
         <div id="templates" style="display:none">
             <div id="template-post">
-                <div class="post">
-                    <div class="content">
-                        <div class="command-bar popup btn-group">
-                            <a class="command-edit btn btn-mini"><i class="icon-pencil"></i> </a>
-                            <a class="command-share btn btn-mini"><i class="icon-retweet"></i> </a>
-                            <a class="command-remove btn btn-mini"><i class="icon-trash"></i> </a>
+                <div class="post media">
+                    <a class="avatar pull-left" href="#">
+                        <img class="media-object" src="http://placehold.it/48&text=...">
+                    </a>
+                    <div class="media-body">
+                        <div class="content">
+                            <div class="command-bar popup btn-group">
+                                <a class="command-edit btn btn-mini"><i class="icon-pencil"></i> </a>
+                                <a class="command-share btn btn-mini"><i class="icon-retweet"></i> </a>
+                                <a class="command-remove btn btn-mini"><i class="icon-trash"></i> </a>
+                            </div>
+                            <div class="text"></div>
+                            <ul class="meta inline">
+                                <li class="info"><span class="badge notViewed"><i class="icon-fire"></i></span><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
+                                <li class="tags"><ul class="inline"></ul></li>
+                                <li class="private-sharing"><i class="icon-lock"></i> private</li>
+                                <li class="sharing"><i class="icon-retweet"></i><a data-placement="bottom" href="#" rel="tooltip" title="" > <span class="count"></span> <span class="persons"></span></a> </li>
+                            </ul>
+                            <div class="command command-edit">
+                                <form>
+                                    <fieldset>
+                                        <label><strong>Edit your post</strong></label>
+                                        <div class="command-bar btn-group">
+                                            <a href="" class="command-link btn btn-mini"><i class="icon-globe"></i></a>
+                                            <a href="" class="command-video btn btn-mini"><i class="icon-facetime-video"></i></a>
+                                            <a href="" class="command-image  btn btn-mini"><i class="icon-camera"></i></a>
+                                            <a href="" class="command-bold  btn btn-mini"><i class="icon-bold"></i></a>
+                                        </div>
+                                        <textarea class="input-block-level" placeholder="Type here"></textarea>
+                                        <ul class="tags inline">
+                                        </ul>
+                                        <div class="tag-alert"></div>
+                                        <div class="add-tag-input input-append">
+                                            <input class="input-block-level" type="text" placeholder="Add a tag">
+                                            <button class="btn" type="button">Add</button>
+                                        </div>
+                                        <div class="form-actions" >
+                                            <button type="submit" class="submit-button btn btn-primary">Save changes</button>
+                                            <button type="button" class="cancel-button btn">Cancel</button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                            <div class="command command-share">
+                                <form>
+                                    <fieldset>
+                                        <label><strong>Share with people</strong></label>
+                                        <div class="shares"></div>
+                                        <div class="form-actions" >
+                                            <button type="submit" class="submit-button btn btn-primary">Share</button>
+                                            <button type="button" class="cancel-button btn">Cancel</button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
                         </div>
-                        <div class="text"></div>
-                        <ul class="meta inline">
-                            <li class="info"><span class="badge notViewed"><i class="icon-fire"></i></span><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
-                            <li class="tags"><ul class="inline"></ul></li>
-                            <li class="private-sharing"><i class="icon-lock"></i> private</li>
-                            <li class="sharing"><i class="icon-retweet"></i><a data-placement="bottom" href="#" rel="tooltip" title="" > <span class="count"></span> <span class="persons"></span></a> </li>
-                        </ul>
-                        <div class="command command-edit">
-                            <form>
-                                <fieldset>
-                                    <label><strong>Edit your post</strong></label>
-                                    <div class="command-bar btn-group">
-                                        <a href="" class="command-link btn btn-mini"><i class="icon-globe"></i></a>
-                                        <a href="" class="command-video btn btn-mini"><i class="icon-facetime-video"></i></a>
-                                        <a href="" class="command-image  btn btn-mini"><i class="icon-camera"></i></a>
-                                        <a href="" class="command-bold  btn btn-mini"><i class="icon-bold"></i></a>
-                                    </div>
-                                    <textarea class="input-block-level" placeholder="Type here"></textarea>
-                                    <ul class="tags inline">
-                                    </ul>
-                                    <div class="tag-alert"></div>
-                                    <div class="add-tag-input input-append">
-                                        <input class="input-block-level" type="text" placeholder="Add a tag">
-                                        <button class="btn" type="button">Add</button>
-                                    </div>
-                                    <div class="form-actions" >
-                                        <button type="submit" class="submit-button btn btn-primary">Save changes</button>
-                                        <button type="button" class="cancel-button btn">Cancel</button>
-                                    </div>
-                                </fieldset>
-                            </form>
+                        <div class="show-more-comments"><i class="icon-comment"></i> <span class="count">0</span> comment<span class="multiple">s</span> <i class="icon-chevron-down"></i></div>
+                        <div class="hide-some-comments"><i class="icon-comment"></i> Hide some comments <i class="icon-chevron-up"></i></div>
+                        <div class="comments"></div>
+                        <div class="new-comment">
+                            <div class="button">
+                                 <form>
+                                    <fieldset>
+                                        <input class="input-block-level" type="text" placeholder="Add a comment">
+                                  </fieldset>
+                                </form>
+                            </div>
+                            <div class="form" style="display:none">
+                                 <form>
+                                    <fieldset>
+                                        <textarea class="input-block-level" placeholder="Type here"></textarea>
+                                        <div class="form-actions">
+                                            <button type="submit" class="submit-button btn btn-small btn-success">Post comment</button>
+                                            <button type="button" class="cancel-button btn btn-small">Cancel</button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
                         </div>
-                        <div class="command command-share">
-                            <form>
-                                <fieldset>
-                                    <label><strong>Share with people</strong></label>
-                                    <div class="shares"></div>
-                                    <div class="form-actions" >
-                                        <button type="submit" class="submit-button btn btn-primary">Share</button>
-                                        <button type="button" class="cancel-button btn">Cancel</button>
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="show-more-comments"><i class="icon-comment"></i> <span class="count">0</span> comment<span class="multiple">s</span> <i class="icon-chevron-down"></i></div>
-                    <div class="hide-some-comments"><i class="icon-comment"></i> Hide some comments <i class="icon-chevron-up"></i></div>
-                    <div class="comments"></div>
-                    <div class="new-comment">
-                        <div class="button">
-                             <form>
-                                <fieldset>
-                                    <input class="input-block-level" type="text" placeholder="Add a comment">
-                              </fieldset>
-                            </form>
-                        </div>
-                        <div class="form" style="display:none">
-                             <form>
-                                <fieldset>
-                                    <textarea class="input-block-level" placeholder="Type here"></textarea>
-                                    <div class="form-actions">
-                                        <button type="submit" class="submit-button btn btn-small btn-success">Post comment</button>
-                                        <button type="button" class="cancel-button btn btn-small">Cancel</button>
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
-                    </div>
+                      </div>
+
+
                     
                 </div>
             </div>
             <div id="template-post-comment">
-                <div class="comment">
-                    <div class="command-bar popup">
-                        <a class="command-delete btn btn-mini"><i class="icon-trash"></i> </a>
+                <div class="comment media">
+                    <a class="pull-left avatar" href="#">
+                        <img class="media-object" src="http://placehold.it/32&text=...">
+                    </a>
+                    <div class="media-body">
+                        <div class="command-bar popup">
+                            <a class="command-delete btn btn-mini"><i class="icon-trash"></i> </a>
+                        </div>
+                        <p class="text">
+                        </p>
+                        <ul class="meta inline">
+                            <li class="info"><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
+                        </ul>
                     </div>
-                    <p class="text">
-                    </p>
-                    <ul class="meta inline">
-                        <li class="info"><i class="icon-user"></i> <span class="username"></span> on <span class="date"></span></li>
-                    </ul>
                 </div>
             </div>
             <div id="template-post-feed">

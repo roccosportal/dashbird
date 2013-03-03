@@ -37,6 +37,21 @@ Dashbird.User = SimpleJSLib.BaseObject.inherit(function (me, _protected){
             }
             return name;
         };
+
+
+        _protected.savedGravatarHashes = {};
+        me.getGravatarHashForUser = function(name){
+            if(typeof(_protected.savedGravatarHashes[name]) !== 'undefined')
+                return _protected.savedGravatarHashes[name];
+
+            _protected.savedGravatarHashes[name] = Dashbird.Utils.md5(name + '@' + location.hostname);
+            return _protected.savedGravatarHashes[name];
+        }
+
+        me.getGravatarUrlForUser = function(name, size){
+            return 'http://www.gravatar.com/avatar/' + me.getGravatarHashForUser(name) +'?f=y&d=identicon&s=' + size;
+        }
+
        return me;
 
 }).construct();

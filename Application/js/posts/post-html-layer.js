@@ -37,7 +37,8 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         else {
             _protected.$post = Dashbird.Templates.getTemplate('foreign-post');
         }
-        
+         _protected.$post.find('img.media-object').attr('src', Dashbird.User.getGravatarUrlForUser(_protected.post.getPostData().user.name, 48));
+
         // create jquery shortcuts
         _protected.$meta =  _protected.$post.find('.content .meta');
         _protected.commands.$bar = _protected.$post.find('.content .command-bar.popup');

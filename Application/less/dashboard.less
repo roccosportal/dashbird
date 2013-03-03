@@ -5,19 +5,6 @@
 @border-color-green :#0BB340;
 @border-color-blue : #1B8EE0;
 
-.border-grey(){
-     border-left: 5px solid @border-color-grey;
-}
-
-.border-green(){
-     border-left: 5px solid @border-color-green;
-}
-
-.border-blue(){
-     border-left: 5px solid @border-color-blue;
-}
-
-
 
 .opacity(@opacity: 0.5) {
   -moz-opacity: @opacity;
@@ -90,23 +77,10 @@
 
 .postHtmlLayer(){
     margin-bottom: 30px;
-    .border-blue;
 
-     &.viewed {
-       .border-grey;
-     }
-     
-     &:hover {
-       .border-green;
-     }
-
-
-    textarea, input[type="text"] {
-      // reset border radius
-      border-radius: 0px;
-      -webkit-border-radius: 0px;
-      -moz-border-radius: 0px;
-    }
+    border: 2px solid @border-color-grey;
+    border-radius: 4px;
+    padding: 8px;
 
     .content, .comment {
         word-wrap: break-word;
@@ -114,7 +88,6 @@
 
        
         margin-bottom: 5px;
-        padding: 0 0 0 15px;
 
         .command-bar.popup {
            .rounded(4px);
@@ -201,39 +174,17 @@
     }
 
     .comment {
-       .border-blue;
 
-        &.viewed {
-            .border-grey;
-       }
-     
-        &:hover {
-         .border-green;
-        }
     }
     .hide-some-comments, .show-more-comments {
-        &:hover {
-         .border-green;
-        }
-
-        .border-grey();
-        margin-left: 20px;
         margin-bottom: 5px;
-        padding: 0 0 0 15px;
         cursor: pointer;
     }
 
     .comments {
-        margin-left: 20px;
     }
 
     .new-comment {
-       &:hover {
-         .border-green;
-       }
-      .border-grey();
-       margin-left: 20px;
-       padding: 0 0 0 15px;
 
        .button input{
            margin-bottom: 0px;
@@ -292,7 +243,7 @@
 
 }
 
- #login-box {
+#login-box {
         margin-top: 50px;
         margin-left: 50px;
-    }
+}

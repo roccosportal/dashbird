@@ -14,7 +14,7 @@ Dashbird.CommentLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protecte
 
 		_protected.$layer = Dashbird.Templates.getTemplate('post-comment');
 		
-		
+		_protected.$layer.find('img.media-object').attr('src',  Dashbird.User.getGravatarUrlForUser(_protected.comment.getUser().name, 32));
 
 		// initialize drawings
 		_protected.drawViewed();

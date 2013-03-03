@@ -52,27 +52,9 @@
 #content #latest .posts .post,
 #content #search .posts .post {
   margin-bottom: 30px;
-  border-left: 5px solid #1B8EE0;
-}
-#content #stack .posts .post.viewed,
-#content #latest .posts .post.viewed,
-#content #search .posts .post.viewed {
-  border-left: 5px solid #EEEEEE;
-}
-#content #stack .posts .post:hover,
-#content #latest .posts .post:hover,
-#content #search .posts .post:hover {
-  border-left: 5px solid #0BB340;
-}
-#content #stack .posts .post textarea,
-#content #stack .posts .post input[type="text"],
-#content #latest .posts .post textarea,
-#content #latest .posts .post input[type="text"],
-#content #search .posts .post textarea,
-#content #search .posts .post input[type="text"] {
-  border-radius: 0px;
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
+  border: 2px solid #EEEEEE;
+  border-radius: 4px;
+  padding: 8px;
 }
 #content #stack .posts .post .content,
 #content #stack .posts .post .comment,
@@ -83,7 +65,6 @@
   word-wrap: break-word;
   position: relative;
   margin-bottom: 5px;
-  padding: 0 0 0 15px;
 }
 #content #stack .posts .post .content .command-bar.popup,
 #content #stack .posts .post .comment .command-bar.popup,
@@ -440,57 +421,14 @@
 #content #search .posts .post .comment .meta li.tags {
   padding-right: 0px;
 }
-#content #stack .posts .post .comment,
-#content #latest .posts .post .comment,
-#content #search .posts .post .comment {
-  border-left: 5px solid #1B8EE0;
-}
-#content #stack .posts .post .comment.viewed,
-#content #latest .posts .post .comment.viewed,
-#content #search .posts .post .comment.viewed {
-  border-left: 5px solid #EEEEEE;
-}
-#content #stack .posts .post .comment:hover,
-#content #latest .posts .post .comment:hover,
-#content #search .posts .post .comment:hover {
-  border-left: 5px solid #0BB340;
-}
 #content #stack .posts .post .hide-some-comments,
 #content #stack .posts .post .show-more-comments,
 #content #latest .posts .post .hide-some-comments,
 #content #latest .posts .post .show-more-comments,
 #content #search .posts .post .hide-some-comments,
 #content #search .posts .post .show-more-comments {
-  border-left: 5px solid #EEEEEE;
-  margin-left: 20px;
   margin-bottom: 5px;
-  padding: 0 0 0 15px;
   cursor: pointer;
-}
-#content #stack .posts .post .hide-some-comments:hover,
-#content #stack .posts .post .show-more-comments:hover,
-#content #latest .posts .post .hide-some-comments:hover,
-#content #latest .posts .post .show-more-comments:hover,
-#content #search .posts .post .hide-some-comments:hover,
-#content #search .posts .post .show-more-comments:hover {
-  border-left: 5px solid #0BB340;
-}
-#content #stack .posts .post .comments,
-#content #latest .posts .post .comments,
-#content #search .posts .post .comments {
-  margin-left: 20px;
-}
-#content #stack .posts .post .new-comment,
-#content #latest .posts .post .new-comment,
-#content #search .posts .post .new-comment {
-  border-left: 5px solid #EEEEEE;
-  margin-left: 20px;
-  padding: 0 0 0 15px;
-}
-#content #stack .posts .post .new-comment:hover,
-#content #latest .posts .post .new-comment:hover,
-#content #search .posts .post .new-comment:hover {
-  border-left: 5px solid #0BB340;
 }
 #content #stack .posts .post .new-comment .button input,
 #content #latest .posts .post .new-comment .button input,
@@ -502,26 +440,15 @@
 }
 #content #single-view .content .post {
   margin-bottom: 30px;
-  border-left: 5px solid #1B8EE0;
-}
-#content #single-view .content .post.viewed {
-  border-left: 5px solid #EEEEEE;
-}
-#content #single-view .content .post:hover {
-  border-left: 5px solid #0BB340;
-}
-#content #single-view .content .post textarea,
-#content #single-view .content .post input[type="text"] {
-  border-radius: 0px;
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
+  border: 2px solid #EEEEEE;
+  border-radius: 4px;
+  padding: 8px;
 }
 #content #single-view .content .post .content,
 #content #single-view .content .post .comment {
   word-wrap: break-word;
   position: relative;
   margin-bottom: 5px;
-  padding: 0 0 0 15px;
 }
 #content #single-view .content .post .content .command-bar.popup,
 #content #single-view .content .post .comment .command-bar.popup {
@@ -678,37 +605,10 @@
 #content #single-view .content .post .comment .meta li.tags {
   padding-right: 0px;
 }
-#content #single-view .content .post .comment {
-  border-left: 5px solid #1B8EE0;
-}
-#content #single-view .content .post .comment.viewed {
-  border-left: 5px solid #EEEEEE;
-}
-#content #single-view .content .post .comment:hover {
-  border-left: 5px solid #0BB340;
-}
 #content #single-view .content .post .hide-some-comments,
 #content #single-view .content .post .show-more-comments {
-  border-left: 5px solid #EEEEEE;
-  margin-left: 20px;
   margin-bottom: 5px;
-  padding: 0 0 0 15px;
   cursor: pointer;
-}
-#content #single-view .content .post .hide-some-comments:hover,
-#content #single-view .content .post .show-more-comments:hover {
-  border-left: 5px solid #0BB340;
-}
-#content #single-view .content .post .comments {
-  margin-left: 20px;
-}
-#content #single-view .content .post .new-comment {
-  border-left: 5px solid #EEEEEE;
-  margin-left: 20px;
-  padding: 0 0 0 15px;
-}
-#content #single-view .content .post .new-comment:hover {
-  border-left: 5px solid #0BB340;
 }
 #content #single-view .content .post .new-comment .button input {
   margin-bottom: 0px;
