@@ -1836,10 +1836,9 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         var replace = new Array(
             "<img src=\"$1\" alt=\"An image\">",
             "<strong>$1</strong>",
-            '<div class="media link-preview" data-url="$1"><a class="pull-left thumbnail" href="#"><img class="media-object" src=""></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">$1</p><p class="description">Loading ...</p></div></div>',
+            '<div class="media link-preview" data-url="$1"><a class="pull-left thumbnail" href="#"><img class="media-object" src="http://placehold.it/120x70&text=no+image"></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">$1</p><p class="description">Loading ...</p></div></div>',
             '<div class="media youtube-preview" data-id="$2"><a class="pull-left thumbnail" href="#"><img class="media-object" src="https://img.youtube.com/vi/$2/1.jpg"></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">www.youtube.com</p><p class="description">Loading ...</p></div></div>',
-            '<div class="media vimeo-preview" data-id="$2"><a class="pull-left thumbnail" href="#"><img class="media-object" src=""></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">www.vimeo.com</p><p class="description">Loading ...</p></div></div>'
-            //"<iframe class='vimeo' src='$1' width='480' height='270' frameborder='0' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>"
+            '<div class="media vimeo-preview" data-id="$2"><a class="pull-left thumbnail" href="#"><img class="media-object" src="http://placehold.it/120x70&text=no+image"></a><div class="media-body"><h6 class="media-heading title">Loading ...</h6><p class="muted">www.vimeo.com</p><p class="description">Loading ...</p></div></div>'
             );
         for(var i = 0; i < search.length; i++) {
             text = text.replace(search[i],replace[i]);
