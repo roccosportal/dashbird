@@ -74,7 +74,7 @@ Dashbird.PostHtmlLayer =  SimpleJSLib.EventHandler.inherit(function(me, _protect
         
         _protected.$post.data('post', me);
         
-        _protected.$meta.find('.viewStatus').click(_protected.post.setLastView);
+        _protected.$meta.find('.viewStatus').click(function() {_protected.post.setLastView() });
         
 
         // attach listener
