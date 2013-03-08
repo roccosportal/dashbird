@@ -1,6 +1,7 @@
 # Requirements
 
-
+See https://github.com/roccosportal/pvik/wiki/Requirements .
+A database is also required (MySQL prefered).
 
 
 # For Developers
@@ -22,7 +23,7 @@ Get the submodule projects.
 `git submodule update`
 
 
-Create a database named `dashbird` on your MySQL Server.
+Create a database named `dashbird` on your Database Server (MySQL prefered).
 
 Execute `bin/structure.sql` in your new database.
 
