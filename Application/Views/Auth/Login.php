@@ -23,7 +23,7 @@ $Username = $this->ViewData->Get('Username');
                 <div class="control-group <?php echo $ValidationState->IsValid() ?  '' : 'error' ?>">
                     <label class="control-label" for="login-box-name">Username</label>
                     <div class="controls">
-                        <input type="text" id="login-box-name" name="username" placeholder="Username" value="<?php echo $Username ?>">
+                        <input type="text" id="login-box-name" name="username" placeholder="Username" value="<?php echo $Username ?>" autofocus>
                     </div>
                 </div>
                 <div class="control-group <?php echo $ValidationState->IsValid() ? '' : 'error' ?>">
