@@ -39,7 +39,7 @@ self::$Config['Routes'] = array (
 );
 
 self::$Config['EmbedlyKey'] = 'put_key_here';
-self::$Config['Version'] = '6.2.0-alpha';
+self::$Config['Version'] = '6.3.0-alpha';
 
 
 

@@ -1,5 +1,10 @@
+/**
+ *  The Post controller updates and removes all post relevant data on the server.
+ *  The Post controller is a singelton.
+ */
 Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protected){
-
+    // Updates the text and tags from a post on the server and updates the relating post model in the client application.
+    // Sets the post automitically to viewed, assuming the user noticed that he changed the data.
 	// @param post <Dashbird.Models.Post>
 	// @param text <string>
 	// @param tags <array>
@@ -16,7 +21,7 @@ Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protect
             }
         });
     };
-         
+    // Deletes a post on the server and destroyes the relating post model in the client application.
     // @param post <Dashbird.Models.Post>     
     me.deletePost = function(post){
         $.getJSON('api/post/delete/', {
@@ -29,7 +34,8 @@ Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protect
         });
         post.destroy();
     };
-    
+    // Sets the post shares for a post on the server and updates the relating post model in the client application.
+    // Sets the post automitically to viewed, assuming the user noticed that he changed the data.
     // @param post <Dashbird.Models.Post>
     // @param userIds <array>
     me.setPostShares = function(post, userIds){
@@ -44,9 +50,9 @@ Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protect
             }
         });
     }
-    
+    // Sets the last view for a post on the server and updates the relating post model in the client application.
     // @param post <Dashbird.Models.Post>
-    // @param newLastView [optional] <datetime>
+    // @param newLastView [optional] <datetime> By default it is the updated time from the post
     me.setLastView = function(post, newLastView){
         if(typeof(newLastView) === 'undefined')
             newLastView = post.getUpdated().get();
@@ -66,7 +72,8 @@ Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protect
            });
         }
     }
-    
+    // Adds a comment to a post on the server and updates the relating post model in the client application.
+    // Sets the post automitically to viewed, assuming the user noticed that he changed the data.
     // @param post <Dashbird.Models.Post>
     // @param text <string>
     // @param callback [optional] <function>
@@ -85,7 +92,8 @@ Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protect
             }
         });
     }
-
+    // Deletes a comment from a post and updates the relating post model in the client application.
+    // Sets the post automitically to viewed, assuming the user noticed that he changed the data.
  	// @param post <Dashbird.Models.Post>
     // @param id <int>
     // @param callback [optional] <function>
@@ -104,7 +112,8 @@ Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protect
             }
         });
     }
-
+    // Adds a post on the server and creates a relating post model in the client application.
+    // Sets the post automitically to viewed, assuming the user noticed that he changed the data.
     // @param text <string>
     // @param tags <array>
     // @param postShares <array>
@@ -125,8 +134,5 @@ Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protect
             }
         });
     }
-
-
-
 	return me;
 }).construct();

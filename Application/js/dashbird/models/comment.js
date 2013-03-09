@@ -12,7 +12,7 @@ Dashbird.Models.Comment = SimpleJSLib.EventHandler.inherit(function(me, _protect
 	_protected.comments = null;
 
 	// constructor
-	// @var  parameters (.construct(<{}>, <Dashbird.Model.Comments>))
+	// @var  parameters (.construct(<{}>, <Dashbird.Models.Comments>))
 	// [0] plain comment data
 	// [1] the comments container the comment belongs to
 	_protected.construct = function(parameters){
