@@ -9,8 +9,7 @@ STILL UNDER DEVELOPMENT
 
 ### Models
 
-Some of the modules are a mix between a Model and a Controller. 
-For example you have `Dashbird.Post` which holds the data of a post and provides observable properties a view can listen to. On the other hand you also have functions like update and delete which pushes the changes to the server.
+For example you have `Dashbird.Post` which holds the data of a post and provides observable properties a view can listen to.
 A list of modules which follows this scheme.
 - Dashbird.Models.Post (contains one Dashbird.Comments)
 - Dashbird.Models.Comments (contains multiple Dashbird.Comment)

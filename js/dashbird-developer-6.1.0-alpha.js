@@ -225,6 +225,109 @@ SimpleJSLib.MappingArray = SimpleJSLib.BaseObject.inherit(function(me, _protecte
 if(typeof(Dashbird) === 'undefined')
 	var Dashbird = {};
 Dashbird.Controllers = {};
+Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protected){
+	// @param post <Dashbird.Models.Post>
+	// @param text <string>
+	// @param tags <array>
+	me.updatePost = function(post, text, tags){
+        $.getJSON('api/post/edit/', {
+            postId : post.getPostId(), 
+            text : text,
+            tags: tags
+        }, function(data) {
+            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
+            if(ajaxResponse.isSuccess){
+               post.mergeData(ajaxResponse.data);
+               me.setLastView(post);
+            }
+        });
+    };
+         
+    // @param post <Dashbird.Models.Post>     
+    me.deletePost = function(post){
+        $.getJSON('api/post/delete/', {
+            postId : post.getPostId()
+        }, function(data) {
+            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
+            if(ajaxResponse.isSuccess){
+               
+            }
+        });
+        post.destroy();
+    };
+    
+    // @param post <Dashbird.Models.Post>
+    // @param userIds <array>
+    me.setPostShares = function(post, userIds){
+        $.getJSON('api/post/shares/set/', {
+            postId : post.getPostId(), 
+            userIds : userIds
+        }, function(data) {
+            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
+            if(ajaxResponse.isSuccess){
+               post.mergeData(ajaxResponse.data);
+               me.setLastView(post);
+            }
+        });
+    }
+    
+    // @param post <Dashbird.Models.Post>
+    // @param newLastView [optional] <datetime>
+    me.setLastView = function(post, newLastView){
+        if(typeof(newLastView) === 'undefined')
+            newLastView = post.getUpdated().get();
+        if(newLastView != post.getLastView().get()){
+            // set it first on local side so there is an instant change
+            post.getLastView().set(newLastView)
+            $.getJSON('/api/post/lastview/set/', {
+               postId : post.getPostId(), 
+               lastView : newLastView
+           }, function(data) {
+               var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
+               if(ajaxResponse.isSuccess){
+                  post.mergeData(ajaxResponse.data);
+               }
+           });
+        }
+    }
+    
+    // @param post <Dashbird.Models.Post>
+    // @param text <string>
+    // @param callback [optional] <function>
+    me.addComment = function(post, text, callback){
+        $.getJSON('api/post/comment/add/', {
+            postId :post.getPostId(), 
+            text : text
+        }, function(data) {
+            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
+            if(ajaxResponse.isSuccess){
+                post.mergeData(ajaxResponse.data.post);
+                me.setLastView(post);
+            }
+            if(callback != null){
+                callback();
+            }
+        });
+    }
+ 	// @param post <Dashbird.Models.Post>
+    // @param id <int>
+    // @param callback [optional] <function>
+    me.deleteComment = function(post, id, callback){
+        $.getJSON('api/post/comment/delete/', {
+            commentId : id
+        }, function(data) {
+            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
+            if(ajaxResponse.isSuccess){
+                post.mergeData(ajaxResponse.data);
+                me.setLastView(post);
+                if(typeof(callback) != 'undefined'){
+                    callback(ajaxResponse);
+                }
+            }
+        });
+    }
+	return me;
+}).construct();
 Dashbird.Controllers.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
     _protected.postList = null;
     
@@ -753,24 +856,26 @@ Dashbird.Models.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected)
     me.getComments = function(){
         return _protected.postData.comments;
     }
-     // @return SimpleJSLib.Óbservable<Date>
+     // @return SimpleJSLib.Observable<Date>
     me.getUpdated = function(){
         return _protected.postData.updated;
     }
-    // @return SimpleJSLib.Óbservable<Date>
+    // @return SimpleJSLib.Observable<Date>
     me.getLastView = function(){
         return _protected.postData.lastView;
     }
-    // //@return SimpleJSLib.Óbservable<Boolean>
+    // //@return SimpleJSLib.Observable<Boolean>
     // @return Boolean
     me.isViewed = function(){
         return !(me.getLastView().get() == null ||  me.getUpdated().get() > me.getLastView().get());
         //return _protected.postData.isViewed;
     }
+    // @return SimpleJSLib.Observable<array>
+    me.getPostShares = function(){
+        return _protected.postData.postShares;
+    }
 
     // --- end ---
-    
-   
     
     me.mergeData = function(data){
         _protected.postData.lastView.set(data.lastView);
@@ -780,99 +885,14 @@ Dashbird.Models.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected)
         _protected.postData.comments.mergeData(data.comments);
         _protected.postData.postShares.set(data.postShares);
     }
+    me.destroy = function(){
+         me.fireEvent('/post/deleted/', me); 
+    }
 
     me.getPostData = function(){
         return _protected.postData;
     };
   
-    me.update = function(text, tags){
-        $.getJSON('api/post/edit/', {
-            postId : _protected.postData.postId, 
-            text : text,
-            tags: tags
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-               me.mergeData(ajaxResponse.data);
-               me.setLastView();
-            }
-        });
-    };
-              
-    me.deletePost = function(){
-        $.getJSON('api/post/delete/', {
-            postId : _protected.postData.postId
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-               
-            }
-        });
-        me.fireEvent('/post/deleted/', me);            
-    };
-    
-    me.setPostShares = function(userIds){
-        $.getJSON('api/post/shares/set/', {
-            postId : _protected.postData.postId, 
-            userIds : userIds
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-               me.mergeData(ajaxResponse.data);
-               me.setLastView();
-            }
-        });
-    }
-    
-    me.setLastView = function(newLastView){
-        if(typeof(newLastView) === 'undefined')
-            newLastView = _protected.postData.updated.get();
-        if(newLastView !=_protected.postData.lastView.get()){
-            // set it first on local side so there is an instant change
-            _protected.postData.lastView.set(newLastView)
-            $.getJSON('/api/post/lastview/set/', {
-               postId : _protected.postData.postId, 
-               lastView : newLastView
-           }, function(data) {
-               var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-               if(ajaxResponse.isSuccess){
-                  me.mergeData(ajaxResponse.data);
-               }
-           });
-        }
-    }
-    
-    
-    me.addComment = function(text, callback){
-        $.getJSON('api/post/comment/add/', {
-            postId : _protected.postData.postId, 
-            text : text
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-                me.mergeData(ajaxResponse.data.post);
-                me.setLastView();
-            }
-            if(callback != null){
-                callback();
-            }
-        });
-    }
-    me.deleteComment = function(id, callback){
-        $.getJSON('api/post/comment/delete/', {
-            commentId : id
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-                me.mergeData(ajaxResponse.data);
-                me.setLastView();
-                if(typeof(callback) != 'undefined'){
-                    callback(ajaxResponse);
-                }
-            }
-        });
-    }
-    
     me.isKeywordMatch = function(keyword){
            if(_protected.postData.text.get().indexOf(keyword) !== -1)
                 return true;
@@ -1128,9 +1148,7 @@ Dashbird.ViewModels.Comment =  SimpleJSLib.EventHandler.inherit(function(me, _pr
                         'cancel-button-text' : 'No, no, I am sorry', 
                         'submit-button-text' : 'Remove the rubish!', 
                         callback : function(){
-                            me.getPost().deleteComment(_protected.comment.getCommentId(), function(){
-                                 me.getPost().setLastView();
-                            });
+                        	Dashbird.Controllers.Post.deleteComment(me.getPost(), _protected.comment.getCommentId());
                         }
                     })
                 });
@@ -1142,7 +1160,9 @@ Dashbird.ViewModels.Comment =  SimpleJSLib.EventHandler.inherit(function(me, _pr
       	// catch events
       	_protected.comment.getText().listen(_protected.onTextChange);
       	_protected.comment.attachEvent('/destroying/', _protected.onCommentDestroying);
-      	_protected.$layer.find('.viewStatus').click(function(){_protected.comment.getPost().setLastView(_protected.comment.getDatetime())});
+      	_protected.$layer.find('.viewStatus').click(function(){
+      		Dashbird.Controllers.Post.setLastView(_protected.comment.getPost(), _protected.comment.getDatetime());
+      	});
       	me.getPost().getLastView().listen( _protected.onLastViewChange);
 	}
 	// --- drawing  ---
@@ -1954,7 +1974,7 @@ Dashbird.Commands.Comment = SimpleJSLib.BaseObject.inherit(function(me, _protect
             });
             _protected.$form.find('.submit-button').click(function(e){
                 e.preventDefault();
-                _protected.postHtmlLayer.getPost().addComment(_protected.$form.find('textarea').val(), function(){
+                Dashbird.Controllers.Post.addComment(_protected.postHtmlLayer.getPost(), _protected.$form.find('textarea').val(), function(){
                     _protected.$form.hide();
                     _protected.$button.show();
                     _protected.$form.find('textarea').val('');
@@ -1994,7 +2014,8 @@ Dashbird.Commands.Edit = Dashbird.Commands.Base.inherit(function(me, _protected)
             _protected.$.find('.submit-button').click(function(e){
                 e.preventDefault();
                 _protected.addTag();
-                _protected.postHtmlLayer.getPost().update(_protected.$.find('textarea').val(), _protected.tags);
+                // update post
+                Dashbird.Controllers.Post.updatePost(_protected.postHtmlLayer.getPost(), _protected.$.find('textarea').val(), _protected.tags);
                 _protected.$.fadeOut();
             });
             
@@ -2039,7 +2060,7 @@ Dashbird.Commands.Edit = Dashbird.Commands.Base.inherit(function(me, _protected)
             _protected.$.fadeIn(function(){
                 _protected.$.find('textarea').focus();
             });
-            _protected.postHtmlLayer.getPost().setLastView();
+            Dashbird.Controllers.Post.setLastView(_protected.postHtmlLayer.getPost());
         });
     };
     
@@ -2116,7 +2137,7 @@ Dashbird.Commands.Remove = Dashbird.Commands.Base.inherit(function(me, _protecte
             'cancel-button-text' : 'No, no, I am sorry', 
             'submit-button-text' : 'Remove the rubish!', 
             callback : function(){
-                _protected.postHtmlLayer.getPost().deletePost();
+                Dashbird.Controllers.Post.deletePost(_protected.postHtmlLayer.getPost());
             }
         });
     }
@@ -2143,7 +2164,7 @@ Dashbird.Commands.Share = Dashbird.Commands.Base.inherit(function(me, _protected
         if(!_protected.isOnDemandInited){
             _protected.$.find('.submit-button').click(function(e){
                 e.preventDefault();
-                _protected.postHtmlLayer.getPost().setPostShares(_protected.postShares);
+                Dashbird.Controllers.Post.setPostShares(_protected.postHtmlLayer.getPost(), _protected.postShares)
                 _protected.$.fadeOut();
             });
             _protected.$.find('.cancel-button').click(function(e){
@@ -2159,7 +2180,7 @@ Dashbird.Commands.Share = Dashbird.Commands.Base.inherit(function(me, _protected
         e.preventDefault();
         _protected.onDemandInit();
         _protected.hideCommands(function(){
-            _protected.postShares = _protected.postHtmlLayer.getPost().getPostData().postShares.get();
+            _protected.postShares = _protected.postHtmlLayer.getPost().getPostShares().get();
             _protected.draw();
             // show option
             _protected.$.fadeIn(function(){

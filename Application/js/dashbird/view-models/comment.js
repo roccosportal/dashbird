@@ -39,9 +39,7 @@ Dashbird.ViewModels.Comment =  SimpleJSLib.EventHandler.inherit(function(me, _pr
                         'cancel-button-text' : 'No, no, I am sorry', 
                         'submit-button-text' : 'Remove the rubish!', 
                         callback : function(){
-                            me.getPost().deleteComment(_protected.comment.getCommentId(), function(){
-                                 me.getPost().setLastView();
-                            });
+                        	Dashbird.Controllers.Post.deleteComment(me.getPost(), _protected.comment.getCommentId());
                         }
                     })
                 });
@@ -56,7 +54,9 @@ Dashbird.ViewModels.Comment =  SimpleJSLib.EventHandler.inherit(function(me, _pr
       	// catch events
       	_protected.comment.getText().listen(_protected.onTextChange);
       	_protected.comment.attachEvent('/destroying/', _protected.onCommentDestroying);
-      	_protected.$layer.find('.viewStatus').click(function(){_protected.comment.getPost().setLastView(_protected.comment.getDatetime())});
+      	_protected.$layer.find('.viewStatus').click(function(){
+      		Dashbird.Controllers.Post.setLastView(_protected.comment.getPost(), _protected.comment.getDatetime());
+      	});
       	me.getPost().getLastView().listen( _protected.onLastViewChange);
 
 	}

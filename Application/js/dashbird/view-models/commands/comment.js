@@ -23,7 +23,7 @@ Dashbird.Commands.Comment = SimpleJSLib.BaseObject.inherit(function(me, _protect
             });
             _protected.$form.find('.submit-button').click(function(e){
                 e.preventDefault();
-                _protected.postHtmlLayer.getPost().addComment(_protected.$form.find('textarea').val(), function(){
+                Dashbird.Controllers.Post.addComment(_protected.postHtmlLayer.getPost(), _protected.$form.find('textarea').val(), function(){
                     _protected.$form.hide();
                     _protected.$button.show();
                     _protected.$form.find('textarea').val('');

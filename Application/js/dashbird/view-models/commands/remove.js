@@ -16,7 +16,7 @@ Dashbird.Commands.Remove = Dashbird.Commands.Base.inherit(function(me, _protecte
             'cancel-button-text' : 'No, no, I am sorry', 
             'submit-button-text' : 'Remove the rubish!', 
             callback : function(){
-                _protected.postHtmlLayer.getPost().deletePost();
+                Dashbird.Controllers.Post.deletePost(_protected.postHtmlLayer.getPost());
             }
         });
     }

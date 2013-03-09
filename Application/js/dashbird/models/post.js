@@ -56,27 +56,31 @@ Dashbird.Models.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected)
         return _protected.postData.comments;
     }
 
-     // @return SimpleJSLib.Óbservable<Date>
+     // @return SimpleJSLib.Observable<Date>
     me.getUpdated = function(){
         return _protected.postData.updated;
     }
 
-    // @return SimpleJSLib.Óbservable<Date>
+    // @return SimpleJSLib.Observable<Date>
     me.getLastView = function(){
         return _protected.postData.lastView;
     }
 
-    // //@return SimpleJSLib.Óbservable<Boolean>
+    // //@return SimpleJSLib.Observable<Boolean>
     // @return Boolean
     me.isViewed = function(){
         return !(me.getLastView().get() == null ||  me.getUpdated().get() > me.getLastView().get());
         //return _protected.postData.isViewed;
     }
 
+    // @return SimpleJSLib.Observable<array>
+    me.getPostShares = function(){
+        return _protected.postData.postShares;
+    }
+
+
 
     // --- end ---
-    
-   
     
     me.mergeData = function(data){
         _protected.postData.lastView.set(data.lastView);
@@ -87,104 +91,15 @@ Dashbird.Models.Post = SimpleJSLib.EventHandler.inherit(function(me, _protected)
         _protected.postData.postShares.set(data.postShares);
     }
 
+    me.destroy = function(){
+         me.fireEvent('/post/deleted/', me); 
+    }
+
 
     me.getPostData = function(){
         return _protected.postData;
     };
   
-    me.update = function(text, tags){
-        $.getJSON('api/post/edit/', {
-            postId : _protected.postData.postId, 
-            text : text,
-            tags: tags
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-               me.mergeData(ajaxResponse.data);
-               me.setLastView();
-            }
-        });
-    };
-              
-    me.deletePost = function(){
-        $.getJSON('api/post/delete/', {
-            postId : _protected.postData.postId
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-               
-            }
-        });
-        me.fireEvent('/post/deleted/', me);            
-    };
-    
-    me.setPostShares = function(userIds){
-        $.getJSON('api/post/shares/set/', {
-            postId : _protected.postData.postId, 
-            userIds : userIds
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-               me.mergeData(ajaxResponse.data);
-               me.setLastView();
-            }
-        });
-    }
-    
-    me.setLastView = function(newLastView){
-        if(typeof(newLastView) === 'undefined')
-            newLastView = _protected.postData.updated.get();
-
-        if(newLastView !=_protected.postData.lastView.get()){
-            // set it first on local side so there is an instant change
-            _protected.postData.lastView.set(newLastView)
-
-            $.getJSON('/api/post/lastview/set/', {
-               postId : _protected.postData.postId, 
-               lastView : newLastView
-           }, function(data) {
-               var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-               if(ajaxResponse.isSuccess){
-                  me.mergeData(ajaxResponse.data);
-               }
-           });
-        }
-    }
-    
-
-    
-    me.addComment = function(text, callback){
-        $.getJSON('api/post/comment/add/', {
-            postId : _protected.postData.postId, 
-            text : text
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-                me.mergeData(ajaxResponse.data.post);
-                me.setLastView();
-            }
-            if(callback != null){
-                callback();
-            }
-        });
-    }
-
-    me.deleteComment = function(id, callback){
-        $.getJSON('api/post/comment/delete/', {
-            commentId : id
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-                me.mergeData(ajaxResponse.data);
-                me.setLastView();
-                if(typeof(callback) != 'undefined'){
-                    callback(ajaxResponse);
-                }
-
-            }
-        });
-    }
-    
     me.isKeywordMatch = function(keyword){
            if(_protected.postData.text.get().indexOf(keyword) !== -1)
                 return true;

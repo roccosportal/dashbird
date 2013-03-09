@@ -26,6 +26,7 @@ $Files = array (
     '~/Application/js/simple-js-lib/mapping-array.js',
     '~/Application/js/dashbird/_.js',
     '~/Application/js/dashbird/controllers/_.js',
+    '~/Application/js/dashbird/controllers/post.js',
     '~/Application/js/dashbird/controllers/posts.js',
     '~/Application/js/dashbird/controllers/user.js',
     '~/Application/js/dashbird/controllers/utils/_.js',

@@ -18,7 +18,7 @@ Dashbird.Commands.Share = Dashbird.Commands.Base.inherit(function(me, _protected
         if(!_protected.isOnDemandInited){
             _protected.$.find('.submit-button').click(function(e){
                 e.preventDefault();
-                _protected.postHtmlLayer.getPost().setPostShares(_protected.postShares);
+                Dashbird.Controllers.Post.setPostShares(_protected.postHtmlLayer.getPost(), _protected.postShares)
                 _protected.$.fadeOut();
             });
 
@@ -35,7 +35,7 @@ Dashbird.Commands.Share = Dashbird.Commands.Base.inherit(function(me, _protected
         e.preventDefault();
         _protected.onDemandInit();
         _protected.hideCommands(function(){
-            _protected.postShares = _protected.postHtmlLayer.getPost().getPostData().postShares.get();
+            _protected.postShares = _protected.postHtmlLayer.getPost().getPostShares().get();
             _protected.draw();
             // show option
             _protected.$.fadeIn(function(){

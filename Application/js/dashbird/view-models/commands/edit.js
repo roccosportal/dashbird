@@ -20,7 +20,8 @@ Dashbird.Commands.Edit = Dashbird.Commands.Base.inherit(function(me, _protected)
             _protected.$.find('.submit-button').click(function(e){
                 e.preventDefault();
                 _protected.addTag();
-                _protected.postHtmlLayer.getPost().update(_protected.$.find('textarea').val(), _protected.tags);
+                // update post
+                Dashbird.Controllers.Post.updatePost(_protected.postHtmlLayer.getPost(), _protected.$.find('textarea').val(), _protected.tags);
                 _protected.$.fadeOut();
             });
             
@@ -69,7 +70,7 @@ Dashbird.Commands.Edit = Dashbird.Commands.Base.inherit(function(me, _protected)
             _protected.$.fadeIn(function(){
                 _protected.$.find('textarea').focus();
             });
-            _protected.postHtmlLayer.getPost().setLastView();
+            Dashbird.Controllers.Post.setLastView(_protected.postHtmlLayer.getPost());
         });
 
     };
