@@ -105,5 +105,28 @@ Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protect
         });
     }
 
+    // @param text <string>
+    // @param tags <array>
+    // @param postShares <array>
+    // @param callback [optional] <function(<Dashbird.Models.Post>)>
+    me.addPost = function(text, tags, postShares, callback){
+        $.getJSON('api/post/add/', {
+            text : text,
+            tags :  tags,
+            shares : postShares
+        }, function(data) {
+            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
+            if(ajaxResponse.isSuccess){
+                var result = Dashbird.Controllers.Posts.mergePostDatas([ajaxResponse.data]);
+                me.setLastView(result.posts[0]);
+                if(typeof(callback) != 'undefined'){
+                    callback(result.posts[0]);
+                }
+            }
+        });
+    }
+
+
+
 	return me;
 }).construct();

@@ -326,6 +326,27 @@ Dashbird.Controllers.Post = SimpleJSLib.BaseObject.inherit(function(me, _protect
             }
         });
     }
+    // @param text <string>
+    // @param tags <array>
+    // @param postShares <array>
+    // @param callback [optional] <function(<Dashbird.Models.Post>)>
+    me.addPost = function(text, tags, postShares, callback){
+        $.getJSON('api/post/add/', {
+            text : text,
+            tags :  tags,
+            shares : postShares
+        }, function(data) {
+            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
+            if(ajaxResponse.isSuccess){
+                var result = Dashbird.Controllers.Posts.mergePostDatas([ajaxResponse.data]);
+                me.setLastView(result.posts[0]);
+                if(typeof(callback) != 'undefined'){
+                    callback(result.posts[0]);
+                }
+            }
+        });
+    }
+
 	return me;
 }).construct();
 Dashbird.Controllers.Posts = SimpleJSLib.EventHandler.inherit(function(me, _protected){
@@ -2518,18 +2539,9 @@ Dashbird.Views.Board.NewPost = SimpleJSLib.EventHandler.inherit(function(me, _pr
     _protected.onSaveClick = function(e){
         e.preventDefault();
         _protected.addTag();
-        $.getJSON('api/post/add/', {
-            text :  _protected.$.find('textarea').val(),
-            tags :  _protected.tags,
-            shares : _protected.postShares
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-                var result = Dashbird.Controllers.Posts.mergePostDatas([ajaxResponse.data]);
-                result.posts[0].setLastView();
-                Dashbird.Views.Board.Stack.show();
-            }
-        });
+        Dashbird.Controllers.Post.addPost(_protected.$.find('textarea').val(), _protected.tags, _protected.postShares, function(post){
+            Dashbird.Views.Board.Stack.show();
+        })
     }
     
     _protected.onCancelClick = function(e){

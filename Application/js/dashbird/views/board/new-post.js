@@ -65,18 +65,9 @@ Dashbird.Views.Board.NewPost = SimpleJSLib.EventHandler.inherit(function(me, _pr
     _protected.onSaveClick = function(e){
         e.preventDefault();
         _protected.addTag();
-        $.getJSON('api/post/add/', {
-            text :  _protected.$.find('textarea').val(),
-            tags :  _protected.tags,
-            shares : _protected.postShares
-        }, function(data) {
-            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
-            if(ajaxResponse.isSuccess){
-                var result = Dashbird.Controllers.Posts.mergePostDatas([ajaxResponse.data]);
-                result.posts[0].setLastView();
-                Dashbird.Views.Board.Stack.show();
-            }
-        });
+        Dashbird.Controllers.Post.addPost(_protected.$.find('textarea').val(), _protected.tags, _protected.postShares, function(post){
+            Dashbird.Views.Board.Stack.show();
+        })
     }
     
     _protected.onCancelClick = function(e){
