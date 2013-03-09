@@ -1,0 +1,1 @@
+Dashbird.Views.Utils = {};
