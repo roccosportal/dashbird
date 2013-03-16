@@ -6,7 +6,7 @@ Dashbird.Views.Board.Search = SimpleJSLib.BaseObject.inherit(function(me, _prote
     me.init = function(){
         _protected.$pane = $('#search');
         _protected.$posts = _protected.$pane.find('.posts');
-        _protected.postHtmlLayersManager = Dashbird.Views.Utils.PostHtmlLayersManager.construct();
+        _protected.viewModelPostsManager = Dashbird.Views.Utils.ViewModelPostsManager.construct();
         _protected.$searchBox = $('#search-box');
         _protected.searchRequestQueue = SimpleJSLib.SingleRequestQueue.construct();
         _protected.searchRequestQueue.setTimeout(500);
@@ -31,13 +31,13 @@ Dashbird.Views.Board.Search = SimpleJSLib.BaseObject.inherit(function(me, _prote
     };
     
     me.search = function(search){
-        _protected.postHtmlLayersManager.clear();
+        _protected.viewModelPostsManager.clear();
         _protected.currentSearch = search;
         var posts = Dashbird.Controllers.Posts.search(search);
         var postHtmlLayer = null;
         for(var i = 0; i < posts.length; i++){
             postHtmlLayer = Dashbird.ViewModels.Post.construct(posts[i]);
-            _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer, 'bottom');
+            _protected.viewModelPostsManager.registerPostHtmlLayer(postHtmlLayer, 'bottom');
             _protected.$posts.append(postHtmlLayer.getLayer());
         }
         Dashbird.Controllers.Posts.attachEvent('/posts/new/', _protected.onNewPosts);
@@ -58,7 +58,7 @@ Dashbird.Views.Board.Search = SimpleJSLib.BaseObject.inherit(function(me, _prote
         window.scrollTo(0,0);
         
          // view is now on top again;
-        _protected.postHtmlLayersManager.allowAll();
+        _protected.viewModelPostsManager.allowAll();
     }
         
     me.getSearchObject = function(){
@@ -91,7 +91,7 @@ Dashbird.Views.Board.Search = SimpleJSLib.BaseObject.inherit(function(me, _prote
         for(var i = 0; i < result.newPosts.length; i++){
             if(result.newPosts[i].isSearchMatch(_protected.currentSearch)){
                 postHtmlLayer = Dashbird.ViewModels.Post.construct(result.newPosts[i]);
-                _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer);
+                _protected.viewModelPostsManager.registerViewModelPost(postHtmlLayer);
                 _protected.$posts.append(postHtmlLayer.getLayer());
             }
         }

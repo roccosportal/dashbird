@@ -2402,13 +2402,10 @@ Dashbird.Views.Board.Feed = SimpleJSLib.EventHandler.inherit(function(me, _prote
 }).construct();
 
 Dashbird.Views.Board.Latest = SimpleJSLib.EventHandler.inherit(function(me, _protected){
-    
     _protected.postList = [];
     _protected.postCount = 30
-    //_protected.postHtmlLayers = [];
-    
     me.init = function(){
-        _protected.postHtmlLayersManager = Dashbird.Views.Utils.PostHtmlLayersManager.construct();
+        _protected.viewModelPostsManager = Dashbird.Views.Utils.ViewModelPostsManager.construct();
         _protected.$changedPostsCounter = $('#latest-changed-posts-counter');
         _protected.$latest = $('#latest');
         _protected.$posts = _protected.$latest.find('.posts');
@@ -2427,7 +2424,7 @@ Dashbird.Views.Board.Latest = SimpleJSLib.EventHandler.inherit(function(me, _pro
         });
         $(window).scroll(function() {
             if(_protected.isVisible()){
-                 _protected.postHtmlLayersManager.changeAllowedToRedraw();
+                 _protected.viewModelPostsManager.changeAllowedToRedraw();
             }
         });
         $('#navigation .latest').click(me.show);
@@ -2487,11 +2484,11 @@ Dashbird.Views.Board.Latest = SimpleJSLib.EventHandler.inherit(function(me, _pro
     _protected.setPosts = function(posts){
         _protected.postList = posts;
         
-        _protected.postHtmlLayersManager.clear();
+        _protected.viewModelPostsManager.clear();
         _protected.$posts.html('');
         for (var j = 0; j <  _protected.postList.length; j++) {
             var postHtmlLayer = Dashbird.ViewModels.Post.construct(_protected.postList[j]);
-            _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer, 'bottom');
+            _protected.viewModelPostsManager.registerViewModelPost(postHtmlLayer, 'bottom');
             _protected.$posts.append(postHtmlLayer.getLayer());
         }
     }
@@ -2732,7 +2729,7 @@ Dashbird.Views.Board.Search = SimpleJSLib.BaseObject.inherit(function(me, _prote
     me.init = function(){
         _protected.$pane = $('#search');
         _protected.$posts = _protected.$pane.find('.posts');
-        _protected.postHtmlLayersManager = Dashbird.Views.Utils.PostHtmlLayersManager.construct();
+        _protected.viewModelPostsManager = Dashbird.Views.Utils.ViewModelPostsManager.construct();
         _protected.$searchBox = $('#search-box');
         _protected.searchRequestQueue = SimpleJSLib.SingleRequestQueue.construct();
         _protected.searchRequestQueue.setTimeout(500);
@@ -2757,13 +2754,13 @@ Dashbird.Views.Board.Search = SimpleJSLib.BaseObject.inherit(function(me, _prote
     };
     
     me.search = function(search){
-        _protected.postHtmlLayersManager.clear();
+        _protected.viewModelPostsManager.clear();
         _protected.currentSearch = search;
         var posts = Dashbird.Controllers.Posts.search(search);
         var postHtmlLayer = null;
         for(var i = 0; i < posts.length; i++){
             postHtmlLayer = Dashbird.ViewModels.Post.construct(posts[i]);
-            _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer, 'bottom');
+            _protected.viewModelPostsManager.registerPostHtmlLayer(postHtmlLayer, 'bottom');
             _protected.$posts.append(postHtmlLayer.getLayer());
         }
         Dashbird.Controllers.Posts.attachEvent('/posts/new/', _protected.onNewPosts);
@@ -2783,7 +2780,7 @@ Dashbird.Views.Board.Search = SimpleJSLib.BaseObject.inherit(function(me, _prote
         window.scrollTo(0,0);
         
          // view is now on top again;
-        _protected.postHtmlLayersManager.allowAll();
+        _protected.viewModelPostsManager.allowAll();
     }
         
     me.getSearchObject = function(){
@@ -2816,7 +2813,7 @@ Dashbird.Views.Board.Search = SimpleJSLib.BaseObject.inherit(function(me, _prote
         for(var i = 0; i < result.newPosts.length; i++){
             if(result.newPosts[i].isSearchMatch(_protected.currentSearch)){
                 postHtmlLayer = Dashbird.ViewModels.Post.construct(result.newPosts[i]);
-                _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer);
+                _protected.viewModelPostsManager.registerViewModelPost(postHtmlLayer);
                 _protected.$posts.append(postHtmlLayer.getLayer());
             }
         }
@@ -2912,7 +2909,7 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
 
     
     me.init = function (){  
-         _protected.postHtmlLayersManager = Dashbird.Views.Utils.PostHtmlLayersManager.construct();
+         _protected.viewModelPostsManager = Dashbird.Views.Utils.ViewModelPostsManager.construct();
         _protected.$stack = $('#stack');
         _protected.$posts = $('#stack .posts');
         _protected.$loading = $('#stack .loading');
@@ -2926,7 +2923,7 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
         
         $(window).scroll(function() {
             if(_protected.isVisible()){
-                _protected.postHtmlLayersManager.changeAllowedToRedraw();
+                _protected.viewModelPostsManager.changeAllowedToRedraw();
                 if(!_protected.isLoading &&  _protected.pager.$morePosts.is(':visible') && Dashbird.Utils.topIsOnScreen( _protected.pager.$morePosts )){
                     me.showMorePosts();
                 }
@@ -2960,7 +2957,7 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
     
     _protected.onShow = function(){
           // view is now on top again;
-        _protected.postHtmlLayersManager.allowAll();
+        _protected.viewModelPostsManager.allowAll();
         
         
         if( _protected.newPosts.length > 0){
@@ -2978,7 +2975,7 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
 
         for (var i = 0; i <  posts.length; i++) {
             var postHtmlLayer = Dashbird.ViewModels.Post.construct(posts[i]);
-            _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer, position);
+            _protected.viewModelPostsManager.registerViewModelPost(postHtmlLayer, position);
             _protected.posts.push(posts[i]);
             if(position==='bottom'){
                 _protected.$posts.append(postHtmlLayer.getLayer());
@@ -3105,145 +3102,180 @@ Dashbird.Views.Utils.Modal = function(){
     
     return me;
 }();
-Dashbird.Views.Utils.PostHtmlLayersManager = SimpleJSLib.BaseObject.inherit(function(me, _protected){
-    
-    _protected.postHtmlLayers = [];
-    _protected.postHtmlLayersDeniedForRedraw = [];
-    _protected.postHtmlLayersAllowedForRedraw = [];
-    
-    
-   
-    
+/**
+ *  This module manages the 'allowedToRedraw' state of view model posts.
+ *  Not every view model post should refresh its content/layout especially when it is outside of the top of the screen.
+ *  The changeAllowedToRedraw method should be called when the user changed the position of its screen (after scrolling) to allow 'hidden'
+ *  view model posts to redraw and others not to redraw.
+ */
+Dashbird.Views.Utils.ViewModelPostsManager = SimpleJSLib.BaseObject.inherit(function(me, _protected){
+    _protected.viewModelPosts = [];
+    _protected.viewModelPostsDeniedForRedraw = [];
+    _protected.viewModelPostsAllowedForRedraw = [];   
+    // Returns all view model posts that are managed by this module.
     me.getPostHtmlLayers = function(){
-        return  _protected.postHtmlLayers;
+        return  _protected.viewModelPosts;
     }
-    
-    me.registerPostHtmlLayer = function(postHtmlLayer, position){
+    // Registers a view model post to this manager.
+    // @param viewModelPost <Dashbird.ViewModels.Post>
+    // @param position [optional] 'bottom'[default]|'top'
+    me.registerViewModelPost = function(viewModelPost, position){
          if(typeof(position) === 'undefined'){
             position = 'bottom';
         }
-        
-        postHtmlLayer.setAllowedToRedraw(true);
-        postHtmlLayer.attachEvent('/destroying/', _protected.onPostHtmlLayerDestroying);
-        var index = _protected.postHtmlLayers.push(postHtmlLayer) - 1;
-        
-          if(position==='bottom'){
-                _protected.postHtmlLayersAllowedForRedraw.push(index);
-          }
-          else if(position==='top'){
-                _protected.postHtmlLayersAllowedForRedraw.unshift(index);
-          }
+        viewModelPost.setAllowedToRedraw(true);
+        viewModelPost.attachEvent('/destroying/', _protected.onViewModelPostDestroying);
+        var index = _protected.viewModelPosts.push(viewModelPost) - 1;
+        if(position==='bottom'){
+            _protected.viewModelPostsAllowedForRedraw.push(index);
+        }
+        else if(position==='top'){
+            // if no view model post is denied for redraw, we safely can put the current 
+            // view model post to the top of the allowed array.
+            // Otherwhise we have to put it to the top of the denied array.
+            if(_protected.viewModelPostsDeniedForRedraw.length == 0){
+                _protected.viewModelPostsAllowedForRedraw.unshift(index);
+            }
+            else {
+                _protected.viewModelPostsDeniedForRedraw.unshift(index);
+            }
+        }
     }
-    
-    
+    // This method recalulates the 'allowedToRedraw' state of the managed view model posts.
+    // For perfomance optimizations it is assumed the user can scroll up and down.
     me.changeAllowedToRedraw = function(){
-        
         var movePostsToAllow = [];
-        // go reverse
-        var postHtmlLayer = null
-        for(var j = _protected.postHtmlLayersDeniedForRedraw.length - 1; j >= 0; j --){
-            postHtmlLayer = _protected.postHtmlLayers[_protected.postHtmlLayersDeniedForRedraw[j]];
-            if(Dashbird.Utils.bottomIsOnScreen(postHtmlLayer.getLayer()))
+        var viewModelPost = null; // <ViewModels.Post>
+        // go reverse through all view model posts that are not allowed to redraw
+        // if we find one, that is not on the screen anymore, we can break the loop
+        for(var j = _protected.viewModelPostsDeniedForRedraw.length - 1; j >= 0; j --){
+            viewModelPost = _protected.viewModelPosts[_protected.viewModelPostsDeniedForRedraw[j]];
+            if(Dashbird.Utils.bottomIsOnScreen(viewModelPost.getLayer()))
                 movePostsToAllow.push(j);
             else
                 break;
         }
-    
+        // if we found any posts which were not allowed to redraw and now appeared on the screen (scrolled up)
+        // we move them to array with the allowed redrawing posts and remove them from the denied array
+        var viewModelPostIndex = null;
         if(movePostsToAllow.length > 0){
             var index = null;
-            var postHtmlLayerIndex = null;
-            for(var k = 0; k <movePostsToAllow.length; k ++){
+            for(var k = 0; k < movePostsToAllow.length; k ++){
+                // the index of _protected.viewModelPostsDeniedForRedraw
                 index = movePostsToAllow[k];
-                postHtmlLayerIndex = _protected.postHtmlLayersDeniedForRedraw[index];
+                // the actual index of the view model post
+                viewModelPostIndex = _protected.viewModelPostsDeniedForRedraw[index];
                 // delete from denied array
-                _protected.postHtmlLayersDeniedForRedraw.splice(index, 1);
+                // we started with the highest index, so we do not have to worry about a changing index
+                _protected.viewModelPostsDeniedForRedraw.splice(index, 1);
                 // add to top of allowed array
-                _protected.postHtmlLayersAllowedForRedraw.unshift(postHtmlLayerIndex);
-                _protected.postHtmlLayers[postHtmlLayerIndex].setAllowedToRedraw(true);
+                _protected.viewModelPostsAllowedForRedraw.unshift(viewModelPostIndex);
+                _protected.viewModelPosts[viewModelPostIndex].setAllowedToRedraw(true);
             }
         }
+        // no posts were moved to the allow array
+        // this could mean the screen scrolled down
         else {
             var movePostsToDenied = [];
-            for(var i = 0; i < _protected.postHtmlLayersAllowedForRedraw.length; i ++){
-                postHtmlLayer = _protected.postHtmlLayers[_protected.postHtmlLayersAllowedForRedraw[i]];
-                if(!Dashbird.Utils.bottomIsOnScreen(postHtmlLayer.getLayer()))
+            // searching for view model posts that were allowed but are not on the screen anymore
+            // if we find one that is still on the screen we can break
+            for(var i = 0; i < _protected.viewModelPostsAllowedForRedraw.length; i ++){
+                viewModelPost = _protected.viewModelPosts[_protected.viewModelPostsAllowedForRedraw[i]];
+                if(!Dashbird.Utils.bottomIsOnScreen(viewModelPost.getLayer()))
                     movePostsToDenied.push(i);
                 else
                     break;
             }
+            // if we found some view models that were allowed to redraw and now not anymore
+            // we have to move them
             if(movePostsToDenied.length > 0){
-                for(var h = 0; h < movePostsToDenied.length; h ++){
+                for(var h = movePostsToDenied.length - 1; h >= 0; h --){
+                     // the index of _protected.viewModelPostsAllowedForRedraw
                     index = movePostsToDenied[h];
-                    postHtmlLayerIndex =_protected.postHtmlLayersAllowedForRedraw[index];
+                     // the actual index of the view model post
+                    viewModelPostIndex =_protected.viewModelPostsAllowedForRedraw[index];
                     // delete from allowed array
-                    _protected.postHtmlLayersAllowedForRedraw.splice(index, 1);
+                    // we going reverse, so we do not have to worry about a changing index
+                    _protected.viewModelPostsAllowedForRedraw.splice(index, 1);
                     // add to bottom of denied array
-                    _protected.postHtmlLayersDeniedForRedraw.push(postHtmlLayerIndex);
-                    _protected.postHtmlLayers[postHtmlLayerIndex].setAllowedToRedraw(false);
+                    _protected.viewModelPostsDeniedForRedraw.push(viewModelPostIndex);
+                    _protected.viewModelPosts[viewModelPostIndex].setAllowedToRedraw(false);
                 }
             }
         }
     };
     
-    
-    _protected.onPostHtmlLayerDestroying = function(postHtmlLayer){
+    // Gets called when a view model post is destroying
+    // @param viewModelPost <Dashbird.ViewModels.Post>
+    _protected.onViewModelPostDestroying = function(viewModelPost){
         var index = null;
-        for(var i = 0; i < _protected.postHtmlLayers.length; i++){
-            if(postHtmlLayer.getPost().getPostData().postId.toString() == _protected.postHtmlLayers[i].getPost().getPostData().postId.toString()){
+        // find the index in viewModelPosts of the given view model posts
+        for(var i = 0; i < _protected.viewModelPosts.length; i++){
+            if(viewModelPost.getPost().getPostId().toString() == _protected.viewModelPosts[i].getPost().getPostId().toString()){
                 index = i;
                 break;
             }
         }
-        
         if(index!=null){
-            _protected.postHtmlLayers[index].detachEvent('/destroying/', _protected.onPostHtmlLayerDestroying);
-            _protected.postHtmlLayers.splice(index, 1);
-            
+            // now we delete it from the array
+            _protected.viewModelPosts[index].detachEvent('/destroying/', _protected.onViewModelPostDestroying);
+            _protected.viewModelPosts.splice(index, 1);
+            // lets search for the index in the allowed array
+            // and because we removed an item from the array the index changed
             var indexReference = null
-            for(var j = 0; j < _protected.postHtmlLayersAllowedForRedraw.length; j++){
-                if(_protected.postHtmlLayersAllowedForRedraw[j]== index){
+            for(var j = 0; j < _protected.viewModelPostsAllowedForRedraw.length; j++){
+                if(indexReference == null && _protected.viewModelPostsAllowedForRedraw[j] == index){
                     indexReference = j;
-                    break;
+                }
+                else if(_protected.viewModelPostsAllowedForRedraw[j] > index){
+                    // every old index that was higher than the deleted index is now one less
+                    _protected.viewModelPostsAllowedForRedraw[j] -= 1;
                 }
             }
-            if(indexReference!=null){
-                _protected.postHtmlLayersAllowedForRedraw.splice(indexReference, 1);
-            }
-            else {
-                for(var k = 0; k < _protected.postHtmlLayersDeniedForRedraw.length; k++){
-                    if(_protected.postHtmlLayersDeniedForRedraw[k]== index){
-                        indexReference = k;
-                        break;
-                    }
+            // we found an reference in the allowed array
+            if(indexReference!=null)
+                _protected.viewModelPostsAllowedForRedraw.splice(indexReference, 1);
+            // reset variable
+            indexReference = null;
+            // lets search for the index in the denied array
+            // and because we removed an item from the array the index changed
+            for(var k = 0; k < _protected.viewModelPostsDeniedForRedraw.length; k++){
+                if(indexReference == null && _protected.viewModelPostsDeniedForRedraw[k]== index){
+                    indexReference = k;
                 }
-                if(indexReference!=null){
-                    _protected.postHtmlLayersDeniedForRedraw.splice(indexReference, 1);
+                else if(_protected.viewModelPostsDeniedForRedraw[k] > index){
+                    // every old index that was higher than the deleted index is now one less
+                    _protected.viewModelPostsDeniedForRedraw[k] -= 1;
                 }
             }
+             // we found an reference in the denied array
+            if(indexReference!=null)
+                _protected.viewModelPostsDeniedForRedraw.splice(indexReference, 1);
         }
     };
-    
+    // This method allows all view model posts that are managed by this module to redraw.
     me.allowAll = function(){
-         var postHtmlLayerIndex = null;
+         var viewModelPostIndex = null;
         // allow all posts to redraw
-        for(var j = _protected.postHtmlLayersDeniedForRedraw.length - 1; j >= 0; j --){
-            postHtmlLayerIndex = _protected.postHtmlLayersDeniedForRedraw[j];
-            _protected.postHtmlLayers[postHtmlLayerIndex].setAllowedToRedraw(true);
-            _protected.postHtmlLayersAllowedForRedraw.unshift(postHtmlLayerIndex);
+        for(var j = _protected.viewModelPostsDeniedForRedraw.length - 1; j >= 0; j --){
+            viewModelPostIndex = _protected.viewModelPostsDeniedForRedraw[j];
+            _protected.viewModelPosts[viewModelPostIndex].setAllowedToRedraw(true);
+            _protected.viewModelPostsAllowedForRedraw.unshift(viewModelPostIndex);
         }
-        
-        _protected.postHtmlLayersDeniedForRedraw = [];
+        _protected.viewModelPostsDeniedForRedraw = [];
     }
-    
+    // This module destroys all view model posts that are managed by this module.
+    // This function should be prefered than deleting view model posts in a loop.
+    // Otherwhise it would costs huge array recalculations.
     me.clear = function(){
-        for (var i = 0; i <  _protected.postHtmlLayers.length; i++) {
-            _protected.postHtmlLayers[i].detachEvent('/destroying/', _protected.onPostHtmlLayerDestroying);
-            _protected.postHtmlLayers[i].destroy();
+        for (var i = 0; i <  _protected.viewModelPosts.length; i++) {
+            // detach the destroying event catcher to prevent array recalculations
+            _protected.viewModelPosts[i].detachEvent('/destroying/', _protected.onViewModelPostDestroying);
+            _protected.viewModelPosts[i].destroy();
         }
-        
-         _protected.postHtmlLayersDeniedForRedraw = [];
-         _protected.postHtmlLayersAllowedForRedraw = [];
-         _protected.postHtmlLayers = [];
+        _protected.viewModelPostsDeniedForRedraw = [];
+        _protected.viewModelPostsAllowedForRedraw = [];
+        _protected.viewModelPosts = [];
     }
     return me;
 });

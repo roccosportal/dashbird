@@ -1,11 +1,8 @@
 Dashbird.Views.Board.Latest = SimpleJSLib.EventHandler.inherit(function(me, _protected){
-    
     _protected.postList = [];
     _protected.postCount = 30
-    //_protected.postHtmlLayers = [];
-    
     me.init = function(){
-        _protected.postHtmlLayersManager = Dashbird.Views.Utils.PostHtmlLayersManager.construct();
+        _protected.viewModelPostsManager = Dashbird.Views.Utils.ViewModelPostsManager.construct();
         _protected.$changedPostsCounter = $('#latest-changed-posts-counter');
         _protected.$latest = $('#latest');
         _protected.$posts = _protected.$latest.find('.posts');
@@ -24,7 +21,7 @@ Dashbird.Views.Board.Latest = SimpleJSLib.EventHandler.inherit(function(me, _pro
         });
         $(window).scroll(function() {
             if(_protected.isVisible()){
-                 _protected.postHtmlLayersManager.changeAllowedToRedraw();
+                 _protected.viewModelPostsManager.changeAllowedToRedraw();
             }
         });
         $('#navigation .latest').click(me.show);
@@ -86,12 +83,12 @@ Dashbird.Views.Board.Latest = SimpleJSLib.EventHandler.inherit(function(me, _pro
     _protected.setPosts = function(posts){
         _protected.postList = posts;
         
-        _protected.postHtmlLayersManager.clear();
+        _protected.viewModelPostsManager.clear();
 
         _protected.$posts.html('');
         for (var j = 0; j <  _protected.postList.length; j++) {
             var postHtmlLayer = Dashbird.ViewModels.Post.construct(_protected.postList[j]);
-            _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer, 'bottom');
+            _protected.viewModelPostsManager.registerViewModelPost(postHtmlLayer, 'bottom');
             _protected.$posts.append(postHtmlLayer.getLayer());
         }
     }

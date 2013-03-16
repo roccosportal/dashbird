@@ -21,7 +21,7 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
 
     
     me.init = function (){  
-         _protected.postHtmlLayersManager = Dashbird.Views.Utils.PostHtmlLayersManager.construct();
+         _protected.viewModelPostsManager = Dashbird.Views.Utils.ViewModelPostsManager.construct();
         _protected.$stack = $('#stack');
         _protected.$posts = $('#stack .posts');
         _protected.$loading = $('#stack .loading');
@@ -35,7 +35,7 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
         
         $(window).scroll(function() {
             if(_protected.isVisible()){
-                _protected.postHtmlLayersManager.changeAllowedToRedraw();
+                _protected.viewModelPostsManager.changeAllowedToRedraw();
                 if(!_protected.isLoading &&  _protected.pager.$morePosts.is(':visible') && Dashbird.Utils.topIsOnScreen( _protected.pager.$morePosts )){
                     me.showMorePosts();
                 }
@@ -69,7 +69,7 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
     
     _protected.onShow = function(){
           // view is now on top again;
-        _protected.postHtmlLayersManager.allowAll();
+        _protected.viewModelPostsManager.allowAll();
         
         
         if( _protected.newPosts.length > 0){
@@ -87,7 +87,7 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
 
         for (var i = 0; i <  posts.length; i++) {
             var postHtmlLayer = Dashbird.ViewModels.Post.construct(posts[i]);
-            _protected.postHtmlLayersManager.registerPostHtmlLayer(postHtmlLayer, position);
+            _protected.viewModelPostsManager.registerViewModelPost(postHtmlLayer, position);
             _protected.posts.push(posts[i]);
             if(position==='bottom'){
                 _protected.$posts.append(postHtmlLayer.getLayer());

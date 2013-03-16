@@ -67,7 +67,7 @@ $Files = array (
     '~/Application/js/dashbird/views/board/stack.js',
     '~/Application/js/dashbird/views/utils/_.js',
     '~/Application/js/dashbird/views/utils/modal.js',
-    '~/Application/js/dashbird/views/utils/post-html-layers-manager.js',
+    '~/Application/js/dashbird/views/utils/view-model-posts-manager.js',
     '~/Application/js/dashbird/views/utils/templates.js',
     '~/Application/js/dashbird/utils.js',
     '~/Application/js/dashbird/views/board/bootstrap.js',
