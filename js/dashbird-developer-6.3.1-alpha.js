@@ -1597,7 +1597,6 @@ Dashbird.ViewModels.Post =  SimpleJSLib.EventHandler.inherit(function(me, _prote
     
     _protected.onPostSharesChanged = function(){
         _protected.drawingManager.queueRedraw(['postShares']);
-         _protected.allowedToRedraw ? _protected.drawPostShares() : _protected.changeSet.postShares = true;
     }
     
     _protected.onLastViewChanged = function(){
