@@ -37,7 +37,7 @@ Dashbird.Views.Board.Search = SimpleJSLib.BaseObject.inherit(function(me, _prote
         var postHtmlLayer = null;
         for(var i = 0; i < posts.length; i++){
             postHtmlLayer = Dashbird.ViewModels.Post.construct(posts[i]);
-            _protected.viewModelPostsManager.registerPostHtmlLayer(postHtmlLayer, 'bottom');
+            _protected.viewModelPostsManager.registerViewModelPost(postHtmlLayer, 'bottom');
             _protected.$posts.append(postHtmlLayer.getLayer());
         }
         Dashbird.Controllers.Posts.attachEvent('/posts/new/', _protected.onNewPosts);

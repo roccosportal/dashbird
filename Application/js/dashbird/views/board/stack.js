@@ -123,7 +123,6 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
     
     _protected.onNewPosts = function(result){
         var posts = result.newPosts;
-        _
         for(var i = 0; i < posts.length; i++){
             if(posts[i].getPostData().created >= _protected.topCreatedDate){
                 _protected.newPosts.push(posts[i]);

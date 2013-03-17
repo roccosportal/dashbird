@@ -2760,7 +2760,7 @@ Dashbird.Views.Board.Search = SimpleJSLib.BaseObject.inherit(function(me, _prote
         var postHtmlLayer = null;
         for(var i = 0; i < posts.length; i++){
             postHtmlLayer = Dashbird.ViewModels.Post.construct(posts[i]);
-            _protected.viewModelPostsManager.registerPostHtmlLayer(postHtmlLayer, 'bottom');
+            _protected.viewModelPostsManager.registerViewModelPost(postHtmlLayer, 'bottom');
             _protected.$posts.append(postHtmlLayer.getLayer());
         }
         Dashbird.Controllers.Posts.attachEvent('/posts/new/', _protected.onNewPosts);
@@ -3011,7 +3011,6 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
     
     _protected.onNewPosts = function(result){
         var posts = result.newPosts;
-        _
         for(var i = 0; i < posts.length; i++){
             if(posts[i].getPostData().created >= _protected.topCreatedDate){
                 _protected.newPosts.push(posts[i]);
