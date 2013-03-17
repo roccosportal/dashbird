@@ -9,6 +9,7 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
     _protected.isLoading = false;
     _protected.topCreatedDate = null;
     _protected.newPosts = [];
+    _protected.newPostsTopCreatedDate = null;
     _protected.isVisible = function(){
         return (_protected.$stack.hasClass('active'));
     };
@@ -16,6 +17,9 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
     
     
     _protected.getCreateDateOfLastPost = function(){
+        if(_protected.posts.length == 0)
+            return Dashbird.InitialData.LoadedAt;
+
         return _protected.posts[_protected.posts.length - 1].getPostData().created;
     }
 
@@ -44,7 +48,13 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
 
         Dashbird.Controllers.Posts.loadPostsByCreated(Dashbird.InitialData.LoadedAt, _protected.pager.postCount, function(result){
             var posts = result.newPosts;
-            _protected.topCreatedDate = posts[0].getPostData().created;
+            var topCreatedDate = Dashbird.InitialData.LoadedAt;
+            if(posts.length > 0){
+                topCreatedDate = posts[0].getPostData().created;
+            }
+            _protected.topCreatedDate = topCreatedDate;
+
+
             me.addPosts(posts);
             _protected.$loading.hide();
             _protected.pager.$morePosts.show();
@@ -74,6 +84,7 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
         
         if( _protected.newPosts.length > 0){
             me.addPosts(_protected.newPosts, 'top');
+            _protected.topCreatedDate = _protected.posts[0].getPostData().created;
             _protected.newPosts = [];
             _protected.drawNewPostCounter();
         }
@@ -88,11 +99,13 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
         for (var i = 0; i <  posts.length; i++) {
             var postHtmlLayer = Dashbird.ViewModels.Post.construct(posts[i]);
             _protected.viewModelPostsManager.registerViewModelPost(postHtmlLayer, position);
-            _protected.posts.push(posts[i]);
+            
             if(position==='bottom'){
+                _protected.posts.push(posts[i]);
                 _protected.$posts.append(postHtmlLayer.getLayer());
             }
             else if(position==='top'){
+                _protected.posts.unshift(posts[i]);
                 _protected.$posts.prepend(postHtmlLayer.getLayer());
             }
             
@@ -110,10 +123,12 @@ Dashbird.Views.Board.Stack = SimpleJSLib.EventHandler.inherit(function(me, _prot
     
     _protected.onNewPosts = function(result){
         var posts = result.newPosts;
+        _
         for(var i = 0; i < posts.length; i++){
             if(posts[i].getPostData().created >= _protected.topCreatedDate){
                 _protected.newPosts.push(posts[i]);
             }
+
         }
         _protected.drawNewPostCounter();
     }
