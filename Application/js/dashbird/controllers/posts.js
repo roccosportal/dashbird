@@ -238,7 +238,7 @@ Dashbird.Controllers.Posts = SimpleJSLib.EventHandler.inherit(function(me, _prot
         $.getJSON('/api/posts/search/', {
             'search' : search
         }, function(data) {
-            var ajaxResponse = Dashbird.Controller.Utils.AjaxResponse.construct(data);
+            var ajaxResponse = Dashbird.Controllers.Utils.AjaxResponse.construct(data);
             if(ajaxResponse.isSuccess){
                 var result = me.mergePostDatas(ajaxResponse.data.posts);
                 result.search = search;
