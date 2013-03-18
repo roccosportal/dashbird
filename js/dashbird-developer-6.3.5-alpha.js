@@ -1481,7 +1481,7 @@ Dashbird.ViewModels.PostFeed =  SimpleJSLib.EventHandler.inherit(function(me, _p
         _protected.$headline.find('.date').html(_protected.post.getPostData().created);
         _protected.$headline.find('.post-link').click(function(e){
             e.preventDefault();
-            Dashbird.Board.Views.SingleView.showPost(_protected.post.getPostData().postId);
+            Dashbird.Views.Board.SingleView.showPost(_protected.post.getPostId());
         });
     }
     
@@ -2844,7 +2844,7 @@ Dashbird.Views.Board.SingleView = SimpleJSLib.EventHandler.inherit(function(me, 
              _protected.postHtmlLayer.setAllowedToRedraw(true);
              _protected.postHtmlLayer.attachEvent('/destroying/', me.hide);
              _protected.$content.append(_protected.postHtmlLayer.getLayer());
-             _protected.currentPost.setLastView();
+             Dashbird.Controllers.Post.setLastView(_protected.currentPost);
         });
     }
     
