@@ -91,22 +91,27 @@ Dashbird.ViewModels.ActivityFeed =  SimpleJSLib.EventHandler.inherit(function(me
 
 
 	_protected.drawLastView = function(){
-		_protected.$lastview.find('.date').text(me.getPost().getLastView().get());
-		_protected.$lastview.detach();
-		
+		if(me.getPost().getLastView().get() != null){
+			_protected.$lastview.find('.date').text(me.getPost().getLastView().get());
+			_protected.$lastview.detach();
+			
 
-		if(_protected.commentFeedLayerList.length == 0){
-			_protected.$layer.append(_protected.$lastview);
+			if(_protected.commentFeedLayerList.length == 0){
+				_protected.$layer.append(_protected.$lastview);
+			}
+			else {
+				 _protected.commentFeedLayerList.each(function(index, commentFeedLayer){
+				 	if(!commentFeedLayer.isViewed()){
+						commentFeedLayer.getLayer().before(_protected.$lastview);
+						return;
+					}
+				 });
+				
+				_protected.commentFeedLayerList.getLast().getLayer().after(_protected.$lastview);
+			}
 		}
 		else {
-			 _protected.commentFeedLayerList.each(function(index, commentFeedLayer){
-			 	if(!commentFeedLayer.isViewed()){
-					commentFeedLayer.getLayer().before(_protected.$lastview);
-					return;
-				}
-			 });
-			
-			_protected.commentFeedLayerList.getLast().getLayer().after(_protected.$lastview);
+			_protected.$lastview.detach();
 		}
 	}
 
