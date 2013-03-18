@@ -74,7 +74,9 @@ Dashbird.ViewModels.Post =  SimpleJSLib.EventHandler.inherit(function(me, _prote
         
         _protected.$post.data('post', me);
         
-        _protected.$meta.find('.viewStatus').click(function() {_protected.post.setLastView() });
+        _protected.$meta.find('.viewStatus').click(function() {
+            Dashbird.Controllers.Post.setLastView(_protected.post)
+        });
         
 
         // attach listener
