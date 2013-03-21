@@ -1,58 +1,41 @@
+/**
+ * This model represents a list of comments for a post.
+ *
+ */
 Dashbird.Models.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protected){
-
 	_protected.comments = null;
-
-	// // contains a mapping like { <commentId> : <indexOfArray>, ... }
-	// _protected.mappingForComments = {};
-
 	_protected.post = null;
-
 	// constructor
-	// @var  parameters (.construct(<[]>, <Dasbird.Posts>))
+	// @param  parameters (.construct(<array>, <Dasbird.Modeles.Post>))
 	// [0] plain comments array
-	// [1] the posts the comments belong to
+	// [1] the post the comments belong to
 	_protected.construct = function(parameters){
 		_protected.comments = SimpleJSLib.MappingArray.construct();
-
 		// shorthands
 		me.getCommentById = _protected.comments.getByKey;
 		me.each = _protected.comments.each;
-
-
 		me.mergeData(parameters[0]);
 		_protected.post = parameters[1];
 	}
-
-
-	// --- fire events ---
-
-	// @var comment Dashbird.Models.Comment
+	// Fires the event '/new/comment/'
+	// @param comment <Dashbird.Models.Comment>
 	_protected.fireEventNewComment = function(comment){
 		me.fireEvent('/new/comment/', comment);
 	}
-
-	// --- end ---
-
-	// --- catch events ---
-
-	// @var comment Dashbird.Models.Comment
+	// This method gets called when a comment is destroying.
+	// It removes the given comment from the list.
+	// @param comment <Dashbird.Models.Comment>
 	_protected.onCommentDestroying = function(comment){
 		comment.detachEvent('/destroying/', _protected.onCommentDestroying);
 		_protected.comments.remove(comment.getCommentId());
 	}
-	// --- end ---
-
-	// --- getter and setters ---
-
+	// Returns the post.
+	// @return <Dashbird.Models.Post>
 	me.getPost = function(){
 		return _protected.post;
 	}
-
-	// --- end ---
-
-
-	// merges the given data to our data
-	// @var commentsData (plain data object)
+	// Merges the given data to our data.
+	// @param commentsData <object> (plain data object)
 	me.mergeData = function(commentsData){
 		var indexOfArray = null;
 		var comment = null;
@@ -67,7 +50,6 @@ Dashbird.Models.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protec
 				_protected.comments.add(comment.getCommentId(), comment);
 				comment.attachEvent('/destroying/', _protected.onCommentDestroying);
 				_protected.fireEventNewComment(comment);
-				
 			}
 			else {
 				// pass merge data to instance
@@ -75,7 +57,6 @@ Dashbird.Models.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protec
 			}
 			processedCommentIds[comment.getCommentId()] = true; 
 		};
-
 		// if these are different there are some old comments
 		if(commentsData.length != _protected.comments.length){
 			// delete old ones
@@ -87,21 +68,14 @@ Dashbird.Models.Comments = SimpleJSLib.EventHandler.inherit(function(me, _protec
 				}
 			}, true);
 		}
-
 	}
-
-	// will be overwritten in constructor
-	// @var commentId 
-	// @return Dashbird.Models.Comment
+	// Returns a comment by the id
+	// @param commentId <int>
+	// @return <Dashbird.Models.Comment>
 	me.getCommentById = null;
-
-	// will be overwritten in constructor
-	// @var commentId 
-	// @return Dashbird.Models.Comment
+	// Allows to itereate the comment array
+	// @param callbackIterator <function>
+	// @param makeRemovingSafe <boolean> [optional] [default=false]
 	me.each = null;
-
-	
-
-
 	return me;
 });
