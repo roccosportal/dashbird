@@ -1194,7 +1194,7 @@ Dashbird.ViewModels.Comment =  SimpleJSLib.EventHandler.inherit(function(me, _pr
                 });
                 // delete comment button
                 _protected.$layer.find('.command-bar.popup .command-delete').click(function(){
-                    me.getPost().setLastView();
+                    Dashbird.Controllers.Post.setLastView(me.getPost());
                     Dashbird.Views.Utils.Modal.show({
                         headline: 'Deleting comment', 
                         text : 'Do you really want to delete this comment?',
