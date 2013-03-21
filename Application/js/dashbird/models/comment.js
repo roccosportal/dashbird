@@ -25,7 +25,7 @@ Dashbird.Models.Comment = SimpleJSLib.EventHandler.inherit(function(me, _protect
 		me.fireEvent('/destroying/', me);
 	}
 	// Returns the text.
-	// @return <SimpleJSLib.Observable>
+	// @return <SimpleJSLib.Observable<string>>
 	me.getText = function(){
 		return _protected.text;
 	}
